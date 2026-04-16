@@ -1,5 +1,6 @@
 "use client";
 
+import type { LucideIcon } from "lucide-react";
 import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -966,7 +967,7 @@ const Welcome = () => {
 /* ——— Reusable Feature Block ——— */
 interface FeatureParagraph { text: React.ReactNode; highlight?: boolean; }
 interface FeatureBlockProps {
-  icon: React.ElementType; emoji: string; title: string; subtitle: string;
+  icon: LucideIcon; emoji: string; title: string; subtitle: string;
   reverse: boolean; paragraphs: FeatureParagraph[]; checks: string[]; isLast?: boolean;
 }
 
