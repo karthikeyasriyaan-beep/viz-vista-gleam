@@ -7,8 +7,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useCurrency } from "@/components/currency-selector";
 import {
-  Plus, Mic, TrendingUp, TrendingDown, ChevronDown, ChevronUp, X, Wallet, ArrowRight, Sparkles
+  Plus, Mic, TrendingUp, TrendingDown, ChevronDown, ChevronUp, X, Wallet, ArrowRight
 } from "lucide-react";
+import { VoiceInput } from "@/components/VoiceInput";
 import { NoIndexMeta } from "@/components/NoIndexMeta";
 import { useNavigate } from "react-router-dom";
 import { getGuestExpenses, getGuestIncome, type GuestExpense, type GuestIncome } from "@/lib/guest-storage";
@@ -202,10 +203,7 @@ export default function Dashboard() {
 
             {/* Quick Actions inline on desktop */}
             <div className="flex gap-3 flex-shrink-0 flex-wrap">
-              <Button variant="outline" className="h-12 rounded-xl border-2 border-primary/20 hover:border-primary/40 gap-2 text-sm font-bold px-5" onClick={() => navigate("/smart-import")}>
-                <Sparkles className="h-4 w-4 text-primary" />
-                Smart Import
-              </Button>
+              <VoiceInput variant="inline" label="Voice Input" onSuccess={refetchAll} />
               <AddExpenseDialog onSuccess={refetchAll} />
             </div>
           </motion.div>
