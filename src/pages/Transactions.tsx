@@ -15,6 +15,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { NoIndexMeta } from "@/components/NoIndexMeta";
+import { VoiceInput } from "@/components/VoiceInput";
 import {
   getGuestExpenses, getGuestIncome, addGuestExpense, addGuestIncome,
   type GuestExpense, type GuestIncome
@@ -217,6 +218,7 @@ export default function Transactions() {
           <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 h-14 flex items-center justify-between gap-3">
             <h1 className="text-base font-bold tracking-tight">Transactions</h1>
             <div className="flex gap-2">
+              <VoiceInput allowedTypes={["expense", "income"]} onSuccess={refetchAll} />
               <AddIncomeDialog onSuccess={refetchAll} />
               <AddExpenseDialog onSuccess={refetchAll} />
             </div>

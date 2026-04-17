@@ -10,6 +10,7 @@ import EditSavingsDialog from "@/components/forms/EditSavingsDialog";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { NoIndexMeta } from "@/components/NoIndexMeta";
+import { VoiceInput } from "@/components/VoiceInput";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 
@@ -59,7 +60,10 @@ const Savings = () => {
                 {savings.length > 0 ? `${savings.length} goal${savings.length > 1 ? "s" : ""} in progress` : "Start your journey to financial freedom"}
               </p>
             </div>
-            <AddSavingsDialog onSuccess={refetch} />
+            <div className="flex items-center gap-2">
+              <VoiceInput allowedTypes={["savings"]} onSuccess={refetch} />
+              <AddSavingsDialog onSuccess={refetch} />
+            </div>
           </motion.div>
 
           {/* Summary Grid */}
