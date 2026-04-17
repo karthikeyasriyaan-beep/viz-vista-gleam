@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  Home, Receipt, Sparkles, Wallet, PiggyBank, CreditCard, Repeat, Settings, LogOut, ChevronDown
+  Home, Receipt, Wallet, PiggyBank, CreditCard, Repeat, Settings, LogOut, ChevronDown
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,6 @@ import { cn } from "@/lib/utils";
 const mainNav = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
   { name: "Transactions", href: "/transactions", icon: Receipt },
-  { name: "Smart Import", href: "/smart-import", icon: Sparkles, badge: "⭐" },
 ];
 
 const manageNav = [

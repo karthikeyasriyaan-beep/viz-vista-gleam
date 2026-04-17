@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, Receipt, Sparkles, MoreHorizontal } from "lucide-react";
+import { Home, Receipt, MoreHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -14,7 +14,6 @@ import { useNavigate } from "react-router-dom";
 const coreNav = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
   { name: "Transactions", href: "/transactions", icon: Receipt },
-  { name: "Smart Import", href: "/smart-import", icon: Sparkles },
 ];
 
 const moreNav = [
