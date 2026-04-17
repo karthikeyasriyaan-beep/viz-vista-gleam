@@ -160,10 +160,9 @@ export function VoiceInput({
   onSuccess,
   label = "Voice Input",
 }: VoiceInputProps) {
-  const { user } = useAuth();
+  const { user, isGuest } = useAuth();
   const { formatAmount } = useCurrency();
   const queryClient = useQueryClient();
-  const isGuest = !user;
 
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<"idle" | "listening" | "processing" | "confirm" | "error">("idle");
