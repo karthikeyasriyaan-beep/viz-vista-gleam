@@ -18,9 +18,9 @@ const coreNav = [
 
 const moreNav = [
   { name: "Budget", href: "/budget", icon: Wallet },
+  { name: "Subscriptions", href: "/subscriptions", icon: Repeat },
   { name: "Savings", href: "/savings", icon: PiggyBank },
   { name: "Loans & Debts", href: "/loans", icon: CreditCard },
-  { name: "Subscriptions", href: "/subscriptions", icon: Repeat },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 
