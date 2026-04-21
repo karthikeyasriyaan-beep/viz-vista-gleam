@@ -1,8 +1,11 @@
-import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 
+/**
+ * Auth removed — no login required. Just waits briefly for the anonymous
+ * Supabase session to be established so queries using auth.uid() work.
+ */
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
+  const { loading } = useAuth();
 
   if (loading) {
     return (
@@ -10,10 +13,6 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
       </div>
     );
-  }
-
-  if (!user) {
-    return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;

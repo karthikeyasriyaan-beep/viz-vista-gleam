@@ -3,24 +3,14 @@ import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 
-// Guest user object for no-auth mode
-const GUEST_USER: User = {
-  // Must be a valid UUID because most queries/columns use uuid type.
-  id: "00000000-0000-0000-0000-000000000000",
-  aud: "authenticated",
-  role: "authenticated",
-  email: "guest@trackora.app",
-  email_confirmed_at: new Date().toISOString(),
-  phone: "",
-  confirmed_at: new Date().toISOString(),
-  last_sign_in_at: new Date().toISOString(),
-  app_metadata: { provider: "guest", providers: ["guest"] },
-  user_metadata: { full_name: "Guest User" },
-  identities: [],
-  created_at: new Date().toISOString(),
-  updated_at: new Date().toISOString(),
-};
-
+/**
+ * Auth simplified: no login UI. On first load, the app silently signs the
+ * visitor in anonymously via Supabase so RLS policies (auth.uid() = user_id)
+ * keep working and each browser gets its own private data.
+ *
+ * `enterAsGuest()` just navigates to /dashboard.
+ * Other auth methods are kept as no-ops so existing imports don't break.
+ */
 interface AuthContextType {
   user: User | null;
   session: Session | null;
@@ -35,137 +25,68 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Check localStorage for guest mode
-const getGuestMode = (): boolean => {
-  try {
-    return localStorage.getItem('trackora_guest_mode') === 'true';
-  } catch {
-    return false;
-  }
-};
-
-const setGuestMode = (value: boolean): void => {
-  try {
-    if (value) {
-      localStorage.setItem('trackora_guest_mode', 'true');
-    } else {
-      localStorage.removeItem('trackora_guest_mode');
-    }
-  } catch {
-    // Ignore localStorage errors
-  }
-};
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isGuest, setIsGuest] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check for existing guest mode
-    if (getGuestMode()) {
-      setUser(GUEST_USER);
-      setIsGuest(true);
-      setLoading(false);
-      return;
-    }
+    let mounted = true;
 
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
+    const ensureSession = async () => {
+      const { data: { session: existing } } = await supabase.auth.getSession();
+      if (existing) {
+        if (!mounted) return;
+        setSession(existing);
+        setUser(existing.user);
         setLoading(false);
+        return;
       }
-    );
-
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+      // No session yet — sign in anonymously so RLS-protected inserts work.
+      const { data, error } = await supabase.auth.signInAnonymously();
+      if (!mounted) return;
+      if (error) {
+        console.error('Anonymous sign-in failed:', error);
+        setLoading(false);
+        return;
+      }
+      setSession(data.session);
+      setUser(data.user);
       setLoading(false);
+    };
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, s) => {
+      setSession(s);
+      setUser(s?.user ?? null);
     });
 
-    return () => subscription.unsubscribe();
+    ensureSession();
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const enterAsGuest = () => {
-    setGuestMode(true);
-    setUser(GUEST_USER);
-    setIsGuest(true);
     navigate('/dashboard');
   };
 
-  const signInWithGoogle = async () => {
-    // Clear guest mode when signing in with real account
-    setGuestMode(false);
-    setIsGuest(false);
-    
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/dashboard`
-      }
-    });
-    return { error };
-  };
-
-  const signInWithEmail = async (email: string, password: string) => {
-    // Clear guest mode when signing in with real account
-    setGuestMode(false);
-    setIsGuest(false);
-    
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    if (!error) {
-      navigate('/dashboard');
-    }
-    return { error };
-  };
-
-  const signUpWithEmail = async (email: string, password: string, fullName: string) => {
-    // Clear guest mode when signing up
-    setGuestMode(false);
-    setIsGuest(false);
-    
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/dashboard`,
-        data: {
-          full_name: fullName,
-        }
-      }
-    });
-    if (!error) {
-      navigate('/dashboard');
-    }
-    return { error };
-  };
-
-  const signOut = async () => {
-    setGuestMode(false);
-    setIsGuest(false);
-    await supabase.auth.signOut();
-    navigate('/');
-  };
+  const noopAuth = async () => ({ error: null });
+  const signOut = async () => { navigate('/'); };
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      session, 
-      loading, 
-      isGuest, 
-      signInWithGoogle, 
-      signInWithEmail, 
-      signUpWithEmail, 
+    <AuthContext.Provider value={{
+      user,
+      session,
+      loading,
+      isGuest: false,
+      signInWithGoogle: noopAuth,
+      signInWithEmail: noopAuth,
+      signUpWithEmail: noopAuth,
       signOut,
-      enterAsGuest 
+      enterAsGuest,
     }}>
       {children}
     </AuthContext.Provider>
