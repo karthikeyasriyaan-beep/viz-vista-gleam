@@ -128,7 +128,6 @@ const Savings = () => {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
                             <p className="text-sm font-semibold truncate">{saving.name}</p>
-                            {saving.category && <Badge variant="outline" className="text-[9px] px-1.5 py-0">{saving.category}</Badge>}
                           </div>
                           <div className="flex items-center gap-2 mt-1">
                             <Progress value={progress} className="h-1.5 flex-1" />
