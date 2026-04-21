@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "13.0.5"
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
@@ -18,7 +18,6 @@ export type Database = {
         Row: {
           category: string
           created_at: string
-          current_spending: number | null
           id: string
           month: number
           monthly_limit: number
@@ -29,7 +28,6 @@ export type Database = {
         Insert: {
           category: string
           created_at?: string
-          current_spending?: number | null
           id?: string
           month: number
           monthly_limit: number
@@ -40,7 +38,6 @@ export type Database = {
         Update: {
           category?: string
           created_at?: string
-          current_spending?: number | null
           id?: string
           month?: number
           monthly_limit?: number
@@ -53,35 +50,35 @@ export type Database = {
       expenses: {
         Row: {
           amount: number
-          category: string | null
-          created_at: string | null
+          category: string
+          created_at: string
           date: string
           id: string
           name: string
           notes: string | null
-          updated_at: string | null
+          updated_at: string
           user_id: string
         }
         Insert: {
           amount: number
-          category?: string | null
-          created_at?: string | null
-          date: string
+          category?: string
+          created_at?: string
+          date?: string
           id?: string
           name: string
           notes?: string | null
-          updated_at?: string | null
+          updated_at?: string
           user_id: string
         }
         Update: {
           amount?: number
-          category?: string | null
-          created_at?: string | null
+          category?: string
+          created_at?: string
           date?: string
           id?: string
           name?: string
           notes?: string | null
-          updated_at?: string | null
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -89,83 +86,80 @@ export type Database = {
       income: {
         Row: {
           amount: number
-          category: string | null
-          created_at: string | null
+          category: string
+          created_at: string
           date: string
           id: string
           notes: string | null
           source: string
-          updated_at: string | null
+          updated_at: string
           user_id: string
         }
         Insert: {
           amount: number
-          category?: string | null
-          created_at?: string | null
-          date: string
+          category?: string
+          created_at?: string
+          date?: string
           id?: string
           notes?: string | null
           source: string
-          updated_at?: string | null
+          updated_at?: string
           user_id: string
         }
         Update: {
           amount?: number
-          category?: string | null
-          created_at?: string | null
+          category?: string
+          created_at?: string
           date?: string
           id?: string
           notes?: string | null
           source?: string
-          updated_at?: string | null
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
       }
       loans: {
         Row: {
-          created_at: string | null
-          current_balance: number
+          created_at: string
           end_date: string | null
           id: string
-          initial_amount: number
-          interest_rate: number | null
-          monthly_payment: number | null
+          interest_rate: number
+          monthly_payment: number
           name: string
           notes: string | null
-          start_date: string
-          status: string | null
-          updated_at: string | null
+          principal_amount: number
+          remaining_amount: number
+          start_date: string | null
+          updated_at: string
           user_id: string
         }
         Insert: {
-          created_at?: string | null
-          current_balance: number
+          created_at?: string
           end_date?: string | null
           id?: string
-          initial_amount: number
-          interest_rate?: number | null
-          monthly_payment?: number | null
+          interest_rate?: number
+          monthly_payment?: number
           name: string
           notes?: string | null
-          start_date: string
-          status?: string | null
-          updated_at?: string | null
+          principal_amount: number
+          remaining_amount: number
+          start_date?: string | null
+          updated_at?: string
           user_id: string
         }
         Update: {
-          created_at?: string | null
-          current_balance?: number
+          created_at?: string
           end_date?: string | null
           id?: string
-          initial_amount?: number
-          interest_rate?: number | null
-          monthly_payment?: number | null
+          interest_rate?: number
+          monthly_payment?: number
           name?: string
           notes?: string | null
-          start_date?: string
-          status?: string | null
-          updated_at?: string | null
+          principal_amount?: number
+          remaining_amount?: number
+          start_date?: string | null
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -200,83 +194,107 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       receipts: {
         Row: {
-          amount: number
-          category: string | null
-          created_at: string | null
-          date: string
+          created_at: string
           id: string
           image_url: string | null
           merchant: string | null
-          name: string
-          notes: string | null
-          updated_at: string | null
+          parsed_data: Json | null
+          raw_text: string | null
+          receipt_date: string | null
+          status: string
+          total_amount: number | null
+          updated_at: string
           user_id: string
         }
         Insert: {
-          amount: number
-          category?: string | null
-          created_at?: string | null
-          date: string
+          created_at?: string
           id?: string
           image_url?: string | null
           merchant?: string | null
-          name: string
-          notes?: string | null
-          updated_at?: string | null
+          parsed_data?: Json | null
+          raw_text?: string | null
+          receipt_date?: string | null
+          status?: string
+          total_amount?: number | null
+          updated_at?: string
           user_id: string
         }
         Update: {
-          amount?: number
-          category?: string | null
-          created_at?: string | null
-          date?: string
+          created_at?: string
           id?: string
           image_url?: string | null
           merchant?: string | null
-          name?: string
-          notes?: string | null
-          updated_at?: string | null
+          parsed_data?: Json | null
+          raw_text?: string | null
+          receipt_date?: string | null
+          status?: string
+          total_amount?: number | null
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
       }
       savings: {
         Row: {
-          category: string | null
-          created_at: string | null
-          current_amount: number | null
+          created_at: string
+          current_amount: number
           deadline: string | null
           id: string
           name: string
           notes: string | null
           target_amount: number
-          updated_at: string | null
+          updated_at: string
           user_id: string
         }
         Insert: {
-          category?: string | null
-          created_at?: string | null
-          current_amount?: number | null
+          created_at?: string
+          current_amount?: number
           deadline?: string | null
           id?: string
           name: string
           notes?: string | null
           target_amount: number
-          updated_at?: string | null
+          updated_at?: string
           user_id: string
         }
         Update: {
-          category?: string | null
-          created_at?: string | null
-          current_amount?: number | null
+          created_at?: string
+          current_amount?: number
           deadline?: string | null
           id?: string
           name?: string
           notes?: string | null
           target_amount?: number
-          updated_at?: string | null
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -285,40 +303,40 @@ export type Database = {
         Row: {
           amount: number
           billing_cycle: string
-          category: string | null
-          created_at: string | null
+          category: string
+          created_at: string
           id: string
+          is_active: boolean
           name: string
-          next_billing_date: string
+          next_billing_date: string | null
           notes: string | null
-          status: string | null
-          updated_at: string | null
+          updated_at: string
           user_id: string
         }
         Insert: {
           amount: number
-          billing_cycle: string
-          category?: string | null
-          created_at?: string | null
+          billing_cycle?: string
+          category?: string
+          created_at?: string
           id?: string
+          is_active?: boolean
           name: string
-          next_billing_date: string
+          next_billing_date?: string | null
           notes?: string | null
-          status?: string | null
-          updated_at?: string | null
+          updated_at?: string
           user_id: string
         }
         Update: {
           amount?: number
           billing_cycle?: string
-          category?: string | null
-          created_at?: string | null
+          category?: string
+          created_at?: string
           id?: string
+          is_active?: boolean
           name?: string
-          next_billing_date?: string
+          next_billing_date?: string | null
           notes?: string | null
-          status?: string | null
-          updated_at?: string | null
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
