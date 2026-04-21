@@ -131,16 +131,24 @@ create table if not exists public.loans (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
   name text not null,
-  principal_amount numeric(12,2) not null,
-  remaining_amount numeric(12,2) not null,
+  initial_amount numeric(12,2) not null,
+  current_balance numeric(12,2) not null,
   interest_rate numeric(6,3) not null default 0,
   monthly_payment numeric(12,2) not null default 0,
   start_date date,
   end_date date,
+  status text not null default 'active', -- active | paid_off | defaulted
   notes text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+-- Migration helpers (rename old columns / add missing ones if you ran a previous version)
+alter table public.loans rename column principal_amount to initial_amount;
+-- if the above errors with "column does not exist", it's already renamed — ignore.
+alter table public.loans rename column remaining_amount to current_balance;
+-- ditto.
+alter table public.loans add column if not exists status text not null default 'active';
 create index if not exists idx_loans_user on public.loans (user_id);
 
 alter table public.loans enable row level security;
@@ -183,15 +191,19 @@ create table if not exists public.subscriptions (
   user_id uuid not null references auth.users(id) on delete cascade,
   name text not null,
   amount numeric(12,2) not null,
-  billing_cycle text not null default 'monthly', -- monthly | yearly | weekly
-  category text not null default 'Other',
+  billing_cycle text not null default 'Monthly', -- Weekly | Monthly | Quarterly | Yearly
+  category text,
   next_billing_date date,
   notes text,
-  is_active boolean not null default true,
+  status text not null default 'active', -- active | cancelled
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
 create index if not exists idx_subscriptions_user on public.subscriptions (user_id);
+
+-- Migration helper if you previously had is_active
+alter table public.subscriptions add column if not exists status text not null default 'active';
+alter table public.subscriptions alter column category drop not null;
 
 alter table public.subscriptions enable row level security;
 drop policy if exists "Subscriptions: owner all" on public.subscriptions;
