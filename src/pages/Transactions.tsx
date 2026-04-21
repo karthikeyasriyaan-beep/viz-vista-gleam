@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { useCurrency } from "@/components/currency-selector";
 import { AddIncomeDialog } from "@/components/forms/AddIncomeDialog";
 import { AddExpenseDialog } from "@/components/forms/AddExpenseDialog";
+import { AddMultipleExpensesDialog } from "@/components/forms/AddMultipleExpensesDialog";
 import EditIncomeDialog from "@/components/forms/EditIncomeDialog";
 import EditExpenseDialog from "@/components/forms/EditExpenseDialog";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -217,8 +218,9 @@ export default function Transactions() {
         <div className="sticky top-14 sm:top-16 z-20 bg-background/95 backdrop-blur-md border-b border-border/20">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 h-14 flex items-center justify-between gap-3">
             <h1 className="text-base font-bold tracking-tight">Transactions</h1>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap justify-end">
               <VoiceInput allowedTypes={["expense", "income"]} onSuccess={refetchAll} />
+              <AddMultipleExpensesDialog onSuccess={refetchAll} />
               <AddIncomeDialog onSuccess={refetchAll} />
               <AddExpenseDialog onSuccess={refetchAll} />
             </div>

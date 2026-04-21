@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Sparkles } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useCurrency } from "@/components/currency-selector";
 import { supabase } from "@/integrations/supabase/client";
@@ -100,7 +100,14 @@ export function AddMultipleExpensesDialog({ onSuccess }: AddMultipleExpensesDial
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user) {
+      toast({
+        title: "Not signed in",
+        description: "Please refresh the page and try again.",
+        variant: "destructive",
+      });
+      return;
+    }
     if (!validate()) return;
 
     setLoading(true);
@@ -118,7 +125,7 @@ export function AddMultipleExpensesDialog({ onSuccess }: AddMultipleExpensesDial
       if (error) throw error;
 
       toast({
-        title: "Expenses added",
+        title: "Smart Import complete",
         description: `Added ${rows.length} expenses successfully.`,
       });
 
@@ -130,11 +137,11 @@ export function AddMultipleExpensesDialog({ onSuccess }: AddMultipleExpensesDial
       ]);
       setOpen(false);
       onSuccess?.();
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error adding multiple expenses:", err);
       toast({
         title: "Error adding expenses",
-        description: "There was an error saving your expenses. Try again.",
+        description: err?.message || "There was an error saving your expenses. Try again.",
         variant: "destructive",
       });
     } finally {
@@ -146,13 +153,16 @@ export function AddMultipleExpensesDialog({ onSuccess }: AddMultipleExpensesDial
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="gap-2" variant="outline">
-          <Plus className="h-4 w-4" />
-          Add Multiple Expenses
+          <Sparkles className="h-4 w-4" />
+          Smart Import
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Add Multiple Expenses</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-primary" />
+            Smart Import — Add Multiple Expenses
+          </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
