@@ -226,7 +226,7 @@ export default function Transactions() {
         </div>
 
         {/* ── Wide content ── */}
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 pt-5 pb-28">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 pt-6 sm:pt-8 md:pt-10 pb-28">
 
           {/* ── Summary cards — full width top ── */}
           <motion.div

@@ -126,7 +126,7 @@ export default function Budget() {
                 </p>
               </div>
               <p className="text-xs text-muted-foreground mt-3 font-medium">
-                Based on your balance · {daysLeft} days left
+                Based on your budget · {daysLeft} days left
               </p>
             </motion.div>
 
