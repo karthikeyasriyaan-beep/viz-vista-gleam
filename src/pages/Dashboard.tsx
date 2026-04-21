@@ -160,7 +160,8 @@ export default function Dashboard() {
   const totalIncome = monthIncome.reduce((s: number, i: any) => s + Number(i.amount), 0);
 
   const budgetLimit = monthlyBudget?.total_limit || 0;
-  const safeToSpend = budgetLimit > 0 ? Math.max(budgetLimit - totalExpenses, 0) : Math.max(totalIncome - totalExpenses, 0);
+  // Dashboard's safe-to-spend is always income-based (budget-based version lives on Budget page)
+  const safeToSpend = Math.max(totalIncome - totalExpenses, 0);
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const dayOfMonth = now.getDate();
   const daysLeft = daysInMonth - dayOfMonth;
@@ -197,7 +198,7 @@ export default function Dashboard() {
                 </p>
               </div>
               <p className="text-xs text-muted-foreground mt-2 font-medium">
-                {formatAmount(safeToSpend)} left · {daysLeft} days remaining
+                Based on income · {formatAmount(safeToSpend)} left · {daysLeft} days remaining
               </p>
             </div>
 
