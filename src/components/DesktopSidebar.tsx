@@ -19,9 +19,13 @@ const mainNav = [
 
 const manageNav = [
   { name: "Budget", href: "/budget", icon: Wallet },
+  { name: "Subscriptions", href: "/subscriptions", icon: Repeat },
+];
+
+const tryMoreNav = [
   { name: "Savings", href: "/savings", icon: PiggyBank },
   { name: "Loans & Debts", href: "/loans", icon: CreditCard },
-  { name: "Subscriptions", href: "/subscriptions", icon: Repeat },
+  { name: "Settings", href: "/settings", icon: Settings },
 ];
 
 export function DesktopSidebar() {
@@ -86,7 +90,7 @@ export function DesktopSidebar() {
         </button>
         {tryMoreOpen && (
           <div className="space-y-1 mt-1">
-            <NavItem item={{ name: "Settings", href: "/settings", icon: Settings }} />
+            {tryMoreNav.map(item => <NavItem key={item.href} item={item} />)}
           </div>
         )}
       </div>
