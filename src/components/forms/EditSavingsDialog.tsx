@@ -17,7 +17,6 @@ export default function EditSavingsDialog({ saving, open, onOpenChange, onSucces
     target_amount: saving?.target_amount || '',
     current_amount: saving?.current_amount || '',
     deadline: saving?.deadline || '',
-    category: saving?.category || '',
     notes: saving?.notes || ''
   });
 
@@ -33,7 +32,6 @@ export default function EditSavingsDialog({ saving, open, onOpenChange, onSucces
           target_amount: parseFloat(formData.target_amount),
           current_amount: parseFloat(formData.current_amount),
           deadline: formData.deadline || null,
-          category: formData.category,
           notes: formData.notes
         })
         .eq('id', saving.id);
@@ -153,15 +151,6 @@ export default function EditSavingsDialog({ saving, open, onOpenChange, onSucces
                 type="date"
                 value={formData.deadline}
                 onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="category">Category (Optional)</Label>
-              <Input
-                id="category"
-                value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
               />
             </div>
             

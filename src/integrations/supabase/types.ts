@@ -122,43 +122,46 @@ export type Database = {
       loans: {
         Row: {
           created_at: string
+          current_balance: number
           end_date: string | null
           id: string
+          initial_amount: number
           interest_rate: number
           monthly_payment: number
           name: string
           notes: string | null
-          principal_amount: number
-          remaining_amount: number
           start_date: string | null
+          status: string
           updated_at: string
           user_id: string
         }
         Insert: {
           created_at?: string
+          current_balance: number
           end_date?: string | null
           id?: string
+          initial_amount: number
           interest_rate?: number
           monthly_payment?: number
           name: string
           notes?: string | null
-          principal_amount: number
-          remaining_amount: number
           start_date?: string | null
+          status?: string
           updated_at?: string
           user_id: string
         }
         Update: {
           created_at?: string
+          current_balance?: number
           end_date?: string | null
           id?: string
+          initial_amount?: number
           interest_rate?: number
           monthly_payment?: number
           name?: string
           notes?: string | null
-          principal_amount?: number
-          remaining_amount?: number
           start_date?: string | null
+          status?: string
           updated_at?: string
           user_id?: string
         }
@@ -303,39 +306,42 @@ export type Database = {
         Row: {
           amount: number
           billing_cycle: string
-          category: string
+          category: string | null
           created_at: string
           id: string
           is_active: boolean
           name: string
           next_billing_date: string | null
           notes: string | null
+          status: string
           updated_at: string
           user_id: string
         }
         Insert: {
           amount: number
           billing_cycle?: string
-          category?: string
+          category?: string | null
           created_at?: string
           id?: string
           is_active?: boolean
           name: string
           next_billing_date?: string | null
           notes?: string | null
+          status?: string
           updated_at?: string
           user_id: string
         }
         Update: {
           amount?: number
           billing_cycle?: string
-          category?: string
+          category?: string | null
           created_at?: string
           id?: string
           is_active?: boolean
           name?: string
           next_billing_date?: string | null
           notes?: string | null
+          status?: string
           updated_at?: string
           user_id?: string
         }
