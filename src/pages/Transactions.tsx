@@ -256,55 +256,6 @@ export default function Transactions() {
             {/* LEFT — Smart input + filters + insight */}
             <div className="space-y-4">
 
-              {/* Smart input */}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.05, ease }}
-                className="rounded-2xl bg-card border border-border/30 p-4"
-              >
-                <div className="flex items-center gap-2 mb-3">
-                  <Sparkles className="h-4 w-4 text-primary" />
-                  <p className="text-sm font-semibold">Quick Add</p>
-                </div>
-                <div className="flex gap-2">
-                  <div className="relative flex-1">
-                    <Input
-                      ref={inputRef}
-                      placeholder='"500 food" or "2000 salary"'
-                      value={smartInput}
-                      onChange={(e) => setSmartInput(e.target.value)}
-                      onKeyDown={(e) => { if (e.key === "Enter") handleSmartAdd(); }}
-                      className="h-10 rounded-xl bg-muted/20 border-border/30 text-sm"
-                    />
-                  </div>
-                  <AnimatePresence>
-                    {smartInput && (
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.9 }} transition={{ duration: 0.12 }}
-                      >
-                        <Button onClick={handleSmartAdd} className="h-10 px-4 rounded-xl text-sm">Add</Button>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-
-                {/* Preview */}
-                <AnimatePresence>
-                  {preview && smartInput && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                      className="mt-2 flex items-center justify-between px-3 py-2 rounded-lg bg-muted/30 border border-border/20"
-                    >
-                      <span className="text-xs text-muted-foreground">{preview.category} · {preview.type}</span>
-                      <span className={`text-sm font-bold ${preview.type === "income" ? "text-success" : "text-destructive"}`}>
-                        {preview.type === "income" ? "+" : "-"}{formatAmount(preview.amount)}
-                      </span>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-
               {/* Filters */}
               <motion.div
                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
