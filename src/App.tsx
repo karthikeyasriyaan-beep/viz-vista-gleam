@@ -14,6 +14,7 @@ import { AnimatePresence } from "framer-motion";
 import Welcome from "./pages/Welcome";
 import Dashboard from "./pages/Dashboard";
 import Transactions from "./pages/Transactions";
+import SmartImport from "./pages/SmartImport";
 import Subscriptions from "./pages/Subscriptions";
 import Loans from "./pages/Loans";
 import Savings from "./pages/Savings";
@@ -106,6 +107,7 @@ const App = () => (
                   <Route path="/onboarding" element={<Onboarding />} />
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/transactions" element={<Transactions />} />
+                  <Route path="/smart-import" element={<SmartImport />} />
                   <Route path="/budget" element={<Budget />} />
                   <Route path="/subscriptions" element={<Subscriptions />} />
                   <Route path="/loans" element={<Loans />} />
