@@ -220,7 +220,7 @@ export default function Transactions() {
             <h1 className="text-base font-bold tracking-tight">Transactions</h1>
             <div className="flex gap-2 flex-wrap justify-end">
               <VoiceInput allowedTypes={["expense", "income"]} onSuccess={refetchAll} />
-              <AddMultipleExpensesDialog onSuccess={refetchAll} />
+              
               <AddIncomeDialog onSuccess={refetchAll} />
               <AddExpenseDialog onSuccess={refetchAll} />
             </div>
