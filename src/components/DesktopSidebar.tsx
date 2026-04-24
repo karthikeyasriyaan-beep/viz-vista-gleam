@@ -64,8 +64,11 @@ export function DesktopSidebar() {
   return (
     <aside className="hidden lg:flex flex-col w-56 border-r border-border/40 bg-card/50 h-screen sticky top-0 p-4">
       {/* Logo */}
-      <Link to="/dashboard" className="flex items-center gap-2 px-3 mb-6">
-        <span className="text-lg font-bold">Trackora</span>
+      <Link to="/dashboard" className="flex items-center gap-2.5 px-3 mb-6">
+        <span className="h-8 w-8 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-md shadow-primary/20">
+          <Wallet className="h-4 w-4 text-primary-foreground" strokeWidth={2.5} />
+        </span>
+        <span className="text-lg font-bold gradient-text tracking-tight">Trackora</span>
       </Link>
 
       {/* Main */}
