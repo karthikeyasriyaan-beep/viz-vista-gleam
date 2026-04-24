@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
@@ -38,6 +39,7 @@ export function AddExpenseDialog({ onSuccess }: AddExpenseDialogProps) {
 
   const { user, isGuest } = useAuth();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const reset = () =>
     setFormData({ name: "", amount: "", category: "", notes: "", date: new Date().toISOString().split("T")[0] });
@@ -68,6 +70,13 @@ export function AddExpenseDialog({ onSuccess }: AddExpenseDialogProps) {
         if (error) throw error;
       }
       toast({ title: "Expense added", description: `${formData.name} added successfully.` });
+      // Refresh all expense-dependent views (Dashboard, Transactions, Analytics, Budget, LiveSummaryBar)
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["expenses", user.id] }),
+        queryClient.invalidateQueries({ queryKey: ["expenses"] }),
+        queryClient.invalidateQueries({ queryKey: ["monthly_budgets", user.id] }),
+        queryClient.invalidateQueries({ queryKey: ["budgets", user.id] }),
+      ]);
       reset();
       setOpen(false);
       onSuccess?.();
