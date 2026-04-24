@@ -1,4 +1,5 @@
 import { useState, useRef, useMemo } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -101,6 +102,7 @@ async function fileToBase64(file: File): Promise<string> {
 export default function SmartImport() {
   const { user } = useAuth();
   const { formatAmount } = useCurrency();
+  const queryClient = useQueryClient();
   const [drafts, setDrafts] = useState<DraftExpense[]>([]);
   const [scanning, setScanning] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -236,6 +238,13 @@ export default function SmartImport() {
       }));
       const { error } = await supabase.from("expenses").insert(inserts);
       if (error) throw error;
+      // Invalidate all expense-related queries so Dashboard, Transactions, Analytics, Budget, LiveSummaryBar all refresh
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["expenses", user.id] }),
+        queryClient.invalidateQueries({ queryKey: ["expenses"] }),
+        queryClient.invalidateQueries({ queryKey: ["monthly_budgets", user.id] }),
+        queryClient.invalidateQueries({ queryKey: ["budgets", user.id] }),
+      ]);
       toast.success(`Saved ${drafts.length} expense${drafts.length > 1 ? "s" : ""}`);
       setDrafts([]);
       setPreviewUrl(null);
