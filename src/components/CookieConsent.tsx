@@ -3,25 +3,71 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { X, Cookie } from "lucide-react";
 
+declare function gtag(...args: any[]): void;
+
+const COOKIE_NAME = "trackora_consent";
+const COOKIE_DAYS = 365;
+
+function setCookie(value: "accepted" | "essential-only") {
+  const expires = new Date();
+  expires.setDate(expires.getDate() + COOKIE_DAYS);
+  document.cookie = `${COOKIE_NAME}=${value}; expires=${expires.toUTCString()}; path=/; SameSite=Lax; Secure`;
+}
+
+function getCookie(): string | null {
+  const match = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith(`${COOKIE_NAME}=`));
+  return match ? match.split("=")[1] : null;
+}
+
+function loadAdSense() {
+  if (document.querySelector('script[src*="adsbygoogle"]')) return;
+  const s = document.createElement("script");
+  s.async = true;
+  s.src =
+    "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9073321526391845";
+  s.crossOrigin = "anonymous";
+  document.head.appendChild(s);
+}
+
 export function CookieConsent() {
   const [showConsent, setShowConsent] = useState(false);
 
   useEffect(() => {
-    const consent = localStorage.getItem("trackora-cookie-consent");
+    const consent = getCookie();
     if (!consent) {
-      // Show after a short delay for better UX
       setTimeout(() => setShowConsent(true), 1000);
     }
   }, []);
 
   const acceptAll = () => {
-    localStorage.setItem("trackora-cookie-consent", "accepted");
+    setCookie("accepted");
     setShowConsent(false);
+
+    if (typeof gtag !== "undefined") {
+      gtag("consent", "update", {
+        analytics_storage: "granted",
+        ad_storage: "granted",
+        ad_user_data: "granted",
+        ad_personalization: "granted",
+      });
+    }
+    loadAdSense();
   };
 
   const rejectNonEssential = () => {
-    localStorage.setItem("trackora-cookie-consent", "essential-only");
+    setCookie("essential-only");
     setShowConsent(false);
+
+    if (typeof gtag !== "undefined") {
+      gtag("consent", "update", {
+        analytics_storage: "denied",
+        ad_storage: "denied",
+        ad_user_data: "denied",
+        ad_personalization: "denied",
+      });
+    }
   };
 
   if (!showConsent) return null;
@@ -42,7 +88,7 @@ export function CookieConsent() {
           <div>
             <h3 className="font-semibold text-base mb-2">We value your privacy</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              We use cookies to enhance your experience, analyze site traffic, and provide personalized content. 
+              We use cookies to enhance your experience, analyze site traffic, and provide personalized content.
               Your data is always protected and never sold.
             </p>
           </div>
