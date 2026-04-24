@@ -265,7 +265,7 @@ export function VoiceInput({
   const openAndStartListening = useCallback(() => {
     setOpen(true);
     setStatus("idle");
-    setTimeout(() => startListening(), 0);
+    startListening();
   }, [startListening]);
 
   useEffect(() => {
