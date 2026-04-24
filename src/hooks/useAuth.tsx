@@ -35,6 +35,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     let mounted = true;
 
     const ensureSession = async () => {
+      if (!mounted) return;
+      setLoading(true);
+
       const { data: { session: existing } } = await supabase.auth.getSession();
       if (existing) {
         if (!mounted) return;
@@ -43,11 +46,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setLoading(false);
         return;
       }
-      // No session yet — sign in anonymously so RLS-protected inserts work.
+
       const { data, error } = await supabase.auth.signInAnonymously();
       if (!mounted) return;
       if (error) {
         console.error('Anonymous sign-in failed:', error);
+        setSession(null);
+        setUser(null);
         setLoading(false);
         return;
       }
@@ -56,12 +61,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
     };
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, s) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, s) => {
+      if (!mounted) return;
       setSession(s);
       setUser(s?.user ?? null);
+
+      if (s?.user) {
+        setLoading(false);
+        return;
+      }
+
+      if (event === 'SIGNED_OUT' || event === 'INITIAL_SESSION') {
+        void ensureSession();
+      }
     });
 
-    ensureSession();
+    void ensureSession();
 
     return () => {
       mounted = false;
@@ -74,7 +89,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const noopAuth = async () => ({ error: null });
-  const signOut = async () => { navigate('/'); };
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    navigate('/');
+  };
 
   return (
     <AuthContext.Provider value={{
