@@ -213,10 +213,6 @@ export default function SmartImport() {
   };
 
   const saveAll = async () => {
-    if (!user) {
-      toast.error("Please sign in to save");
-      return;
-    }
     if (!drafts.length) {
       toast.error("Nothing to save");
       return;
@@ -229,8 +225,22 @@ export default function SmartImport() {
     }
     setSaving(true);
     try {
+      // Ensure we have a session — auto sign in anonymously if needed
+      let activeUser = user;
+      if (!activeUser) {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          activeUser = session.user;
+        } else {
+          const { data, error } = await supabase.auth.signInAnonymously();
+          if (error) throw error;
+          activeUser = data.user;
+        }
+      }
+      if (!activeUser) throw new Error("Could not establish a session");
+
       const inserts = drafts.map(d => ({
-        user_id: user.id,
+        user_id: activeUser!.id,
         name: d.name.trim(),
         category: d.category,
         amount: Number(d.amount),
@@ -240,10 +250,10 @@ export default function SmartImport() {
       if (error) throw error;
       // Invalidate all expense-related queries so Dashboard, Transactions, Analytics, Budget, LiveSummaryBar all refresh
       await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ["expenses", user.id] }),
+        queryClient.invalidateQueries({ queryKey: ["expenses", activeUser.id] }),
         queryClient.invalidateQueries({ queryKey: ["expenses"] }),
-        queryClient.invalidateQueries({ queryKey: ["monthly_budgets", user.id] }),
-        queryClient.invalidateQueries({ queryKey: ["budgets", user.id] }),
+        queryClient.invalidateQueries({ queryKey: ["monthly_budgets", activeUser.id] }),
+        queryClient.invalidateQueries({ queryKey: ["budgets", activeUser.id] }),
       ]);
       toast.success(`Saved ${drafts.length} expense${drafts.length > 1 ? "s" : ""}`);
       setDrafts([]);
