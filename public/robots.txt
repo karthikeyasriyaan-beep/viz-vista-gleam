@@ -1,16 +1,22 @@
-User-agent: Googlebot
+User-agent: *
 Allow: /
+Disallow: /dashboard
+Disallow: /transactions
+Disallow: /budget
+Disallow: /subscriptions
+Disallow: /loans
+Disallow: /savings
+Disallow: /analytics
+Disallow: /settings
+Disallow: /smart-import
+Disallow: /onboarding
+Disallow: /reset-password
 
-User-agent: Bingbot
-Allow: /
-
+# Allow social crawlers to access the landing page for link previews
 User-agent: Twitterbot
 Allow: /
 
 User-agent: facebookexternalhit
-Allow: /
-
-User-agent: *
 Allow: /
 
 # Sitemap
