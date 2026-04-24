@@ -2,10 +2,10 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useQueryClient } from "@tanstack/react-query";
@@ -22,7 +22,7 @@ interface SetMonthlyBudgetDialogProps {
 }
 
 export function SetMonthlyBudgetDialog({ open, onOpenChange, existingBudget }: SetMonthlyBudgetDialogProps) {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
 
@@ -34,7 +34,10 @@ export function SetMonthlyBudgetDialog({ open, onOpenChange, existingBudget }: S
   });
 
   const onSubmit = async (values: z.infer<typeof monthlyBudgetSchema>) => {
-    if (!user) return;
+    if (authLoading || !user) {
+      toast.error("Your session is still getting ready. Please try again.");
+      return;
+    }
     setLoading(true);
 
     try {
@@ -77,6 +80,9 @@ export function SetMonthlyBudgetDialog({ open, onOpenChange, existingBudget }: S
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{existingBudget ? "Edit" : "Set"} Monthly Budget</DialogTitle>
+          <DialogDescription className="sr-only">
+            Set the total amount you want to spend this month.
+          </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -86,14 +92,12 @@ export function SetMonthlyBudgetDialog({ open, onOpenChange, existingBudget }: S
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Total Monthly Budget</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      placeholder="5000.00"
-                      {...field}
-                    />
-                  </FormControl>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    placeholder="5000.00"
+                    {...field}
+                  />
                   <FormMessage />
                 </FormItem>
               )}

@@ -160,7 +160,7 @@ export function VoiceInput({
   onSuccess,
   label = "Voice Input",
 }: VoiceInputProps) {
-  const { user, isGuest } = useAuth();
+  const { user, isGuest, loading: authLoading } = useAuth();
   const { formatAmount } = useCurrency();
   const queryClient = useQueryClient();
 
@@ -173,6 +173,7 @@ export function VoiceInput({
 
   const recognitionRef = useRef<any>(null);
   const supportedRef = useRef<boolean>(false);
+
 
   /* Check browser support once */
   useEffect(() => {
@@ -261,7 +262,12 @@ export function VoiceInput({
     }
   }, [allowedTypes]);
 
-  /* Reset state when dialog closes */
+  const openAndStartListening = useCallback(() => {
+    setOpen(true);
+    setStatus("idle");
+    startListening();
+  }, [startListening]);
+
   useEffect(() => {
     if (!open) {
       stopListening();
@@ -273,17 +279,13 @@ export function VoiceInput({
     }
   }, [open, stopListening]);
 
-  /* Auto-start on open */
-  useEffect(() => {
-    if (open && status === "idle") {
-      // tiny delay so the dialog is mounted
-      const t = setTimeout(() => startListening(), 200);
-      return () => clearTimeout(t);
-    }
-  }, [open, status, startListening]);
 
   const handleSave = async () => {
     if (!parsed) return;
+    if (authLoading || (!isGuest && !user)) {
+      toast.error("Your session is still getting ready. Please try again.");
+      return;
+    }
     setSaving(true);
     try {
       const today = new Date().toISOString().split("T")[0];
@@ -366,7 +368,7 @@ export function VoiceInput({
         <Button
           size="icon"
           disabled={!isSupported}
-          onClick={() => setOpen(true)}
+          onClick={openAndStartListening}
           className={cn(
             "h-14 w-14 rounded-full shadow-lg fixed bottom-20 right-5 z-30 lg:bottom-6",
             "bg-primary text-primary-foreground hover:bg-primary/90",
@@ -383,7 +385,7 @@ export function VoiceInput({
         <Button
           variant="outline"
           disabled={!isSupported}
-          onClick={() => setOpen(true)}
+          onClick={openAndStartListening}
           className={cn(
             "h-12 rounded-xl border-2 border-primary/20 hover:border-primary/40 gap-2 text-sm font-bold px-5",
             className
@@ -399,7 +401,7 @@ export function VoiceInput({
         size="icon"
         variant="outline"
         disabled={!isSupported}
-        onClick={() => setOpen(true)}
+        onClick={openAndStartListening}
         className={cn("h-10 w-10 rounded-xl", className)}
         aria-label="Voice input"
       >

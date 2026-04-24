@@ -2,10 +2,10 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -37,7 +37,7 @@ interface SetBudgetDialogProps {
 }
 
 export function SetBudgetDialog({ open, onOpenChange, editingBudget }: SetBudgetDialogProps) {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
 
@@ -50,7 +50,10 @@ export function SetBudgetDialog({ open, onOpenChange, editingBudget }: SetBudget
   });
 
   const onSubmit = async (values: z.infer<typeof budgetSchema>) => {
-    if (!user) return;
+    if (authLoading || !user) {
+      toast.error("Your session is still getting ready. Please try again.");
+      return;
+    }
     setLoading(true);
 
     try {
@@ -94,6 +97,9 @@ export function SetBudgetDialog({ open, onOpenChange, editingBudget }: SetBudget
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{editingBudget ? "Edit" : "Set"} Category Budget</DialogTitle>
+          <DialogDescription className="sr-only">
+            Create or update a spending limit for a specific expense category.
+          </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -104,11 +110,9 @@ export function SetBudgetDialog({ open, onOpenChange, editingBudget }: SetBudget
                 <FormItem>
                   <FormLabel>Category</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select category" />
-                      </SelectTrigger>
-                    </FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
                     <SelectContent>
                       {EXPENSE_CATEGORIES.map((cat) => (
                         <SelectItem key={cat} value={cat}>
@@ -127,14 +131,12 @@ export function SetBudgetDialog({ open, onOpenChange, editingBudget }: SetBudget
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Monthly Budget Limit</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      placeholder="1000.00"
-                      {...field}
-                    />
-                  </FormControl>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    placeholder="1000.00"
+                    {...field}
+                  />
                   <FormMessage />
                 </FormItem>
               )}
