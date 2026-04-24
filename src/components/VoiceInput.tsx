@@ -174,11 +174,6 @@ export function VoiceInput({
   const recognitionRef = useRef<any>(null);
   const supportedRef = useRef<boolean>(false);
 
-  const openAndStartListening = useCallback(() => {
-    setOpen(true);
-    setStatus("idle");
-    setTimeout(() => startListening(), 0);
-  }, [startListening]);
 
   /* Check browser support once */
   useEffect(() => {
@@ -265,9 +260,12 @@ export function VoiceInput({
       setStatus("error");
       setErrorMsg("Couldn't start microphone. Please try again.");
     }
-  }, [allowedTypes]);
+  const openAndStartListening = useCallback(() => {
+    setOpen(true);
+    setStatus("idle");
+    setTimeout(() => startListening(), 0);
+  }, [startListening]);
 
-  /* Reset state when dialog closes */
   useEffect(() => {
     if (!open) {
       stopListening();
