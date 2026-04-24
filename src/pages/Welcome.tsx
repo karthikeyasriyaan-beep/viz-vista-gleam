@@ -14,7 +14,6 @@ import {
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Link } from "react-router-dom";
 import { Footer } from "@/components/Footer";
-import { CookieConsent } from "@/components/CookieConsent";
 import { useAuth } from "@/hooks/useAuth";
 import { SEOHead } from "@/components/SEOHead";
 import { useRef, useState, useEffect } from "react";
@@ -160,8 +159,6 @@ const Welcome = () => {
         )}
       </AnimatePresence>
 
-      <CookieConsent />
-      
       {/* Floating Header — hides on scroll down */}
       <motion.header 
         initial={{ y: -100, opacity: 0 }}
