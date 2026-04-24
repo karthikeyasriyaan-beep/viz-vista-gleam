@@ -16,18 +16,62 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-66293FMNGF"></script>
+    <!-- Google Consent Mode v2 — must run BEFORE gtag loads -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
 
+      // Default: deny all non-essential until the user consents
+      gtag('consent', 'default', {
+        analytics_storage: 'denied',
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        wait_for_update: 500
+      });
+
+      // If the user has already consented in a previous visit, restore their choice from the real cookie
+      (function() {
+        var match = document.cookie.split('; ').find(function(r){ return r.startsWith('trackora_consent='); });
+        var saved = match ? match.split('=')[1] : null;
+        if (saved === 'accepted') {
+          gtag('consent', 'update', {
+            analytics_storage: 'granted',
+            ad_storage: 'granted',
+            ad_user_data: 'granted',
+            ad_personalization: 'granted'
+          });
+        } else if (saved === 'essential-only') {
+          gtag('consent', 'update', {
+            analytics_storage: 'denied',
+            ad_storage: 'denied',
+            ad_user_data: 'denied',
+            ad_personalization: 'denied'
+          });
+        }
+      })();
+    </script>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-66293FMNGF"></script>
+    <script>
+      gtag('js', new Date());
       gtag('config', 'G-66293FMNGF');
     </script>
 
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9073321526391845"
-     crossorigin="anonymous"></script>
+    <!-- AdSense — loads only after consent cookie is set to accepted -->
+    <script>
+      (function() {
+        var match = document.cookie.split('; ').find(function(r){ return r.startsWith('trackora_consent='); });
+        if (match && match.split('=')[1] === 'accepted') {
+          var s = document.createElement('script');
+          s.async = true;
+          s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9073321526391845';
+          s.crossOrigin = 'anonymous';
+          document.head.appendChild(s);
+        }
+      })();
+    </script>
 
     <!-- Structured Data for SEO -->
     <script type="application/ld+json">
