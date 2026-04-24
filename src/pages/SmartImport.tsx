@@ -100,7 +100,7 @@ async function fileToBase64(file: File): Promise<string> {
 }
 
 export default function SmartImport() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { formatAmount } = useCurrency();
   const queryClient = useQueryClient();
   const [drafts, setDrafts] = useState<DraftExpense[]>([]);
@@ -225,19 +225,19 @@ export default function SmartImport() {
     }
     setSaving(true);
     try {
-      // Ensure we have a session — auto sign in anonymously if needed
+      // Wait for the existing auth session managed by AuthProvider — never create a
+      // new anonymous user here, otherwise the saved expenses end up under a different
+      // user_id than what Dashboard/Transactions are querying.
       let activeUser = user;
       if (!activeUser) {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user) {
-          activeUser = session.user;
-        } else {
-          const { data, error } = await supabase.auth.signInAnonymously();
-          if (error) throw error;
-          activeUser = data.user;
+        // Poll briefly for AuthProvider to finish bootstrapping
+        for (let i = 0; i < 20 && !activeUser; i++) {
+          await new Promise(r => setTimeout(r, 150));
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session?.user) activeUser = session.user;
         }
       }
-      if (!activeUser) throw new Error("Could not establish a session");
+      if (!activeUser) throw new Error("Session not ready, please retry");
 
       const inserts = drafts.map(d => ({
         user_id: activeUser!.id,
