@@ -260,6 +260,8 @@ export function VoiceInput({
       setStatus("error");
       setErrorMsg("Couldn't start microphone. Please try again.");
     }
+  }, [allowedTypes]);
+
   const openAndStartListening = useCallback(() => {
     setOpen(true);
     setStatus("idle");
