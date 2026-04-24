@@ -26,16 +26,23 @@ export default function Contact() {
     }
 
     setLoading(true);
+
+    const subject = encodeURIComponent(`Trackora Contact: Message from ${name}`);
+    const body = encodeURIComponent(
+      `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`
+    );
+    window.location.href = `mailto:trackorateam@trackorapp.in?subject=${subject}&body=${body}`;
+
     setTimeout(() => {
       toast({
-        title: "Message Sent!",
-        description: "We'll get back to you as soon as possible.",
+        title: "Email client opened",
+        description: "Your message is pre-filled — just hit Send in your email app.",
       });
       setName("");
       setEmail("");
       setMessage("");
       setLoading(false);
-    }, 1000);
+    }, 800);
   };
 
   return (
@@ -108,10 +115,10 @@ export default function Contact() {
             <p className="text-foreground font-medium">
               Email:{" "}
               <a
-                href="mailto:contact@trackora.com"
+                href="mailto:trackorateam@trackorapp.in"
                 className="text-primary hover:underline"
               >
-                contact@trackora.com
+                trackorateam@trackorapp.in
               </a>
             </p>
             <p className="text-sm text-muted-foreground">
