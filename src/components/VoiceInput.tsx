@@ -160,7 +160,7 @@ export function VoiceInput({
   onSuccess,
   label = "Voice Input",
 }: VoiceInputProps) {
-  const { user, isGuest } = useAuth();
+  const { user, isGuest, loading: authLoading } = useAuth();
   const { formatAmount } = useCurrency();
   const queryClient = useQueryClient();
 
@@ -173,6 +173,12 @@ export function VoiceInput({
 
   const recognitionRef = useRef<any>(null);
   const supportedRef = useRef<boolean>(false);
+
+  const openAndStartListening = useCallback(() => {
+    setOpen(true);
+    // Keep microphone start in the direct user gesture chain to avoid browser blocking.
+    setTimeout(() => startListening(), 0);
+  }, []);
 
   /* Check browser support once */
   useEffect(() => {

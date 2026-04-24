@@ -37,7 +37,7 @@ interface SetBudgetDialogProps {
 }
 
 export function SetBudgetDialog({ open, onOpenChange, editingBudget }: SetBudgetDialogProps) {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
 
@@ -50,7 +50,10 @@ export function SetBudgetDialog({ open, onOpenChange, editingBudget }: SetBudget
   });
 
   const onSubmit = async (values: z.infer<typeof budgetSchema>) => {
-    if (!user) return;
+    if (authLoading || !user) {
+      toast.error("Your session is still getting ready. Please try again.");
+      return;
+    }
     setLoading(true);
 
     try {

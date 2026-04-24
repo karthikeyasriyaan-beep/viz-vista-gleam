@@ -22,7 +22,7 @@ interface SetMonthlyBudgetDialogProps {
 }
 
 export function SetMonthlyBudgetDialog({ open, onOpenChange, existingBudget }: SetMonthlyBudgetDialogProps) {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
 
@@ -34,7 +34,10 @@ export function SetMonthlyBudgetDialog({ open, onOpenChange, existingBudget }: S
   });
 
   const onSubmit = async (values: z.infer<typeof monthlyBudgetSchema>) => {
-    if (!user) return;
+    if (authLoading || !user) {
+      toast.error("Your session is still getting ready. Please try again.");
+      return;
+    }
     setLoading(true);
 
     try {
