@@ -77,6 +77,9 @@ export function SetMonthlyBudgetDialog({ open, onOpenChange, existingBudget }: S
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{existingBudget ? "Edit" : "Set"} Monthly Budget</DialogTitle>
+          <DialogDescription className="sr-only">
+            Set the total amount you want to spend this month.
+          </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -86,14 +89,12 @@ export function SetMonthlyBudgetDialog({ open, onOpenChange, existingBudget }: S
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Total Monthly Budget</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      placeholder="5000.00"
-                      {...field}
-                    />
-                  </FormControl>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    placeholder="5000.00"
+                    {...field}
+                  />
                   <FormMessage />
                 </FormItem>
               )}

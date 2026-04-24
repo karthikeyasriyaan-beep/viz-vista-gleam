@@ -94,6 +94,9 @@ export function SetBudgetDialog({ open, onOpenChange, editingBudget }: SetBudget
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{editingBudget ? "Edit" : "Set"} Category Budget</DialogTitle>
+          <DialogDescription className="sr-only">
+            Create or update a spending limit for a specific expense category.
+          </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -104,11 +107,9 @@ export function SetBudgetDialog({ open, onOpenChange, editingBudget }: SetBudget
                 <FormItem>
                   <FormLabel>Category</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select category" />
-                      </SelectTrigger>
-                    </FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
                     <SelectContent>
                       {EXPENSE_CATEGORIES.map((cat) => (
                         <SelectItem key={cat} value={cat}>
@@ -127,14 +128,12 @@ export function SetBudgetDialog({ open, onOpenChange, editingBudget }: SetBudget
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Monthly Budget Limit</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      placeholder="1000.00"
-                      {...field}
-                    />
-                  </FormControl>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    placeholder="1000.00"
+                    {...field}
+                  />
                   <FormMessage />
                 </FormItem>
               )}
