@@ -37,7 +37,7 @@ export function AddLoanDialog({ onSuccess }: AddLoanDialogProps) {
     notes: "",
   });
 
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
 
   const reset = () =>
@@ -49,7 +49,10 @@ export function AddLoanDialog({ onSuccess }: AddLoanDialogProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    if (authLoading || !user) {
+      toast({ title: "Please wait", description: "Your session is still getting ready.", variant: "destructive" });
+      return;
+    }
 
     const initialAmount = parseFloat(formData.initial_amount) || 0;
     const interestRate = parseFloat(formData.interest_rate) || 0;

@@ -35,7 +35,7 @@ export function AddIncomeDialog({ onSuccess }: AddIncomeDialogProps) {
     date: new Date().toISOString().split("T")[0],
   });
 
-  const { user, isGuest } = useAuth();
+  const { user, isGuest, loading: authLoading } = useAuth();
   const { toast } = useToast();
 
   const reset = () =>
@@ -43,7 +43,10 @@ export function AddIncomeDialog({ onSuccess }: AddIncomeDialogProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    if (authLoading || !user) {
+      toast({ title: "Please wait", description: "Your session is still getting ready.", variant: "destructive" });
+      return;
+    }
     setLoading(true);
     try {
       if (isGuest) {

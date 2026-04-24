@@ -25,7 +25,7 @@ export function AddSubscriptionDialog({ onSuccess }: AddSubscriptionDialogProps)
     next_billing_date: "",
   });
   const nameRef = useRef<HTMLInputElement>(null);
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -34,7 +34,10 @@ export function AddSubscriptionDialog({ onSuccess }: AddSubscriptionDialogProps)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    if (authLoading || !user) {
+      toast({ title: "Please wait", description: "Your session is still getting ready.", variant: "destructive" });
+      return;
+    }
     setLoading(true);
     try {
       const { error } = await supabase.from("subscriptions").insert({
