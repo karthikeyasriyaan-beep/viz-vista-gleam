@@ -79,7 +79,32 @@ export default function LiveSummaryBar() {
     color: "text-accent",
     bgColor: "bg-accent/10"
   }];
-  return <div className="glass-strong sticky top-16 z-20 mb-4 sm:mb-6 overflow-hidden">
-      
-    </div>;
+  return (
+    <div className="sticky top-16 z-20 mb-4 sm:mb-6 bg-background/80 backdrop-blur-md border-b border-border/20">
+      <div className="flex items-center gap-3 px-4 sm:px-6 py-2.5 overflow-x-auto scrollbar-none">
+        {stats.map(({ label, value, icon: Icon, color, bgColor }) => (
+          <motion.div
+            key={label}
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="flex items-center gap-2.5 flex-shrink-0"
+          >
+            <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${bgColor}`}>
+              <Icon className={`h-3.5 w-3.5 ${color}`} />
+            </div>
+            <div>
+              <p className="text-[10px] text-muted-foreground leading-none mb-0.5">{label}</p>
+              <p className={`text-sm font-semibold leading-none ${color}`}>
+                {formatAmount(value)}
+              </p>
+            </div>
+            {label !== "Savings" && (
+              <div className="w-px h-6 bg-border/40 ml-1 flex-shrink-0" />
+            )}
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
 }
