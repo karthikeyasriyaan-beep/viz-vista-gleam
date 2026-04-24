@@ -71,7 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      if (event === 'SIGNED_OUT' || event === 'INITIAL_SESSION') {
+      if (event === 'SIGNED_OUT') {
         void ensureSession();
       }
     });
