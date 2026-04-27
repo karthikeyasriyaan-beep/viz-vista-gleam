@@ -7,7 +7,6 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { Card } from "@/components/ui/card";
 import {
   Sparkles, Upload, Trash2, Loader2, ImageIcon, Plus, Save, ClipboardPaste,
 } from "lucide-react";
@@ -64,7 +63,6 @@ function parseQuickEntries(input: string): DraftExpense[] {
     const tokens = rest.split(/\s+/).filter(Boolean);
     let category = "Other";
     let name = rest;
-    // last token might be category
     if (tokens.length > 1) {
       const last = tokens[tokens.length - 1].toLowerCase();
       const matched = CATEGORIES.find(c => c.toLowerCase() === last);
@@ -99,8 +97,10 @@ async function fileToBase64(file: File): Promise<string> {
   });
 }
 
+const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
+
 export default function SmartImport() {
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
   const { formatAmount } = useCurrency();
   const queryClient = useQueryClient();
   const [drafts, setDrafts] = useState<DraftExpense[]>([]);
@@ -225,12 +225,8 @@ export default function SmartImport() {
     }
     setSaving(true);
     try {
-      // Wait for the existing auth session managed by AuthProvider — never create a
-      // new anonymous user here, otherwise the saved expenses end up under a different
-      // user_id than what Dashboard/Transactions are querying.
       let activeUser = user;
       if (!activeUser) {
-        // Poll briefly for AuthProvider to finish bootstrapping
         for (let i = 0; i < 20 && !activeUser; i++) {
           await new Promise(r => setTimeout(r, 150));
           const { data: { session } } = await supabase.auth.getSession();
@@ -248,7 +244,6 @@ export default function SmartImport() {
       }));
       const { error } = await supabase.from("expenses").insert(inserts);
       if (error) throw error;
-      // Invalidate all expense-related queries so Dashboard, Transactions, Analytics, Budget, LiveSummaryBar all refresh
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ["expenses", activeUser.id] }),
         queryClient.invalidateQueries({ queryKey: ["expenses"] }),
@@ -267,212 +262,275 @@ export default function SmartImport() {
   };
 
   return (
-    <div className="min-h-screen w-full" onPaste={onPaste}>
+    <>
       <NoIndexMeta />
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-16 sm:pt-20 pb-32 lg:pt-10">
-        {/* Header */}
-        <div className="mb-6">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center">
-              <Sparkles className="h-5 w-5 text-primary" />
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-bold">Smart Import</h1>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Upload a UPI/PayPal screenshot or type quick entries — we'll add them to your expenses.
-          </p>
-        </div>
+      <div className="min-h-screen w-full bg-background" onPaste={onPaste}>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-          {/* Screenshot upload */}
-          <Card className="p-5">
-            <div className="flex items-center gap-2 mb-3">
-              <ImageIcon className="h-4 w-4 text-primary" />
-              <h2 className="font-semibold">Upload Screenshot</h2>
+        {/* ── Sticky topbar — matches Transactions ── */}
+        <div className="sticky top-14 sm:top-16 z-20 bg-background/95 backdrop-blur-md border-b border-border/20">
+          <div className="max-w-5xl mx-auto px-3 sm:px-6 md:px-8 py-2.5 sm:h-14 sm:py-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-foreground" />
+              <h1 className="text-base font-bold tracking-tight">Smart Import</h1>
             </div>
-            <p className="text-xs text-muted-foreground mb-3">
-              GPay, PhonePe, Paytm, BHIM, PayPal. You can also paste (Ctrl/Cmd+V).
-            </p>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={onFileChange}
-            />
-            <div className="flex gap-2">
-              <Button
-                onClick={() => fileInputRef.current?.click()}
-                disabled={scanning}
-                className="gap-2 flex-1"
-              >
-                {scanning ? (
-                  <><Loader2 className="h-4 w-4 animate-spin" /> Scanning…</>
-                ) : (
-                  <><Upload className="h-4 w-4" /> Choose Image</>
-                )}
-              </Button>
+            <div className="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto justify-between sm:justify-end">
               <Button
                 variant="outline"
-                disabled={scanning}
-                className="gap-2"
-                onClick={() => toast.info("Press Ctrl/Cmd+V anywhere on this page to paste a screenshot")}
+                size="sm"
+                onClick={addManualRow}
+                className="gap-1.5 h-9 rounded-lg"
               >
-                <ClipboardPaste className="h-4 w-4" /> Paste
-              </Button>
-            </div>
-            {previewUrl && (
-              <div className="mt-3 rounded-lg border overflow-hidden bg-muted/30">
-                <img src={previewUrl} alt="screenshot preview" className="max-h-48 w-full object-contain" />
-              </div>
-            )}
-          </Card>
-
-          {/* Quick text entry */}
-          <Card className="p-5">
-            <div className="flex items-center gap-2 mb-3">
-              <Sparkles className="h-4 w-4 text-primary" />
-              <h2 className="font-semibold">Quick Entry</h2>
-            </div>
-            <p className="text-xs text-muted-foreground mb-3">
-              Type like <span className="font-mono bg-muted px-1.5 py-0.5 rounded">200 food, 150 uber travel</span>. Comma-separate multiple.
-            </p>
-            <Textarea
-              value={quickInput}
-              onChange={e => setQuickInput(e.target.value)}
-              placeholder="200 food, 150 uber travel, 50 coffee"
-              rows={3}
-              className="mb-3"
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-                  e.preventDefault();
-                  handleQuickAdd();
-                }
-              }}
-            />
-            <Button onClick={handleQuickAdd} className="w-full gap-2" disabled={!quickInput.trim()}>
-              <Plus className="h-4 w-4" /> Add to list
-            </Button>
-          </Card>
-        </div>
-
-        {/* Detected list */}
-        <Card className="p-5">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="font-semibold">Detected expenses ({drafts.length})</h2>
-              <p className="text-xs text-muted-foreground">Edit, delete, or add more before saving.</p>
-            </div>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={addManualRow} className="gap-1.5">
                 <Plus className="h-3.5 w-3.5" /> Row
               </Button>
               {drafts.length > 0 && (
-                <Button variant="ghost" size="sm" onClick={clearAll} className="gap-1.5 text-destructive">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearAll}
+                  className="gap-1.5 h-9 rounded-lg text-destructive hover:text-destructive"
+                >
                   <Trash2 className="h-3.5 w-3.5" /> Clear
                 </Button>
               )}
             </div>
           </div>
+        </div>
 
-          {drafts.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              <Sparkles className="h-8 w-8 mx-auto mb-2 opacity-40" />
-              <p className="text-sm">No expenses yet. Upload a screenshot or type a quick entry above.</p>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              <AnimatePresence initial={false}>
-                {drafts.map(d => (
-                  <motion.div
-                    key={d.id}
-                    initial={{ opacity: 0, y: -8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    className="grid grid-cols-12 gap-2 items-end p-3 rounded-lg border bg-card/50"
-                  >
-                    <div className="col-span-12 sm:col-span-4">
-                      <Label className="text-[10px] uppercase text-muted-foreground">Name</Label>
-                      <Input
-                        value={d.name}
-                        onChange={e => updateDraft(d.id, { name: e.target.value })}
-                        placeholder="e.g. Zomato"
-                        className="h-9"
-                      />
-                    </div>
-                    <div className="col-span-5 sm:col-span-2">
-                      <Label className="text-[10px] uppercase text-muted-foreground">Amount</Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        value={d.amount}
-                        onChange={e => updateDraft(d.id, { amount: e.target.value })}
-                        className="h-9"
-                      />
-                    </div>
-                    <div className="col-span-7 sm:col-span-3">
-                      <Label className="text-[10px] uppercase text-muted-foreground">Category</Label>
-                      <Select value={d.category} onValueChange={v => updateDraft(d.id, { category: v })}>
-                        <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          {CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="col-span-9 sm:col-span-2">
-                      <Label className="text-[10px] uppercase text-muted-foreground">Date</Label>
-                      <Input
-                        type="date"
-                        value={d.date}
-                        onChange={e => updateDraft(d.id, { date: e.target.value })}
-                        className="h-9"
-                      />
-                    </div>
-                    <div className="col-span-3 sm:col-span-1 flex justify-end">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-9 w-9"
-                        onClick={() => removeDraft(d.id)}
-                      >
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
-                    </div>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </div>
-          )}
-        </Card>
-      </div>
+        {/* ── Content ── */}
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 pt-6 sm:pt-8 pb-32">
 
-      {/* Sticky footer total */}
-      {drafts.length > 0 && (
-        <motion.div
-          initial={{ y: 80 }}
-          animate={{ y: 0 }}
-          className="fixed bottom-14 lg:bottom-0 left-0 right-0 z-30 border-t bg-card/95 backdrop-blur-md"
-        >
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
-            <div>
-              <div className="text-[10px] uppercase text-muted-foreground tracking-wider">Total</div>
-              <div className="text-xl sm:text-2xl font-bold">{formatAmount(total)}</div>
-            </div>
-            <Button
-              size="lg"
-              onClick={saveAll}
-              disabled={saving}
-              className="gap-2 min-w-[160px]"
+          {/* Hero blurb */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ ease }}
+            className="mb-6"
+          >
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">
+              Drop a receipt.<br className="sm:hidden" />
+              <span className="text-muted-foreground"> Or just type it.</span>
+            </h2>
+            <p className="text-sm text-muted-foreground mt-1.5">
+              Upload a UPI/PayPal screenshot, paste an image, or write quick entries — we'll do the rest.
+            </p>
+          </motion.div>
+
+          {/* Two input cards */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 mb-5">
+
+            {/* Screenshot upload */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05, ease }}
+              className="rounded-2xl bg-card border border-border/30 p-5"
             >
-              {saving ? (
-                <><Loader2 className="h-4 w-4 animate-spin" /> Saving…</>
-              ) : (
-                <><Save className="h-4 w-4" /> Save all ({drafts.length})</>
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-sm font-semibold tracking-tight">Upload Screenshot</p>
+                <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">AI scan</span>
+              </div>
+              <p className="text-xs text-muted-foreground mb-4">
+                GPay, PhonePe, Paytm, BHIM, PayPal. Or paste with Ctrl/Cmd+V.
+              </p>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={onFileChange}
+              />
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={scanning}
+                  className="gap-2 flex-1 h-10 rounded-xl"
+                >
+                  {scanning ? (
+                    <><Loader2 className="h-4 w-4 animate-spin" /> Scanning…</>
+                  ) : (
+                    <><Upload className="h-4 w-4" /> Choose image</>
+                  )}
+                </Button>
+                <Button
+                  variant="outline"
+                  disabled={scanning}
+                  className="gap-2 h-10 rounded-xl"
+                  onClick={() => toast.info("Press Ctrl/Cmd+V anywhere on this page to paste")}
+                >
+                  <ClipboardPaste className="h-4 w-4" />
+                </Button>
+              </div>
+              {previewUrl && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="mt-4 rounded-xl border border-border/40 overflow-hidden bg-muted/30"
+                >
+                  <img src={previewUrl} alt="screenshot preview" className="max-h-44 w-full object-contain" />
+                </motion.div>
               )}
-            </Button>
+            </motion.div>
+
+            {/* Quick text entry */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1, ease }}
+              className="rounded-2xl bg-card border border-border/30 p-5"
+            >
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-sm font-semibold tracking-tight">Quick Entry</p>
+                <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Type fast</span>
+              </div>
+              <p className="text-xs text-muted-foreground mb-4">
+                Try <span className="font-mono bg-muted px-1.5 py-0.5 rounded text-foreground">200 food, 150 uber travel</span>
+              </p>
+              <Textarea
+                value={quickInput}
+                onChange={e => setQuickInput(e.target.value)}
+                placeholder="200 food, 150 uber travel, 50 coffee"
+                rows={3}
+                className="mb-3 rounded-xl resize-none"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+                    e.preventDefault();
+                    handleQuickAdd();
+                  }
+                }}
+              />
+              <Button
+                onClick={handleQuickAdd}
+                className="w-full gap-2 h-10 rounded-xl"
+                disabled={!quickInput.trim()}
+              >
+                <Plus className="h-4 w-4" /> Add to list
+              </Button>
+            </motion.div>
           </div>
-        </motion.div>
-      )}
-    </div>
+
+          {/* Detected list */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15, ease }}
+            className="rounded-2xl bg-card border border-border/30 p-5"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <p className="text-sm font-semibold tracking-tight">
+                  Detected <span className="text-muted-foreground font-medium">({drafts.length})</span>
+                </p>
+                <p className="text-xs text-muted-foreground mt-0.5">Edit, delete, or add more before saving.</p>
+              </div>
+            </div>
+
+            {drafts.length === 0 ? (
+              <div className="text-center py-14 px-4">
+                <div className="h-12 w-12 mx-auto mb-3 rounded-2xl bg-muted/60 flex items-center justify-center">
+                  <Sparkles className="h-5 w-5 text-muted-foreground" />
+                </div>
+                <p className="text-sm font-medium mb-1">Nothing here yet</p>
+                <p className="text-xs text-muted-foreground">Upload a screenshot or type a quick entry above.</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <AnimatePresence initial={false}>
+                  {drafts.map(d => (
+                    <motion.div
+                      key={d.id}
+                      initial={{ opacity: 0, y: -8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ ease }}
+                      className="grid grid-cols-12 gap-2 items-end p-3 rounded-xl border border-border/30 bg-background/40 hover:border-border/60 transition-colors"
+                    >
+                      <div className="col-span-12 sm:col-span-4">
+                        <Label className="text-[10px] uppercase text-muted-foreground tracking-wider">Name</Label>
+                        <Input
+                          value={d.name}
+                          onChange={e => updateDraft(d.id, { name: e.target.value })}
+                          placeholder="e.g. Zomato"
+                          className="h-9 rounded-lg mt-0.5"
+                        />
+                      </div>
+                      <div className="col-span-5 sm:col-span-2">
+                        <Label className="text-[10px] uppercase text-muted-foreground tracking-wider">Amount</Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          value={d.amount}
+                          onChange={e => updateDraft(d.id, { amount: e.target.value })}
+                          className="h-9 rounded-lg mt-0.5"
+                        />
+                      </div>
+                      <div className="col-span-7 sm:col-span-3">
+                        <Label className="text-[10px] uppercase text-muted-foreground tracking-wider">Category</Label>
+                        <Select value={d.category} onValueChange={v => updateDraft(d.id, { category: v })}>
+                          <SelectTrigger className="h-9 rounded-lg mt-0.5"><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            {CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="col-span-9 sm:col-span-2">
+                        <Label className="text-[10px] uppercase text-muted-foreground tracking-wider">Date</Label>
+                        <Input
+                          type="date"
+                          value={d.date}
+                          onChange={e => updateDraft(d.id, { date: e.target.value })}
+                          className="h-9 rounded-lg mt-0.5"
+                        />
+                      </div>
+                      <div className="col-span-3 sm:col-span-1 flex justify-end">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-9 w-9 rounded-lg"
+                          onClick={() => removeDraft(d.id)}
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
+            )}
+          </motion.div>
+        </div>
+
+        {/* Sticky footer total */}
+        <AnimatePresence>
+          {drafts.length > 0 && (
+            <motion.div
+              initial={{ y: 80, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 80, opacity: 0 }}
+              transition={{ ease }}
+              className="fixed bottom-14 lg:bottom-0 left-0 right-0 z-30 border-t border-border/30 bg-card/95 backdrop-blur-md"
+            >
+              <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-3 flex items-center justify-between gap-3">
+                <div>
+                  <div className="text-[10px] uppercase text-muted-foreground tracking-wider font-medium">Total</div>
+                  <div className="text-xl sm:text-2xl font-extrabold tracking-tight">{formatAmount(total)}</div>
+                </div>
+                <Button
+                  size="lg"
+                  onClick={saveAll}
+                  disabled={saving}
+                  className="gap-2 min-w-[150px] sm:min-w-[180px] h-11 rounded-xl"
+                >
+                  {saving ? (
+                    <><Loader2 className="h-4 w-4 animate-spin" /> Saving…</>
+                  ) : (
+                    <><Save className="h-4 w-4" /> Save all ({drafts.length})</>
+                  )}
+                </Button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </>
   );
 }
