@@ -17,10 +17,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { NoIndexMeta } from "@/components/NoIndexMeta";
 import { VoiceInput } from "@/components/VoiceInput";
-import {
-  getGuestExpenses, getGuestIncome, addGuestExpense, addGuestIncome,
-  type GuestExpense, type GuestIncome
-} from "@/lib/guest-storage";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 
@@ -80,7 +76,7 @@ const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
 /* ——— Component ——— */
 export default function Transactions() {
   const { formatAmount } = useCurrency();
-  const { user, isGuest } = useAuth();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
 
   const [selectedIncome, setSelectedIncome] = useState<any>(null);
@@ -91,57 +87,44 @@ export default function Transactions() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const [guestIncome, setGuestIncome] = useState<GuestIncome[]>([]);
-  const [guestExpenses, setGuestExpenses] = useState<GuestExpense[]>([]);
-
-  const refreshGuestData = () => {
-    setGuestIncome(getGuestIncome());
-    setGuestExpenses(getGuestExpenses());
-  };
-  useEffect(() => { if (isGuest) refreshGuestData(); }, [isGuest]);
-
-  const { data: supabaseIncome = [], refetch: refetchIncome } = useQuery({
+  const { data: income = [], refetch: refetchIncome } = useQuery({
     queryKey: ["income", user?.id],
     queryFn: async () => {
       if (!user) return [];
       const { data } = await supabase.from("income").select("*").eq("user_id", user.id).order("date", { ascending: false });
       return data || [];
     },
-    enabled: !!user && !isGuest,
+    enabled: !!user,
+    staleTime: 1000 * 60 * 2,
   });
 
-  const { data: supabaseExpenses = [], refetch: refetchExpenses } = useQuery({
+  const { data: expenses = [], refetch: refetchExpenses } = useQuery({
     queryKey: ["expenses", user?.id],
     queryFn: async () => {
       if (!user) return [];
       const { data } = await supabase.from("expenses").select("*").eq("user_id", user.id).order("date", { ascending: false });
       return data || [];
     },
-    enabled: !!user && !isGuest,
+    enabled: !!user,
+    staleTime: 1000 * 60 * 2,
   });
 
-  const income = isGuest ? guestIncome : supabaseIncome;
-  const expenses = isGuest ? guestExpenses : supabaseExpenses;
-
   const refetchAll = useCallback(() => {
-    if (isGuest) { refreshGuestData(); return; }
     refetchIncome();
     refetchExpenses();
     queryClient.invalidateQueries({ queryKey: ["income", user?.id] });
     queryClient.invalidateQueries({ queryKey: ["expenses", user?.id] });
-  }, [isGuest, refetchIncome, refetchExpenses, queryClient, user?.id]);
+  }, [refetchIncome, refetchExpenses, queryClient, user?.id]);
 
   const handleSmartAdd = async () => {
     const parsed = parseSmartInput(smartInput);
     if (!parsed) { toast.error('Try: "500 food" or "2000 salary"'); return; }
     const today = new Date().toISOString().split("T")[0];
     if (parsed.type === "income") {
-      if (isGuest) addGuestIncome({ source: parsed.description, amount: parsed.amount, date: today, category: parsed.category });
-      else if (user) await supabase.from("income").insert({ user_id: user.id, source: parsed.description, amount: parsed.amount, date: today, category: parsed.category });
+      if (user) await supabase.from("income").insert({ user_id: user.id, source: parsed.description, amount: parsed.amount, date: today, category: parsed.category });
       toast.success(`+${formatAmount(parsed.amount)} income added`);
     } else {
-      if (isGuest) addGuestExpense({ name: parsed.description, amount: parsed.amount, date: today, category: parsed.category });
-      else if (user) await supabase.from("expenses").insert({ user_id: user.id, name: parsed.description, amount: parsed.amount, date: today, category: parsed.category });
+      if (user) await supabase.from("expenses").insert({ user_id: user.id, name: parsed.description, amount: parsed.amount, date: today, category: parsed.category });
       toast.success(`-${formatAmount(parsed.amount)} expense recorded`);
     }
     setSmartInput("");
@@ -185,7 +168,6 @@ export default function Transactions() {
   }, [expenses, income]);
 
   const handleDelete = async (t: any) => {
-    if (isGuest) { toast.info("Delete not available in guest mode"); return; }
     await supabase.from(t.type === "income" ? "income" : "expenses").delete().eq("id", t.id);
     toast.success("Deleted");
     refetchAll();
