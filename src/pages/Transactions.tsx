@@ -216,11 +216,10 @@ export default function Transactions() {
 
         {/* ── Sticky topbar ── */}
         <div className="sticky top-14 sm:top-16 z-20 bg-background/95 backdrop-blur-md border-b border-border/20">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 h-14 flex items-center justify-between gap-3">
+          <div className="max-w-5xl mx-auto px-3 sm:px-6 md:px-8 py-2.5 sm:h-14 sm:py-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <h1 className="text-base font-bold tracking-tight">Transactions</h1>
-            <div className="flex gap-2 flex-wrap justify-end">
+            <div className="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto justify-between sm:justify-end">
               <VoiceInput allowedTypes={["expense", "income"]} onSuccess={refetchAll} />
-              
               <AddIncomeDialog onSuccess={refetchAll} />
               <AddExpenseDialog onSuccess={refetchAll} />
             </div>
@@ -234,7 +233,7 @@ export default function Transactions() {
           <motion.div
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
             transition={{ ease }}
-            className="grid grid-cols-3 gap-3 mb-5"
+            className="grid grid-cols-2 gap-3 mb-5"
           >
             <div className="rounded-xl bg-success/5 border border-success/15 px-4 py-4">
               <p className="text-[10px] font-medium text-success/50 uppercase tracking-wide mb-1">Total Income</p>
@@ -243,10 +242,6 @@ export default function Transactions() {
             <div className="rounded-xl bg-destructive/5 border border-destructive/15 px-4 py-4">
               <p className="text-[10px] font-medium text-destructive/50 uppercase tracking-wide mb-1">Total Expenses</p>
               <p className="text-lg font-bold text-destructive truncate">-{formatAmount(totalExpenses)}</p>
-            </div>
-            <div className={`rounded-xl border px-4 py-4 ${net >= 0 ? "bg-success/5 border-success/15" : "bg-destructive/5 border-destructive/15"}`}>
-              <p className={`text-[10px] font-medium uppercase tracking-wide mb-1 ${net >= 0 ? "text-success/50" : "text-destructive/50"}`}>Net Balance</p>
-              <p className={`text-lg font-bold truncate ${net >= 0 ? "text-success" : "text-destructive"}`}>{formatAmount(net)}</p>
             </div>
           </motion.div>
 
