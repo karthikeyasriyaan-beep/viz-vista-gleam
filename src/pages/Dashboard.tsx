@@ -12,7 +12,7 @@ import {
 import { VoiceInput } from "@/components/VoiceInput";
 import { NoIndexMeta } from "@/components/NoIndexMeta";
 import { useNavigate } from "react-router-dom";
-import { getGuestExpenses, getGuestIncome, type GuestExpense, type GuestIncome } from "@/lib/guest-storage";
+
 import { AddExpenseDialog } from "@/components/forms/AddExpenseDialog";
 import { motion, AnimatePresence } from "framer-motion";
 import { Progress } from "@/components/ui/progress";
@@ -93,7 +93,7 @@ const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
 /* ——— Main Dashboard ——— */
 export default function Dashboard() {
-  const { user, isGuest } = useAuth();
+  const { user } = useAuth();
   const { formatAmount } = useCurrency();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -102,29 +102,27 @@ export default function Dashboard() {
     if (!localStorage.getItem("trackora_onboarded")) navigate("/onboarding", { replace: true });
   }, [navigate]);
 
-  const [guestIncome, setGuestIncome] = useState<GuestIncome[]>([]);
-  const [guestExpenses, setGuestExpenses] = useState<GuestExpense[]>([]);
   const [showLoans, setShowLoans] = useState(false);
-
-  const refreshGuestData = () => { setGuestIncome(getGuestIncome()); setGuestExpenses(getGuestExpenses()); };
-  useEffect(() => { if (isGuest) refreshGuestData(); }, [isGuest]);
 
   const { data: income = [] } = useQuery({
     queryKey: ["income", user?.id],
     queryFn: async () => { if (!user) return []; const { data } = await supabase.from("income").select("*").eq("user_id", user.id); return data || []; },
-    enabled: !!user && !isGuest,
+    enabled: !!user,
+    staleTime: 1000 * 60 * 2,
   });
 
   const { data: expenses = [] } = useQuery({
     queryKey: ["expenses", user?.id],
     queryFn: async () => { if (!user) return []; const { data } = await supabase.from("expenses").select("*").eq("user_id", user.id); return data || []; },
-    enabled: !!user && !isGuest,
+    enabled: !!user,
+    staleTime: 1000 * 60 * 2,
   });
 
   const { data: loans = [] } = useQuery({
     queryKey: ["loans", user?.id],
     queryFn: async () => { if (!user) return []; const { data } = await supabase.from("loans").select("*").eq("user_id", user.id).eq("status", "active"); return data || []; },
-    enabled: !!user && !isGuest,
+    enabled: !!user,
+    staleTime: 1000 * 60 * 2,
   });
 
   const { data: monthlyBudget } = useQuery({
@@ -135,19 +133,19 @@ export default function Dashboard() {
       const { data } = await supabase.from("monthly_budgets").select("*").eq("user_id", user.id).eq("month", now.getMonth() + 1).eq("year", now.getFullYear()).single();
       return data;
     },
-    enabled: !!user && !isGuest,
+    enabled: !!user,
+    staleTime: 1000 * 60 * 2,
   });
 
   const refetchAll = () => {
-    if (isGuest) { refreshGuestData(); return; }
     queryClient.invalidateQueries({ queryKey: ["income", user?.id] });
     queryClient.invalidateQueries({ queryKey: ["expenses", user?.id] });
     queryClient.invalidateQueries({ queryKey: ["loans", user?.id] });
     queryClient.invalidateQueries({ queryKey: ["monthly_budgets", user?.id] });
   };
 
-  const displayedExpenses = isGuest ? guestExpenses : (expenses as any[]);
-  const displayedIncome = isGuest ? guestIncome : (income as any[]);
+  const displayedExpenses = expenses as any[];
+  const displayedIncome = income as any[];
 
   const now = new Date();
   const currentMonth = now.getMonth();
@@ -295,8 +293,7 @@ export default function Dashboard() {
             </motion.div>
 
             {/* Loans & Debts */}
-            {!isGuest && (
-              <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.24, ease }}
+            <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.24, ease }}
                 className="rounded-2xl bg-card border border-border/40 overflow-hidden">
                 <div className="flex items-center justify-between px-5 pt-5 pb-3">
                   <div className="flex items-center gap-2">
@@ -323,7 +320,6 @@ export default function Dashboard() {
                   )}
                 </div>
               </motion.div>
-            )}
           </div>
         </div>
         <OnboardingPopups />
