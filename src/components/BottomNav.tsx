@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, Receipt, MoreHorizontal, Sparkles } from "lucide-react";
+import { Home, Receipt, MoreHorizontal, Sparkles, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -15,6 +15,7 @@ const coreNav = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
   { name: "Transactions", href: "/transactions", icon: Receipt },
   { name: "Smart Import", href: "/smart-import", icon: Sparkles },
+  { name: "Analytics", href: "/analytics", icon: BarChart3 },
 ];
 
 const moreNav = [
