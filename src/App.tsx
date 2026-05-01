@@ -15,6 +15,7 @@ import Welcome from "./pages/Welcome";
 import Dashboard from "./pages/Dashboard";
 import Transactions from "./pages/Transactions";
 import SmartImport from "./pages/SmartImport";
+import Analytics from "./pages/Analytics";
 import Subscriptions from "./pages/Subscriptions";
 import Loans from "./pages/Loans";
 import Savings from "./pages/Savings";
@@ -108,6 +109,7 @@ const App = () => (
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/transactions" element={<Transactions />} />
                   <Route path="/smart-import" element={<SmartImport />} />
+                  <Route path="/analytics" element={<Analytics />} />
                   <Route path="/budget" element={<Budget />} />
                   <Route path="/subscriptions" element={<Subscriptions />} />
                   <Route path="/loans" element={<Loans />} />
