@@ -73,7 +73,7 @@ export function CookieConsent() {
   if (!showConsent) return null;
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-md z-50 animate-slide-up">
+    <div className="fixed bottom-20 left-4 right-4 md:left-auto md:right-4 md:bottom-4 md:max-w-md z-50 animate-slide-up">
       <Card className="p-6 shadow-2xl border-2 bg-card/95 backdrop-blur-lg">
         <button
           onClick={rejectNonEssential}
