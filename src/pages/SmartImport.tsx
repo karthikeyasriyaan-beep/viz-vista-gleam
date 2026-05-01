@@ -275,17 +275,17 @@ export default function SmartImport() {
 
         {/* ── Sticky topbar — matches Transactions ── */}
         <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-md border-b border-border/20 lg:top-0">
-          <div className="max-w-5xl mx-auto px-3 sm:px-6 md:px-8 py-2.5 sm:h-14 sm:py-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 h-14 flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-foreground" />
               <h1 className="text-base font-bold tracking-tight">Smart Import</h1>
             </div>
-            <div className="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto justify-between sm:justify-end">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={addManualRow}
-                className="gap-1.5 h-9 rounded-lg"
+                className="gap-1.5 h-9 rounded-lg px-3"
               >
                 <Plus className="h-3.5 w-3.5" /> Row
               </Button>
