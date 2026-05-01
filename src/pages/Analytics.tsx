@@ -90,10 +90,10 @@ export default function Analytics() {
   const { formatAmount } = useCurrency();
   const [range, setRange] = useState<"3m" | "6m" | "12m">("6m");
 
-  const fetchAll = (table: string) => async () => {
+  const fetchAll = (table: string) => async (): Promise<any[]> => {
     if (!user) return [];
-    const { data } = await supabase.from(table as any).select("*").eq("user_id", user.id);
-    return data || [];
+    const { data } = await (supabase.from(table as any) as any).select("*").eq("user_id", user.id);
+    return (data as any[]) || [];
   };
 
   const { data: expenses = [], isLoading: l1 } = useQuery({ queryKey: ["expenses", user?.id], queryFn: fetchAll("expenses"), enabled: !!user });
