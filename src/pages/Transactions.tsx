@@ -77,6 +77,13 @@ function parseSmartInput(input: string): ParsedInput | null {
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
+function parseAppDate(value: string | Date) {
+  if (value instanceof Date) return value;
+  const match = String(value).match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (match) return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  return new Date(value);
+}
+
 /* ——— Component ——— */
 export default function Transactions() {
   const { formatAmount } = useCurrency();
@@ -153,12 +160,12 @@ export default function Transactions() {
   const allTransactions = useMemo(() => [
     ...income.map((i: any) => ({ ...i, type: "income" as const })),
     ...expenses.map((e: any) => ({ ...e, type: "expense" as const })),
-  ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()), [income, expenses]);
+  ].sort((a, b) => parseAppDate(b.date).getTime() - parseAppDate(a.date).getTime()), [income, expenses]);
 
   const filtered = useMemo(() => {
     const now = new Date();
     return allTransactions.filter((t) => {
-      const d = new Date(t.date);
+      const d = parseAppDate(t.date);
       if (timeFilter === "today" && d.toDateString() !== now.toDateString()) return false;
       if (timeFilter === "week") { const w = new Date(); w.setDate(w.getDate() - 7); if (d < w) return false; }
       if (timeFilter === "month") { const m = new Date(); m.setMonth(m.getMonth() - 1); if (d < m) return false; }
@@ -196,9 +203,9 @@ export default function Transactions() {
     const yest = new Date(); yest.setDate(yest.getDate() - 1);
     const yesterdayStr = yest.toDateString();
     const groups: { label: string; items: typeof filtered }[] = [];
-    const todays = filtered.filter((t) => new Date(t.date).toDateString() === todayStr);
-    const yesterdays = filtered.filter((t) => new Date(t.date).toDateString() === yesterdayStr);
-    const earlier = filtered.filter((t) => new Date(t.date).toDateString() !== todayStr && new Date(t.date).toDateString() !== yesterdayStr);
+    const todays = filtered.filter((t) => parseAppDate(t.date).toDateString() === todayStr);
+    const yesterdays = filtered.filter((t) => parseAppDate(t.date).toDateString() === yesterdayStr);
+    const earlier = filtered.filter((t) => parseAppDate(t.date).toDateString() !== todayStr && parseAppDate(t.date).toDateString() !== yesterdayStr);
     if (todays.length) groups.push({ label: "Today", items: todays });
     if (yesterdays.length) groups.push({ label: "Yesterday", items: yesterdays });
     if (earlier.length) groups.push({ label: "Earlier", items: earlier });
@@ -327,7 +334,7 @@ export default function Transactions() {
                       const isIncome = t.type === "income";
                       const title = isIncome ? t.source : t.name;
                       const Icon = getCategoryIcon(t.category);
-                      const dateStr = new Date(t.date).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+                      const dateStr = parseAppDate(t.date).toLocaleDateString(undefined, { month: "short", day: "numeric" });
                       const isExpanded = expandedId === `${t.type}-${t.id}`;
 
                       return (
