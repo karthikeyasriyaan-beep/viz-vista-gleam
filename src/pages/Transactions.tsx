@@ -161,7 +161,7 @@ export default function Transactions() {
   }, [allTransactions, timeFilter, searchQuery]);
 
   const insight = useMemo(() => {
-    const week = expenses.filter((e: any) => { const w = new Date(); w.setDate(w.getDate() - 7); return new Date(e.date) >= w; });
+    const week = expenses.filter((e: any) => { const w = new Date(); w.setDate(w.getDate() - 7); return parseAppDate(e.date) >= w; });
     if (week.length > 0) {
       const cat: Record<string, number> = {};
       week.forEach((e: any) => { const c = e.category || "Other"; cat[c] = (cat[c] || 0) + Number(e.amount); });
