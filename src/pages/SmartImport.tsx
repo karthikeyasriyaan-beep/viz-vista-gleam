@@ -13,6 +13,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { useCurrency } from "@/components/currency-selector";
 import { supabase } from "@/integrations/supabase/client";
+import { addGuestExpense } from "@/lib/guest-storage";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { NoIndexMeta } from "@/components/NoIndexMeta";
@@ -100,7 +101,7 @@ async function fileToBase64(file: File): Promise<string> {
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
 export default function SmartImport() {
-  const { user } = useAuth();
+  const { user, isGuest } = useAuth();
   const { formatAmount } = useCurrency();
   const queryClient = useQueryClient();
   const [drafts, setDrafts] = useState<DraftExpense[]>([]);
@@ -241,9 +242,15 @@ export default function SmartImport() {
         category: d.category,
         amount: Number(d.amount),
         date: d.date,
+        notes: d.source ? `Imported via Smart Import (${d.source})` : "Imported via Smart Import",
       }));
-      const { error } = await supabase.from("expenses").insert(inserts);
-      if (error) throw error;
+
+      if (isGuest) {
+        inserts.forEach(addGuestExpense);
+      } else {
+        const { error } = await supabase.from("expenses").insert(inserts);
+        if (error) throw error;
+      }
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ["expenses", activeUser.id] }),
         queryClient.invalidateQueries({ queryKey: ["expenses"] }),
@@ -267,18 +274,18 @@ export default function SmartImport() {
       <div className="min-h-screen w-full bg-background" onPaste={onPaste}>
 
         {/* ── Sticky topbar — matches Transactions ── */}
-        <div className="sticky top-14 sm:top-16 z-20 bg-background/95 backdrop-blur-md border-b border-border/20">
-          <div className="max-w-5xl mx-auto px-3 sm:px-6 md:px-8 py-2.5 sm:h-14 sm:py-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-md border-b border-border/20 lg:top-0">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 h-14 flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-foreground" />
               <h1 className="text-base font-bold tracking-tight">Smart Import</h1>
             </div>
-            <div className="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto justify-between sm:justify-end">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={addManualRow}
-                className="gap-1.5 h-9 rounded-lg"
+                className="gap-1.5 h-9 rounded-lg px-3"
               >
                 <Plus className="h-3.5 w-3.5" /> Row
               </Button>
@@ -297,16 +304,16 @@ export default function SmartImport() {
         </div>
 
         {/* ── Content ── */}
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 pt-6 sm:pt-8 pb-32">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 pt-5 sm:pt-6 pb-32">
 
           {/* Hero blurb */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ ease }}
-            className="mb-6"
+            className="mb-5"
           >
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight line-clamp-2">
               Drop a receipt.<br className="sm:hidden" />
               <span className="text-muted-foreground"> Or just type it.</span>
             </h2>

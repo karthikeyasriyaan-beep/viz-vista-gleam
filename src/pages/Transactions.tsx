@@ -77,6 +77,13 @@ function parseSmartInput(input: string): ParsedInput | null {
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
+function parseAppDate(value: string | Date) {
+  if (value instanceof Date) return value;
+  const match = String(value).match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (match) return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  return new Date(value);
+}
+
 /* ——— Component ——— */
 export default function Transactions() {
   const { formatAmount } = useCurrency();
@@ -153,12 +160,12 @@ export default function Transactions() {
   const allTransactions = useMemo(() => [
     ...income.map((i: any) => ({ ...i, type: "income" as const })),
     ...expenses.map((e: any) => ({ ...e, type: "expense" as const })),
-  ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()), [income, expenses]);
+  ].sort((a, b) => parseAppDate(b.date).getTime() - parseAppDate(a.date).getTime()), [income, expenses]);
 
   const filtered = useMemo(() => {
     const now = new Date();
     return allTransactions.filter((t) => {
-      const d = new Date(t.date);
+      const d = parseAppDate(t.date);
       if (timeFilter === "today" && d.toDateString() !== now.toDateString()) return false;
       if (timeFilter === "week") { const w = new Date(); w.setDate(w.getDate() - 7); if (d < w) return false; }
       if (timeFilter === "month") { const m = new Date(); m.setMonth(m.getMonth() - 1); if (d < m) return false; }
@@ -171,7 +178,7 @@ export default function Transactions() {
   }, [allTransactions, timeFilter, searchQuery]);
 
   const insight = useMemo(() => {
-    const week = expenses.filter((e: any) => { const w = new Date(); w.setDate(w.getDate() - 7); return new Date(e.date) >= w; });
+    const week = expenses.filter((e: any) => { const w = new Date(); w.setDate(w.getDate() - 7); return parseAppDate(e.date) >= w; });
     if (week.length > 0) {
       const cat: Record<string, number> = {};
       week.forEach((e: any) => { const c = e.category || "Other"; cat[c] = (cat[c] || 0) + Number(e.amount); });
@@ -196,9 +203,9 @@ export default function Transactions() {
     const yest = new Date(); yest.setDate(yest.getDate() - 1);
     const yesterdayStr = yest.toDateString();
     const groups: { label: string; items: typeof filtered }[] = [];
-    const todays = filtered.filter((t) => new Date(t.date).toDateString() === todayStr);
-    const yesterdays = filtered.filter((t) => new Date(t.date).toDateString() === yesterdayStr);
-    const earlier = filtered.filter((t) => new Date(t.date).toDateString() !== todayStr && new Date(t.date).toDateString() !== yesterdayStr);
+    const todays = filtered.filter((t) => parseAppDate(t.date).toDateString() === todayStr);
+    const yesterdays = filtered.filter((t) => parseAppDate(t.date).toDateString() === yesterdayStr);
+    const earlier = filtered.filter((t) => parseAppDate(t.date).toDateString() !== todayStr && parseAppDate(t.date).toDateString() !== yesterdayStr);
     if (todays.length) groups.push({ label: "Today", items: todays });
     if (yesterdays.length) groups.push({ label: "Yesterday", items: yesterdays });
     if (earlier.length) groups.push({ label: "Earlier", items: earlier });
@@ -215,7 +222,7 @@ export default function Transactions() {
       <div className="min-h-screen w-full bg-background">
 
         {/* ── Sticky topbar ── */}
-        <div className="sticky top-14 sm:top-16 z-20 bg-background/95 backdrop-blur-md border-b border-border/20">
+        <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-md border-b border-border/20">
           <div className="max-w-5xl mx-auto px-3 sm:px-6 md:px-8 py-2.5 sm:h-14 sm:py-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <h1 className="text-base font-bold tracking-tight">Transactions</h1>
             <div className="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto justify-between sm:justify-end">
@@ -227,7 +234,7 @@ export default function Transactions() {
         </div>
 
         {/* ── Wide content ── */}
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 pt-6 sm:pt-8 pb-28">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 pt-5 sm:pt-6 pb-28">
 
           {/* ── Summary cards — full width top ── */}
           <motion.div
@@ -327,7 +334,7 @@ export default function Transactions() {
                       const isIncome = t.type === "income";
                       const title = isIncome ? t.source : t.name;
                       const Icon = getCategoryIcon(t.category);
-                      const dateStr = new Date(t.date).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+                      const dateStr = parseAppDate(t.date).toLocaleDateString(undefined, { month: "short", day: "numeric" });
                       const isExpanded = expandedId === `${t.type}-${t.id}`;
 
                       return (
