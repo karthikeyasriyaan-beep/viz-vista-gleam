@@ -91,6 +91,13 @@ function AnimatedNumber({ value, format }: { value: number; format: (n: number) 
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
+function parseAppDate(value: string | Date) {
+  if (value instanceof Date) return value;
+  const match = String(value).match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (match) return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  return new Date(value);
+}
+
 /* ——— Main Dashboard ——— */
 export default function Dashboard() {
   const { user } = useAuth();
@@ -151,8 +158,8 @@ export default function Dashboard() {
   const currentMonth = now.getMonth();
   const currentYear = now.getFullYear();
 
-  const monthExpenses = displayedExpenses.filter((e: any) => { const d = new Date(e.date); return d.getMonth() === currentMonth && d.getFullYear() === currentYear; });
-  const monthIncome = displayedIncome.filter((i: any) => { const d = new Date(i.date); return d.getMonth() === currentMonth && d.getFullYear() === currentYear; });
+  const monthExpenses = displayedExpenses.filter((e: any) => { const d = parseAppDate(e.date); return d.getMonth() === currentMonth && d.getFullYear() === currentYear; });
+  const monthIncome = displayedIncome.filter((i: any) => { const d = parseAppDate(i.date); return d.getMonth() === currentMonth && d.getFullYear() === currentYear; });
 
   const totalExpenses = monthExpenses.reduce((s: number, e: any) => s + Number(e.amount), 0);
   const totalIncome = monthIncome.reduce((s: number, i: any) => s + Number(i.amount), 0);
@@ -173,7 +180,7 @@ export default function Dashboard() {
     return [
       ...displayedIncome.map((i: any) => ({ ...i, type: "income" as const })),
       ...displayedExpenses.map((e: any) => ({ ...e, type: "expense" as const })),
-    ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    ].sort((a, b) => parseAppDate(b.date).getTime() - parseAppDate(a.date).getTime());
   }, [displayedIncome, displayedExpenses]);
 
   const recentTx = allTransactions.slice(0, 5);
@@ -271,7 +278,7 @@ export default function Dashboard() {
                 {recentTx.map((t, idx) => {
                   const isIncome = t.type === "income";
                   const title = isIncome ? t.source : t.name;
-                  const timeStr = new Date(t.date).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+                  const timeStr = parseAppDate(t.date).toLocaleDateString(undefined, { month: "short", day: "numeric" });
                   return (
                     <motion.div key={`${t.type}-${t.id}`} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.22 + idx * 0.03, ease }}
                       className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-muted/30 transition-colors cursor-pointer"
