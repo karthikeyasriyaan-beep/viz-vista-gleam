@@ -422,20 +422,22 @@ export default function Analytics() {
 
         {/* Tabs: deeper analytics per feature */}
         <Tabs defaultValue="spending" className="space-y-4">
-          <TabsList className="w-full grid grid-cols-2 sm:grid-cols-5 h-auto p-1 bg-muted/40 rounded-xl">
-            {[
-              { v: "spending", l: "Spending" },
-              { v: "income", l: "Income" },
-              { v: "subs", l: "Subs" },
-              { v: "loans", l: "Loans" },
-              { v: "goals", l: "Goals" },
-            ].map(t => (
-              <TabsTrigger key={t.v} value={t.v}
-                className="text-[11px] sm:text-xs font-semibold rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm">
-                {t.l}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+          <div className="-mx-3 sm:mx-0 px-3 sm:px-0 overflow-x-auto scrollbar-none">
+            <TabsList className="inline-flex sm:grid sm:w-full sm:grid-cols-5 h-auto p-1 bg-muted/40 rounded-xl gap-1 min-w-full sm:min-w-0">
+              {[
+                { v: "spending", l: "Spending" },
+                { v: "income", l: "Income" },
+                { v: "subs", l: "Subs" },
+                { v: "loans", l: "Loans" },
+                { v: "goals", l: "Goals" },
+              ].map(t => (
+                <TabsTrigger key={t.v} value={t.v}
+                  className="text-[11px] sm:text-xs font-semibold rounded-lg px-3 sm:px-2 whitespace-nowrap data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                  {t.l}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
 
           {/* Spending */}
           <TabsContent value="spending" className="space-y-4">
