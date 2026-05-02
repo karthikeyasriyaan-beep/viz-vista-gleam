@@ -306,18 +306,18 @@ export default function Analytics() {
 
       {/* Sticky header — matches Transactions / Smart Import vibe */}
       <div className="sticky top-14 sm:top-16 lg:top-0 z-20 bg-background/95 backdrop-blur-md border-b border-border/20">
-        <div className="max-w-6xl mx-auto px-3 sm:px-6 md:px-8 py-2.5 sm:h-14 sm:py-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <BarChart3 className="h-4 w-4" />
-            <h1 className="text-base font-bold tracking-tight">Analytics</h1>
+        <div className="max-w-6xl mx-auto px-3 sm:px-6 md:px-8 h-12 sm:h-14 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 min-w-0">
+            <BarChart3 className="h-4 w-4 flex-shrink-0" />
+            <h1 className="text-base font-bold tracking-tight truncate">Analytics</h1>
           </div>
-          <div className="flex items-center gap-1 p-0.5 rounded-full border border-border/40 bg-muted/30 self-start sm:self-auto">
+          <div className="flex items-center gap-1 p-0.5 rounded-full border border-border/40 bg-muted/30 flex-shrink-0">
             {(["3m", "6m", "12m"] as const).map(r => (
               <button
                 key={r}
                 onClick={() => setRange(r)}
                 className={cn(
-                  "text-[11px] font-semibold px-3 py-1 rounded-full transition-all",
+                  "text-[10px] sm:text-[11px] font-semibold px-2.5 sm:px-3 py-1 rounded-full transition-all",
                   range === r ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"
                 )}
               >
