@@ -61,23 +61,24 @@ function StatCard({ label, value, delta, icon: Icon, tone = "neutral", index = 0
   return (
     <motion.div
       variants={fadeUp} initial="hidden" animate="show" custom={index}
-      className="relative overflow-hidden rounded-2xl border border-border/30 bg-card p-4 sm:p-5 group hover:border-border/60 transition-colors"
+      className="relative overflow-hidden rounded-2xl border border-border/30 bg-card p-3.5 sm:p-5 group hover:border-border/60 transition-colors min-w-0"
     >
       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-br from-foreground/[0.02] to-transparent pointer-events-none" />
-      <div className="flex items-start justify-between mb-3 relative">
-        <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">{label}</span>
-        <Icon className="h-4 w-4 text-muted-foreground/70" />
+      <div className="flex items-start justify-between mb-2 sm:mb-3 relative gap-2">
+        <span className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground truncate">{label}</span>
+        <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground/70 flex-shrink-0" />
       </div>
-      <div className="text-xl sm:text-2xl font-extrabold tracking-tight tabular-nums relative">{value}</div>
+      <div className="text-lg sm:text-2xl font-extrabold tracking-tight tabular-nums relative truncate">{value}</div>
       {delta != null && (
         <div className={cn(
-          "mt-2 inline-flex items-center gap-1 text-[11px] font-medium",
+          "mt-1.5 sm:mt-2 inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-medium flex-wrap",
           tone === "expense" ? (positive ? "text-rose-500" : "text-emerald-500")
                               : (positive ? "text-emerald-500" : "text-rose-500")
         )}>
           {positive ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
           <span className="tabular-nums">{Math.abs(delta).toFixed(1)}%</span>
-          <span className="text-muted-foreground font-normal">vs last month</span>
+          <span className="text-muted-foreground font-normal hidden sm:inline">vs last month</span>
+          <span className="text-muted-foreground font-normal sm:hidden">vs last</span>
         </div>
       )}
     </motion.div>
