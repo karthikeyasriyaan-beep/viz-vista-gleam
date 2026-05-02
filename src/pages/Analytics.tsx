@@ -327,23 +327,23 @@ export default function Analytics() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-3 sm:px-6 md:px-8 py-4 sm:py-6 space-y-5 sm:space-y-6">
+      <div className="max-w-6xl mx-auto px-3 sm:px-6 md:px-8 py-4 sm:py-6 pb-24 lg:pb-6 space-y-5 sm:space-y-6">
         {/* Hero summary */}
         <motion.div variants={fadeUp} initial="hidden" animate="show" className="space-y-1">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Your money story</p>
-          <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
+          <p className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Your money story</p>
+          <h2 className="text-[1.6rem] leading-tight sm:text-4xl font-extrabold tracking-tight break-words">
             {totals.net >= 0 ? "You kept" : "You overspent"}{" "}
             <span className="bg-gradient-to-r from-foreground to-foreground/40 bg-clip-text text-transparent">
               {formatAmount(Math.abs(totals.net))}
             </span>
           </h2>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             Across {monthlyTrend.length} months • Savings rate {totals.savingsRate.toFixed(1)}%
           </p>
         </motion.div>
 
         {/* Top stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
           <StatCard label="Income" value={formatAmount(totals.totalIncome)} delta={deltas.income} icon={TrendingUp} index={0} />
           <StatCard label="Expenses" value={formatAmount(totals.totalExpenses)} delta={deltas.expense} icon={TrendingDown} tone="expense" index={1} />
           <StatCard label="Net" value={formatAmount(totals.net)} delta={deltas.net} icon={Wallet} index={2} />
