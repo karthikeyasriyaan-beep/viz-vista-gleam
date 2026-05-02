@@ -61,23 +61,24 @@ function StatCard({ label, value, delta, icon: Icon, tone = "neutral", index = 0
   return (
     <motion.div
       variants={fadeUp} initial="hidden" animate="show" custom={index}
-      className="relative overflow-hidden rounded-2xl border border-border/30 bg-card p-4 sm:p-5 group hover:border-border/60 transition-colors"
+      className="relative overflow-hidden rounded-2xl border border-border/30 bg-card p-3.5 sm:p-5 group hover:border-border/60 transition-colors min-w-0"
     >
       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-br from-foreground/[0.02] to-transparent pointer-events-none" />
-      <div className="flex items-start justify-between mb-3 relative">
-        <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">{label}</span>
-        <Icon className="h-4 w-4 text-muted-foreground/70" />
+      <div className="flex items-start justify-between mb-2 sm:mb-3 relative gap-2">
+        <span className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground truncate">{label}</span>
+        <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground/70 flex-shrink-0" />
       </div>
-      <div className="text-xl sm:text-2xl font-extrabold tracking-tight tabular-nums relative">{value}</div>
+      <div className="text-lg sm:text-2xl font-extrabold tracking-tight tabular-nums relative truncate">{value}</div>
       {delta != null && (
         <div className={cn(
-          "mt-2 inline-flex items-center gap-1 text-[11px] font-medium",
+          "mt-1.5 sm:mt-2 inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-medium flex-wrap",
           tone === "expense" ? (positive ? "text-rose-500" : "text-emerald-500")
                               : (positive ? "text-emerald-500" : "text-rose-500")
         )}>
           {positive ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
           <span className="tabular-nums">{Math.abs(delta).toFixed(1)}%</span>
-          <span className="text-muted-foreground font-normal">vs last month</span>
+          <span className="text-muted-foreground font-normal hidden sm:inline">vs last month</span>
+          <span className="text-muted-foreground font-normal sm:hidden">vs last</span>
         </div>
       )}
     </motion.div>
@@ -305,18 +306,18 @@ export default function Analytics() {
 
       {/* Sticky header — matches Transactions / Smart Import vibe */}
       <div className="sticky top-14 sm:top-16 lg:top-0 z-20 bg-background/95 backdrop-blur-md border-b border-border/20">
-        <div className="max-w-6xl mx-auto px-3 sm:px-6 md:px-8 py-2.5 sm:h-14 sm:py-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <BarChart3 className="h-4 w-4" />
-            <h1 className="text-base font-bold tracking-tight">Analytics</h1>
+        <div className="max-w-6xl mx-auto px-3 sm:px-6 md:px-8 h-12 sm:h-14 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 min-w-0">
+            <BarChart3 className="h-4 w-4 flex-shrink-0" />
+            <h1 className="text-base font-bold tracking-tight truncate">Analytics</h1>
           </div>
-          <div className="flex items-center gap-1 p-0.5 rounded-full border border-border/40 bg-muted/30 self-start sm:self-auto">
+          <div className="flex items-center gap-1 p-0.5 rounded-full border border-border/40 bg-muted/30 flex-shrink-0">
             {(["3m", "6m", "12m"] as const).map(r => (
               <button
                 key={r}
                 onClick={() => setRange(r)}
                 className={cn(
-                  "text-[11px] font-semibold px-3 py-1 rounded-full transition-all",
+                  "text-[10px] sm:text-[11px] font-semibold px-2.5 sm:px-3 py-1 rounded-full transition-all",
                   range === r ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"
                 )}
               >
@@ -327,23 +328,23 @@ export default function Analytics() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-3 sm:px-6 md:px-8 py-4 sm:py-6 space-y-5 sm:space-y-6">
+      <div className="max-w-6xl mx-auto px-3 sm:px-6 md:px-8 py-4 sm:py-6 pb-24 lg:pb-6 space-y-5 sm:space-y-6">
         {/* Hero summary */}
         <motion.div variants={fadeUp} initial="hidden" animate="show" className="space-y-1">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Your money story</p>
-          <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
+          <p className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Your money story</p>
+          <h2 className="text-[1.6rem] leading-tight sm:text-4xl font-extrabold tracking-tight break-words">
             {totals.net >= 0 ? "You kept" : "You overspent"}{" "}
             <span className="bg-gradient-to-r from-foreground to-foreground/40 bg-clip-text text-transparent">
               {formatAmount(Math.abs(totals.net))}
             </span>
           </h2>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             Across {monthlyTrend.length} months • Savings rate {totals.savingsRate.toFixed(1)}%
           </p>
         </motion.div>
 
         {/* Top stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
           <StatCard label="Income" value={formatAmount(totals.totalIncome)} delta={deltas.income} icon={TrendingUp} index={0} />
           <StatCard label="Expenses" value={formatAmount(totals.totalExpenses)} delta={deltas.expense} icon={TrendingDown} tone="expense" index={1} />
           <StatCard label="Net" value={formatAmount(totals.net)} delta={deltas.net} icon={Wallet} index={2} />
@@ -421,20 +422,22 @@ export default function Analytics() {
 
         {/* Tabs: deeper analytics per feature */}
         <Tabs defaultValue="spending" className="space-y-4">
-          <TabsList className="w-full grid grid-cols-2 sm:grid-cols-5 h-auto p-1 bg-muted/40 rounded-xl">
-            {[
-              { v: "spending", l: "Spending" },
-              { v: "income", l: "Income" },
-              { v: "subs", l: "Subs" },
-              { v: "loans", l: "Loans" },
-              { v: "goals", l: "Goals" },
-            ].map(t => (
-              <TabsTrigger key={t.v} value={t.v}
-                className="text-[11px] sm:text-xs font-semibold rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm">
-                {t.l}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+          <div className="-mx-3 sm:mx-0 px-3 sm:px-0 overflow-x-auto scrollbar-none">
+            <TabsList className="inline-flex sm:grid sm:w-full sm:grid-cols-5 h-auto p-1 bg-muted/40 rounded-xl gap-1 min-w-full sm:min-w-0">
+              {[
+                { v: "spending", l: "Spending" },
+                { v: "income", l: "Income" },
+                { v: "subs", l: "Subs" },
+                { v: "loans", l: "Loans" },
+                { v: "goals", l: "Goals" },
+              ].map(t => (
+                <TabsTrigger key={t.v} value={t.v}
+                  className="text-[11px] sm:text-xs font-semibold rounded-lg px-3 sm:px-2 whitespace-nowrap data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                  {t.l}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
 
           {/* Spending */}
           <TabsContent value="spending" className="space-y-4">
@@ -449,7 +452,7 @@ export default function Analytics() {
                       <CartesianGrid strokeDasharray="2 4" stroke="hsl(var(--border))" opacity={0.4} horizontal={false} />
                       <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false}
                         tickFormatter={v => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v} />
-                      <YAxis type="category" dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={11} tickLine={false} axisLine={false} width={80} />
+                      <YAxis type="category" dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} width={64} tickFormatter={(v: string) => v.length > 9 ? v.slice(0, 8) + "…" : v} />
                       <Tooltip content={<ChartTip formatAmount={formatAmount} />} cursor={{ fill: "hsl(var(--foreground) / 0.04)" }} />
                       <Bar dataKey="amount" name="Spent" radius={[0, 8, 8, 0]}>
                         {categoryBreakdown.slice(0, 6).map((_, i) => (
@@ -556,17 +559,19 @@ export default function Analytics() {
           {/* Loans */}
           <TabsContent value="loans" className="space-y-4">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-              <div className="rounded-2xl border border-border/30 bg-card p-4 sm:p-5 flex flex-col justify-center items-center">
-                <div className="w-full h-[180px]">
+              <div className="rounded-2xl border border-border/30 bg-card p-4 sm:p-5 flex flex-col items-center justify-center">
+                <div className="relative w-full h-[180px] sm:h-[200px] flex items-center justify-center">
                   <ResponsiveContainer>
                     <RadialBarChart innerRadius="70%" outerRadius="100%" data={[{ name: "Paid", value: loanStats.pct, fill: "hsl(var(--foreground))" }]} startAngle={90} endAngle={-270}>
                       <PolarAngleAxis type="number" domain={[0, 100]} tick={false} />
                       <RadialBar background={{ fill: "hsl(var(--muted))" }} dataKey="value" cornerRadius={20} />
                     </RadialBarChart>
                   </ResponsiveContainer>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                    <p className="text-2xl sm:text-3xl font-extrabold tracking-tight tabular-nums leading-none">{loanStats.pct.toFixed(0)}%</p>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider mt-1">Paid off</p>
+                  </div>
                 </div>
-                <p className="text-2xl font-extrabold tracking-tight tabular-nums -mt-24">{loanStats.pct.toFixed(0)}%</p>
-                <p className="text-[11px] text-muted-foreground uppercase tracking-wider mt-16">Paid off</p>
               </div>
               <div className="lg:col-span-2 rounded-2xl border border-border/30 bg-card p-4 sm:p-5 space-y-3">
                 <div className="grid grid-cols-2 gap-3">
