@@ -559,17 +559,19 @@ export default function Analytics() {
           {/* Loans */}
           <TabsContent value="loans" className="space-y-4">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-              <div className="rounded-2xl border border-border/30 bg-card p-4 sm:p-5 flex flex-col justify-center items-center">
-                <div className="w-full h-[180px]">
+              <div className="rounded-2xl border border-border/30 bg-card p-4 sm:p-5 flex flex-col items-center justify-center">
+                <div className="relative w-full h-[180px] sm:h-[200px] flex items-center justify-center">
                   <ResponsiveContainer>
                     <RadialBarChart innerRadius="70%" outerRadius="100%" data={[{ name: "Paid", value: loanStats.pct, fill: "hsl(var(--foreground))" }]} startAngle={90} endAngle={-270}>
                       <PolarAngleAxis type="number" domain={[0, 100]} tick={false} />
                       <RadialBar background={{ fill: "hsl(var(--muted))" }} dataKey="value" cornerRadius={20} />
                     </RadialBarChart>
                   </ResponsiveContainer>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                    <p className="text-2xl sm:text-3xl font-extrabold tracking-tight tabular-nums leading-none">{loanStats.pct.toFixed(0)}%</p>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider mt-1">Paid off</p>
+                  </div>
                 </div>
-                <p className="text-2xl font-extrabold tracking-tight tabular-nums -mt-24">{loanStats.pct.toFixed(0)}%</p>
-                <p className="text-[11px] text-muted-foreground uppercase tracking-wider mt-16">Paid off</p>
               </div>
               <div className="lg:col-span-2 rounded-2xl border border-border/30 bg-card p-4 sm:p-5 space-y-3">
                 <div className="grid grid-cols-2 gap-3">
