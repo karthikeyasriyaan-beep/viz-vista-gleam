@@ -452,7 +452,7 @@ export default function Analytics() {
                       <CartesianGrid strokeDasharray="2 4" stroke="hsl(var(--border))" opacity={0.4} horizontal={false} />
                       <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false}
                         tickFormatter={v => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v} />
-                      <YAxis type="category" dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={11} tickLine={false} axisLine={false} width={80} />
+                      <YAxis type="category" dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} width={64} tickFormatter={(v: string) => v.length > 9 ? v.slice(0, 8) + "…" : v} />
                       <Tooltip content={<ChartTip formatAmount={formatAmount} />} cursor={{ fill: "hsl(var(--foreground) / 0.04)" }} />
                       <Bar dataKey="amount" name="Spent" radius={[0, 8, 8, 0]}>
                         {categoryBreakdown.slice(0, 6).map((_, i) => (
