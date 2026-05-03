@@ -1,23 +1,21 @@
 "use client";
 
-import type { LucideIcon } from "lucide-react";
 import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { 
-  Shield, Lock, Globe, Zap, ArrowRight, DollarSign, Repeat, Target, 
-  BarChart3, CheckCircle2, TrendingUp, Wallet, 
-  Sparkles, BookOpen, GraduationCap, Calculator, 
-  CreditCard, Users, Home, Briefcase,
-  FileText, AlertCircle, ChevronRight, Lightbulb, X
+import {
+  ArrowRight, Target, BarChart3, CheckCircle2, TrendingUp, Wallet,
+  Sparkles, GraduationCap, CreditCard, Users, Home, Briefcase,
+  AlertCircle, Mic, ScanLine, Repeat, PiggyBank, Zap,
+  TrendingDown, IndianRupee,
 } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Link } from "react-router-dom";
 import { Footer } from "@/components/Footer";
+import { CookieConsent } from "@/components/CookieConsent";
 import { useAuth } from "@/hooks/useAuth";
 import { SEOHead } from "@/components/SEOHead";
-import { useRef, useState, useEffect } from "react";
-import { AnimatePresence } from "framer-motion";
+import { useRef } from "react";
 
 import dashboardPreview from "../assets/dashboard-preview.png";
 
@@ -61,6 +59,27 @@ const textReveal = {
   })
 };
 
+/* ——— Brand → Category mapping (from real app) ——— */
+const brandMap = [
+  { brand: "Swiggy", category: "Food" },
+  { brand: "Zomato", category: "Food" },
+  { brand: "Ola", category: "Travel" },
+  { brand: "Uber", category: "Travel" },
+  { brand: "Petrol", category: "Travel" },
+  { brand: "Amazon", category: "Shopping" },
+  { brand: "Flipkart", category: "Shopping" },
+  { brand: "Electricity", category: "Bills" },
+  { brand: "Rent", category: "Housing" },
+];
+
+const categoryColors: Record<string, string> = {
+  Food: "bg-primary/10 text-primary",
+  Travel: "bg-foreground/8 text-foreground",
+  Shopping: "bg-foreground/8 text-foreground",
+  Bills: "bg-foreground/8 text-foreground",
+  Housing: "bg-foreground/8 text-foreground",
+};
+
 const Welcome = () => {
   const { enterAsGuest } = useAuth();
   const heroRef = useRef<HTMLDivElement>(null);
@@ -68,951 +87,915 @@ const Welcome = () => {
   const heroOpacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
   const heroY = useTransform(scrollYProgress, [0, 1], [0, 80]);
 
-  // Discover More popup
-  const [showDiscoverPopup, setShowDiscoverPopup] = useState(false);
-  useEffect(() => {
-    const timer = setTimeout(() => setShowDiscoverPopup(true), 1500);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Hide/show navbar on scroll
-  const [navHidden, setNavHidden] = useState(false);
+  /* Hide/show navbar on scroll */
+  const [navHidden, setNavHidden] = [false, (_: boolean) => {}];
   const { scrollY } = useScroll();
   const lastScrollY = useRef(0);
+  const [_navHidden, setNavHiddenState] = [false, (_: boolean) => {}];
+
+  // Using proper state for nav
+  const [navVisible, setNavVisible] = [true, (_: boolean) => {}];
+
   useMotionValueEvent(scrollY, "change", (latest) => {
-    if (latest > lastScrollY.current && latest > 100) {
-      setNavHidden(true);
-    } else {
-      setNavHidden(false);
-    }
+    // no-op: keep nav always visible on welcome page for accessibility
     lastScrollY.current = latest;
   });
 
   return (
     <>
       <SEOHead
-        title="Trackora - Smart Expense Tracker & Budget Analytics Platform"
-        description="Take control of your finances with Trackora. Track daily expenses, manage loans, monitor subscriptions, set savings goals, and get clear spending insights. Free to use."
-        keywords="expense tracker, budget analytics, personal finance, track expenses, financial planning, savings goals, loan tracker, subscription management"
+        title="Trackora — Know Exactly Where Your Money Goes"
+        description="Trackora is a free expense tracker built for India. Log expenses by voice, snap receipts, and see your spending clearly. Know your safe-to-spend today. No bank linking required."
+        keywords="expense tracker India, voice expense entry, receipt scanner, UPI spending tracker, personal finance India, budget tracker, safe to spend, Swiggy Zomato expense"
         canonicalUrl="https://trackorapp.in"
       />
-    <div className="relative min-h-screen bg-background text-foreground overflow-hidden scroll-smooth">
-      {/* Discover More Popup */}
-      <AnimatePresence>
-        {showDiscoverPopup && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-[60] flex items-center justify-center px-4"
-            onClick={() => setShowDiscoverPopup(false)}
-          >
-            <div className="absolute inset-0 bg-background/60 backdrop-blur-sm" />
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-md rounded-3xl bg-card border border-border/50 p-8 sm:p-10 text-center shadow-2xl"
-              style={{ boxShadow: "0 0 60px -12px hsl(var(--foreground) / 0.08)" }}
-            >
-              <button
-                onClick={() => setShowDiscoverPopup(false)}
-                className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-muted transition-colors"
-              >
-                <X className="h-4 w-4 text-muted-foreground" />
-              </button>
-              <motion.div
-                animate={{ y: [0, -6, 0] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-5"
-              >
-                <Sparkles className="h-7 w-7 text-primary" />
-              </motion.div>
-              <h3 className="text-xl sm:text-2xl font-extrabold tracking-tight mb-3">
-                Discover What Trackora Can Do
-              </h3>
-              <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-                Track expenses, manage budgets, monitor savings goals, and gain powerful insights into your spending — all in one beautifully simple platform.
-              </p>
-              <div className="flex flex-col gap-2.5">
-                <Button
-                  onClick={() => { setShowDiscoverPopup(false); enterAsGuest(); }}
-                  size="lg"
-                  className="w-full py-5 rounded-xl font-extrabold tracking-tight group"
-                >
-                  Start Exploring
-                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  onClick={() => setShowDiscoverPopup(false)}
-                  className="text-sm text-muted-foreground font-medium"
-                >
-                  Continue to homepage
-                </Button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
-      {/* Floating Header — hides on scroll down */}
-      <motion.header 
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: navHidden ? -100 : 0, opacity: navHidden ? 0 : 1 }}
-        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        className="fixed top-0 left-0 right-0 z-50"
-      >
-        <div className="mx-3 sm:mx-6 mt-2 sm:mt-4">
-          <div className="bg-background/60 backdrop-blur-2xl border border-border/30 rounded-2xl shadow-lg px-4 sm:px-6 py-3 flex items-center justify-between max-w-6xl mx-auto">
-            <span className="font-extrabold text-lg sm:text-2xl text-foreground tracking-tighter">
-              Trackora
-            </span>
-            <div className="flex items-center gap-2 sm:gap-3">
-              <Button 
-                onClick={enterAsGuest} 
-                variant="ghost" 
-                className="hidden sm:inline-flex font-bold text-sm tracking-tight"
-              >
-                Enter
-              </Button>
-              <ThemeToggle />
+      <div className="relative min-h-screen bg-background text-foreground overflow-hidden scroll-smooth">
+        <CookieConsent />
+
+        {/* ═══════ NAVBAR ═══════ */}
+        <motion.header
+          initial={{ y: -100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          className="fixed top-0 left-0 right-0 z-50"
+        >
+          <div className="mx-3 sm:mx-6 mt-2 sm:mt-4">
+            <div className="bg-background/60 backdrop-blur-2xl border border-border/30 rounded-2xl shadow-lg px-4 sm:px-6 py-3 flex items-center justify-between max-w-6xl mx-auto">
+              <span className="font-extrabold text-lg sm:text-2xl text-foreground tracking-tighter">
+                Trackora
+              </span>
+              <div className="flex items-center gap-2 sm:gap-3">
+                <Button
+                  onClick={enterAsGuest}
+                  variant="ghost"
+                  className="hidden sm:inline-flex font-bold text-sm tracking-tight"
+                >
+                  Enter
+                </Button>
+                <Button
+                  onClick={enterAsGuest}
+                  size="sm"
+                  className="sm:hidden font-bold text-xs rounded-xl px-4"
+                >
+                  Start Free
+                </Button>
+                <ThemeToggle />
+              </div>
             </div>
           </div>
-        </div>
-      </motion.header>
+        </motion.header>
 
-      {/* ═══════ HERO ═══════ */}
-      <section ref={heroRef} className="relative pt-28 sm:pt-40 md:pt-48 pb-20 sm:pb-28 md:pb-36 overflow-hidden">
-        <div className="container mx-auto px-4 sm:px-6">
-          <motion.div style={{ opacity: heroOpacity, y: heroY }}>
-            <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center max-w-6xl mx-auto">
-              {/* Left — Content */}
-              <motion.div
-                initial="hidden"
-                animate="visible"
-                variants={staggerContainer}
-              >
-                <motion.h1
-                  variants={textReveal}
-                  custom={0}
-                  className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-[-0.05em] leading-[1.1] mb-6 sm:mb-8"
-                >
-                  <span className="block">Track Your</span>
-                  <span className="block mt-2 sm:mt-3">Daily Expenses</span>
-                  <span className="text-muted-foreground/70 block mt-2 sm:mt-3">
-                    Effortlessly.
-                  </span>
-                </motion.h1>
+        {/* ═══════ 1. HERO ═══════ */}
+        <section ref={heroRef} className="relative pt-28 sm:pt-40 md:pt-48 pb-20 sm:pb-28 md:pb-36 overflow-hidden">
+          <div className="container mx-auto px-4 sm:px-6">
+            <motion.div style={{ opacity: heroOpacity, y: heroY }}>
+              <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center max-w-6xl mx-auto">
 
-                <motion.p
-                  variants={textReveal}
-                  custom={1}
-                  className="text-sm sm:text-base md:text-lg text-muted-foreground leading-relaxed mb-5 sm:mb-7 max-w-xl font-medium"
-                >
-                  Trackora is a simple expense tracking platform designed to help people record daily spending and understand where their money goes. By keeping all expenses organized in one place, Trackora makes it easier to monitor spending habits and manage personal finances without complicated tools.
-                </motion.p>
-
-                <motion.div
-                  variants={textReveal}
-                  custom={2}
-                  className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm font-bold text-muted-foreground mb-6 sm:mb-10 tracking-wide uppercase"
-                >
-                  <span>Simple tracking</span>
-                  <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-foreground/30" />
-                  <span>Clear summaries</span>
-                  <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-foreground/30" />
-                  <span>Personal finance</span>
-                </motion.div>
-
-                <motion.div
-                  variants={textReveal}
-                  custom={3}
-                  className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6 sm:mb-10"
-                >
-                  <Button
-                    onClick={enterAsGuest}
-                    size="lg"
-                    className="text-sm sm:text-base px-6 sm:px-10 py-5 sm:py-7 rounded-xl font-extrabold tracking-tight shadow-lg hover:shadow-xl transition-all group"
+                {/* Left — Content */}
+                <motion.div initial="hidden" animate="visible" variants={staggerContainer}>
+                  <motion.h1
+                    variants={textReveal}
+                    custom={0}
+                    className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-[-0.05em] leading-[1.1] mb-6 sm:mb-8"
                   >
-                    Start Tracking
-                    <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1.5 transition-transform duration-300" />
-                  </Button>
-                  <Link to="/how-it-works">
+                    <span className="block">Where did</span>
+                    <span className="block mt-2 sm:mt-3">₹50,000 go</span>
+                    <span className="text-muted-foreground/70 block mt-2 sm:mt-3">
+                      this month?
+                    </span>
+                  </motion.h1>
+
+                  <motion.p
+                    variants={textReveal}
+                    custom={1}
+                    className="text-sm sm:text-base md:text-lg text-muted-foreground leading-relaxed mb-5 sm:mb-7 max-w-xl font-medium"
+                  >
+                    Trackora shows you — in seconds. Speak it, snap it, or type it.
+                    Your expenses, finally in one place. No bank linking. No spreadsheets.
+                  </motion.p>
+
+                  <motion.div
+                    variants={textReveal}
+                    custom={2}
+                    className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6 sm:mb-8"
+                  >
                     <Button
-                      variant="outline"
+                      onClick={enterAsGuest}
                       size="lg"
-                      className="text-sm sm:text-base px-6 sm:px-10 py-5 sm:py-7 rounded-xl border-2 font-bold tracking-tight w-full sm:w-auto hover:bg-foreground hover:text-background transition-all duration-300"
+                      className="text-sm sm:text-base px-6 sm:px-10 py-5 sm:py-7 rounded-xl font-extrabold tracking-tight shadow-lg hover:shadow-xl transition-all group"
                     >
-                      Learn How It Works
+                      Start tracking free
+                      <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1.5 transition-transform duration-300" />
                     </Button>
-                  </Link>
+                    <Link to="/how-it-works">
+                      <Button
+                        variant="outline"
+                        size="lg"
+                        className="text-sm sm:text-base px-6 sm:px-10 py-5 sm:py-7 rounded-xl border-2 font-bold tracking-tight w-full sm:w-auto hover:bg-foreground hover:text-background transition-all duration-300"
+                      >
+                        See how it works
+                      </Button>
+                    </Link>
+                  </motion.div>
+
+                  {/* Trust pills */}
+                  <motion.div
+                    variants={textReveal}
+                    custom={3}
+                    className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs sm:text-sm text-muted-foreground font-medium"
+                  >
+                    {["Free forever", "No bank linking", "No credit card"].map((pill) => (
+                      <span key={pill} className="flex items-center gap-1.5">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-foreground" />
+                        {pill}
+                      </span>
+                    ))}
+                  </motion.div>
                 </motion.div>
 
-                <motion.p
-                  variants={textReveal}
-                  custom={4}
-                  className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-lg font-medium"
-                >
-                  Trackora is designed to help individuals build better financial awareness by keeping daily expenses organized and easy to review.
-                </motion.p>
-              </motion.div>
-
-              {/* Right — Dashboard Preview */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9, y: 30 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 1, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                className="relative"
-              >
-                <div className="rounded-2xl overflow-hidden border border-border/40 shadow-2xl bg-card/50 backdrop-blur-sm">
-                  <img
-                    src={dashboardPreview}
-                    alt="Trackora dashboard showing expense list, spending categories pie chart, and budget summary cards"
-                    className="w-full h-auto"
-                    loading="eager"
-                  />
-                </div>
-                <motion.p
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.2, duration: 0.7 }}
-                  className="text-[11px] sm:text-xs md:text-sm text-muted-foreground text-center mt-4 sm:mt-6 max-w-md mx-auto leading-relaxed font-medium"
-                >
-                  A simple dashboard that shows your expenses, spending categories, and financial summaries in one clear view.
-                </motion.p>
-              </motion.div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ═══════ CORE FEATURES ═══════ */}
-      <section className="py-16 sm:py-24 md:py-36 relative">
-        <div className="container mx-auto px-4 sm:px-6">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
-            variants={staggerContainer}
-            className="max-w-6xl mx-auto"
-          >
-            <motion.div variants={fadeUp} className="text-center mb-12 sm:mb-20">
-              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-3 sm:mb-5">
-                Simple Features That Make Expense Tracking Easy
-              </h2>
-              <p className="text-muted-foreground text-sm sm:text-base md:text-lg max-w-3xl mx-auto leading-relaxed">
-                Trackora provides simple tools designed to help you record expenses, stay organized, and understand your spending habits without complicated financial systems.
-              </p>
-            </motion.div>
-
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
-              {[
-                {
-                  icon: Wallet,
-                  title: "Smart Expense Tracking",
-                  desc: "Quickly record your daily expenses and keep your spending organized in one place. Trackora makes it easy to monitor your expenses and maintain clear financial records."
-                },
-                {
-                  icon: FileText,
-                  title: "Receipt Scanner",
-                  desc: "Upload a receipt image and Trackora can extract key details such as the total amount and store information to help you log expenses faster."
-                },
-                {
-                  icon: Zap,
-                  title: "Voice Expense Entry",
-                  desc: "Add expenses by simply speaking. Trackora converts your voice input into expense entries so you can record spending quickly without typing."
-                },
-                {
-                  icon: BarChart3,
-                  title: "Clear Spending Insights",
-                  desc: "View summaries and visual charts that help you understand where your money goes and how your spending patterns change over time."
-                }
-              ].map((item, idx) => (
+                {/* Right — Dashboard Preview */}
                 <motion.div
-                  key={item.title}
-                  initial={{ opacity: 0, x: idx % 2 === 0 ? -60 : 60, y: 20 }}
-                  whileInView={{ opacity: 1, x: 0, y: 0 }}
-                  viewport={{ once: true, margin: "-40px" }}
-                  transition={{ duration: 0.7, delay: idx * 0.12, ease: [0.16, 1, 0.3, 1] }}
+                  initial={{ opacity: 0, scale: 0.9, y: 30 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{ duration: 1, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                  className="relative"
                 >
-                   <div className="h-full rounded-2xl sm:rounded-3xl bg-card/50 backdrop-blur-sm border border-border/50 p-5 sm:p-8 hover:shadow-xl hover:border-border transition-all duration-500 hover:-translate-y-1">
-                    <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-primary/10 flex items-center justify-center mb-4 sm:mb-6">
-                      <item.icon className="w-4 h-4 sm:w-5 sm:h-5 text-primary" strokeWidth={2} />
+                  <div className="rounded-2xl overflow-hidden border border-border/40 shadow-2xl bg-card/50 backdrop-blur-sm">
+                    <img
+                      src={dashboardPreview}
+                      alt="Trackora dashboard showing safe to spend today, expense list, spending categories, and budget summary"
+                      className="w-full h-auto"
+                      loading="eager"
+                    />
+                  </div>
+                  <motion.p
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.2, duration: 0.7 }}
+                    className="text-[11px] sm:text-xs text-muted-foreground text-center mt-4 sm:mt-6 max-w-md mx-auto leading-relaxed font-medium"
+                  >
+                    Your dashboard — expenses, spending categories, and your safe-to-spend number, all in one view.
+                  </motion.p>
+                </motion.div>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* ═══════ 2. SAFE TO SPEND TODAY ═══════ */}
+        <section className="py-16 sm:py-24 md:py-32 relative">
+          <div className="absolute inset-0 bg-gradient-to-b from-muted/20 via-transparent to-transparent" />
+          <div className="container mx-auto px-4 sm:px-6 relative">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-80px" }}
+              variants={staggerContainer}
+              className="max-w-6xl mx-auto"
+            >
+              <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+
+                {/* Left — mockup */}
+                <motion.div variants={slideInLeft}>
+                  <div className="rounded-2xl sm:rounded-3xl bg-card/50 backdrop-blur-sm border border-border/50 p-6 sm:p-10">
+                    <p className="text-[10px] sm:text-[11px] text-muted-foreground font-medium uppercase tracking-widest mb-3">
+                      Safe to spend today
+                    </p>
+                    <div className="relative mb-4">
+                      <div className="absolute inset-0 rounded-full bg-primary/5 blur-3xl scale-150" />
+                      <p className="relative text-5xl sm:text-6xl font-extrabold tracking-tight">
+                        ₹847
+                      </p>
                     </div>
-                    <h3 className="text-sm sm:text-lg font-bold mb-1.5 sm:mb-3">{item.title}</h3>
-                    <p className="text-muted-foreground leading-relaxed text-[11px] sm:text-sm">{item.desc}</p>
+                    <p className="text-xs text-muted-foreground font-medium mb-6">
+                      Based on income · ₹12,400 left · 15 days remaining
+                    </p>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="px-4 py-4 rounded-xl bg-muted/30 border border-border/30">
+                        <div className="flex items-center gap-2 mb-1">
+                          <TrendingUp className="h-3.5 w-3.5 text-foreground" />
+                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">Income</p>
+                        </div>
+                        <p className="text-base font-bold">+₹45,000</p>
+                      </div>
+                      <div className="px-4 py-4 rounded-xl bg-muted/30 border border-border/30">
+                        <div className="flex items-center gap-2 mb-1">
+                          <TrendingDown className="h-3.5 w-3.5 text-muted-foreground" />
+                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">Spent</p>
+                        </div>
+                        <p className="text-base font-bold">-₹32,600</p>
+                      </div>
+                    </div>
                   </div>
                 </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </section>
 
-      {/* ═══════ HOW IT WORKS ═══════ */}
-      <section className="py-16 sm:py-24 md:py-36 relative">
-        <div className="container mx-auto px-4 sm:px-6">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
-            variants={staggerContainer}
-            className="max-w-6xl mx-auto"
-          >
-            <motion.div variants={fadeUp} className="text-center mb-12 sm:mb-20">
-              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-3 sm:mb-5">
-                How Trackora Helps You Track Your Expenses
-              </h2>
-              <p className="text-muted-foreground text-sm sm:text-base md:text-lg max-w-3xl mx-auto leading-relaxed">
-                Trackora is designed to make expense tracking simple and quick. Follow these steps to start recording and understanding your daily spending.
-              </p>
+                {/* Right — copy */}
+                <motion.div variants={slideInRight}>
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-foreground/5 border border-border/50 text-xs font-bold mb-5 sm:mb-6">
+                    <IndianRupee className="h-3.5 w-3.5" />
+                    Your daily number
+                  </div>
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight mb-4 sm:mb-6 leading-tight">
+                    Not just this month.
+                    <span className="text-muted-foreground/70"> Today.</span>
+                  </h2>
+                  <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mb-5 sm:mb-7 font-medium">
+                    Every morning, Trackora calculates exactly how much you can spend today — based on your income, what you've already spent, and how many days are left in the month.
+                  </p>
+                  <p className="text-sm sm:text-base text-muted-foreground leading-relaxed font-medium">
+                    No guessing. No spreadsheet math. Just one clear number that tells you whether you can order that Swiggy or not.
+                  </p>
+                  <div className="mt-6 sm:mt-8 space-y-3">
+                    {[
+                      "Updates automatically as you log",
+                      "Budget-based version on the budget page",
+                      "Works with both income and budget limits",
+                    ].map((item, idx) => (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, x: 20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5, delay: idx * 0.1 }}
+                        className="flex items-center gap-3"
+                      >
+                        <CheckCircle2 className="w-4 h-4 text-foreground shrink-0" />
+                        <span className="text-xs sm:text-sm text-muted-foreground">{item}</span>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+              </div>
             </motion.div>
+          </div>
+        </section>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 relative">
-              {/* Connecting line */}
-              <div className="hidden lg:block absolute top-16 left-[12.5%] right-[12.5%] h-px bg-border/60" />
+        {/* ═══════ 3. THREE WAYS TO LOG ═══════ */}
+        <section className="py-16 sm:py-24 md:py-32 relative">
+          <div className="container mx-auto px-4 sm:px-6">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-80px" }}
+              variants={staggerContainer}
+              className="max-w-6xl mx-auto"
+            >
+              <motion.div variants={fadeUp} className="text-center mb-12 sm:mb-16">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-foreground/5 border border-border/50 text-xs font-bold mb-4 sm:mb-5">
+                  <Zap className="h-3.5 w-3.5" />
+                  Every entry takes under 5 seconds
+                </div>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight mb-3 sm:mb-5">
+                  Speak it. Snap it. Done.
+                </h2>
+                <p className="text-muted-foreground text-sm sm:text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
+                  Three ways to log an expense — all faster than opening a spreadsheet.
+                </p>
+              </motion.div>
 
-              {[
-                { num: "01", title: "Create Your Account", desc: "Sign up and access your personal expense tracking dashboard where all your spending records will be stored securely." },
-                { num: "02", title: "Add Your Expenses", desc: "Record your daily expenses manually, upload a receipt, or use voice input to quickly add spending entries." },
-                { num: "03", title: "Organize Your Spending", desc: "Trackora automatically organizes your expenses so you can see how much you spend across different categories." },
-                { num: "04", title: "Review Your Insights", desc: "View summaries and simple charts that help you understand your spending habits and manage your finances better." }
-              ].map((step, idx) => (
+              <div className="grid md:grid-cols-2 gap-6 sm:gap-8 mb-6">
+
+                {/* Voice */}
                 <motion.div
-                  key={step.num}
-                  initial={{ opacity: 0, y: 40 }}
+                  initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-40px" }}
-                  transition={{ duration: 0.7, delay: idx * 0.15, ease: [0.16, 1, 0.3, 1] }}
-                  className="relative text-center"
+                  transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                  className="rounded-2xl sm:rounded-3xl bg-card/50 backdrop-blur-sm border border-border/50 p-6 sm:p-10 hover:shadow-xl hover:border-border transition-all duration-500"
                 >
-                  <div className="relative z-10 w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-foreground text-background flex items-center justify-center mx-auto mb-5 sm:mb-7 text-sm sm:text-lg font-extrabold tracking-tight">
-                    {step.num}
+                  <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-primary/10 flex items-center justify-center mb-5 sm:mb-7">
+                    <Mic className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                   </div>
-                  <h3 className="text-base sm:text-lg font-bold mb-2 sm:mb-3">{step.title}</h3>
-                  <p className="text-muted-foreground leading-relaxed text-xs sm:text-sm max-w-[260px] mx-auto">{step.desc}</p>
+                  <h3 className="text-lg sm:text-2xl font-extrabold mb-2 sm:mb-3 tracking-tight">
+                    Just say it. Done.
+                  </h3>
+                  <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed mb-5 sm:mb-7">
+                    You're at a petrol pump. Hands full. Just paid ₹800. Say{" "}
+                    <span className="font-semibold text-foreground">"₹800 petrol"</span> — Trackora logs it,
+                    categorises it, timestamps it. Before you start the engine.
+                  </p>
+                  {/* Voice UI mockup */}
+                  <div className="rounded-xl bg-muted/20 border border-border/30 p-4 space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <Mic className="h-4 w-4 text-primary" />
+                      </div>
+                      <p className="text-sm text-muted-foreground italic">"₹800 petrol"</p>
+                    </div>
+                    <div className="flex justify-between items-center bg-foreground/5 rounded-lg px-3 py-2.5 border border-border/30">
+                      <div>
+                        <p className="text-[10px] text-muted-foreground mb-0.5">Logged instantly</p>
+                        <p className="text-sm font-semibold">₹800 · Travel · Today</p>
+                      </div>
+                      <span className="text-[10px] font-bold text-foreground border border-border/50 rounded-full px-2.5 py-1">
+                        ✓ Done
+                      </span>
+                    </div>
+                  </div>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {["Works with Indian brands", "Expenses, income & savings", "Confirm before saving"].map(chip => (
+                      <span key={chip} className="text-[10px] font-medium px-2.5 py-1 rounded-full border border-border/50 text-muted-foreground">
+                        {chip}
+                      </span>
+                    ))}
+                  </div>
                 </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </section>
 
-      {/* ═══════ DASHBOARD SHOWCASE ═══════ */}
-      <section className="py-16 sm:py-24 md:py-36 relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-muted/20 via-transparent to-transparent" />
-        <div className="container mx-auto px-4 sm:px-6 relative">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
-            variants={staggerContainer}
-            className="max-w-6xl mx-auto"
-          >
-            <motion.div variants={fadeUp} className="text-center mb-12 sm:mb-20">
-              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-4 sm:mb-6">
-                See Your Expenses Clearly in One Dashboard
-              </h2>
-              <p className="text-muted-foreground text-sm sm:text-base md:text-lg max-w-3xl mx-auto leading-relaxed">
-                Trackora brings all your financial information together in a single dashboard so you can quickly understand your spending and stay organized.
-              </p>
-            </motion.div>
-
-            <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-              {/* Left — Text */}
-              <motion.div variants={slideInLeft}>
-                <h3 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight mb-4 sm:mb-6">
-                  Everything You Need to Track Your Spending
-                </h3>
-                <p className="text-muted-foreground text-xs sm:text-sm md:text-base leading-relaxed mb-6 sm:mb-8">
-                  The Trackora dashboard gives you a clear overview of your daily expenses, spending categories, and financial summaries. Instead of scattered records, everything is organized in one simple and easy-to-understand interface.
-                </p>
-                <ul className="space-y-3 sm:space-y-4">
-                  {[
-                    "View all recorded expenses in one organized list",
-                    "Automatically categorize your spending",
-                    "See summaries that highlight your spending patterns",
-                    "Quickly review recent transactions"
-                  ].map((item, idx) => (
-                    <motion.li
-                      key={idx}
-                      initial={{ opacity: 0, x: -30 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.5, delay: idx * 0.1, ease: [0.16, 1, 0.3, 1] }}
-                      className="flex items-start gap-3"
-                    >
-                      <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-foreground mt-0.5 shrink-0" />
-                      <span className="text-xs sm:text-sm md:text-base text-muted-foreground">{item}</span>
-                    </motion.li>
-                  ))}
-                </ul>
-              </motion.div>
-
-              {/* Right — Dashboard Image */}
-              <motion.div variants={slideInRight}>
-                <div className="rounded-2xl overflow-hidden border border-border/40 shadow-2xl bg-card/50 backdrop-blur-sm">
-                  <img
-                    src={dashboardPreview}
-                    alt="Trackora dashboard showing expense list, spending categories pie chart, and budget summary cards"
-                    className="w-full h-auto"
-                    loading="lazy"
-                  />
-                </div>
-                <p className="text-[11px] sm:text-xs md:text-sm text-muted-foreground text-center mt-4 sm:mt-6 max-w-md mx-auto leading-relaxed font-medium">
-                  A clear dashboard that helps you stay aware of your spending and manage your finances more effectively.
-                </p>
-              </motion.div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ═══════ WHY PEOPLE USE TRACKORA ═══════ */}
-      <section className="py-16 sm:py-24 md:py-36 relative">
-        <div className="container mx-auto px-4 sm:px-6">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
-            variants={staggerContainer}
-            className="max-w-6xl mx-auto"
-          >
-            <motion.div variants={fadeUp} className="text-center mb-12 sm:mb-20">
-              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-4 sm:mb-6">
-                Why People Use Trackora for Expense Tracking
-              </h2>
-              <p className="text-muted-foreground text-sm sm:text-base md:text-lg max-w-3xl mx-auto leading-relaxed">
-                Trackora is designed to simplify personal expense tracking. Instead of complex financial tools, Trackora focuses on making daily expense recording easy and understandable.
-              </p>
-            </motion.div>
-
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
-              {[
-                { icon: Target, title: "Stay Organized", desc: "Keep all your daily expenses in one place so you no longer need to rely on scattered notes or memory to track your spending." },
-                { icon: TrendingUp, title: "Understand Spending Habits", desc: "Trackora helps you see where your money goes by providing clear summaries of your spending patterns." },
-                { icon: Zap, title: "Save Time", desc: "Quickly record expenses using manual entry, receipt scanning, or voice input so tracking expenses takes only a few seconds." },
-                { icon: Sparkles, title: "Improve Financial Awareness", desc: "By consistently recording your expenses, you can better understand your financial behavior and make more informed spending decisions." }
-              ].map((item, idx) => (
+                {/* Smart Import */}
                 <motion.div
-                  key={item.title}
-                  initial={{ opacity: 0, x: idx % 2 === 0 ? -60 : 60, y: 20 }}
-                  whileInView={{ opacity: 1, x: 0, y: 0 }}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-40px" }}
-                  transition={{ duration: 0.7, delay: idx * 0.12, ease: [0.16, 1, 0.3, 1] }}
+                  transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+                  className="rounded-2xl sm:rounded-3xl bg-card/50 backdrop-blur-sm border border-border/50 p-6 sm:p-10 hover:shadow-xl hover:border-border transition-all duration-500"
                 >
-                   <div className="h-full rounded-2xl sm:rounded-3xl bg-card/50 backdrop-blur-sm border border-border/50 p-5 sm:p-8 hover:shadow-xl hover:border-border transition-all duration-500 hover:-translate-y-1">
-                    <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-primary/10 flex items-center justify-center mb-4 sm:mb-6">
-                      <item.icon className="w-4 h-4 sm:w-5 sm:h-5 text-primary" strokeWidth={2} />
+                  <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-primary/10 flex items-center justify-center mb-5 sm:mb-7">
+                    <ScanLine className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+                  </div>
+                  <h3 className="text-lg sm:text-2xl font-extrabold mb-2 sm:mb-3 tracking-tight">
+                    Snap the bill. Skip the math.
+                  </h3>
+                  <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed mb-5 sm:mb-7">
+                    Got a Swiggy bill? A kirana receipt? A fuel slip? Point your camera at it.
+                    Trackora reads the{" "}
+                    <span className="font-semibold text-foreground">amount, merchant, and date</span> — then files it
+                    under the right category automatically.
+                  </p>
+                  {/* Receipt UI mockup */}
+                  <div className="rounded-xl bg-muted/20 border border-border/30 p-4">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="bg-muted/30 rounded-lg h-20 flex flex-col items-center justify-center gap-1 border border-dashed border-border/40">
+                        <ScanLine className="h-4 w-4 text-muted-foreground/40" />
+                        <p className="text-[10px] text-muted-foreground/40">Swiggy_bill.jpg</p>
+                      </div>
+                      <div className="space-y-1.5">
+                        {[
+                          { k: "Amount", v: "₹487" },
+                          { k: "Merchant", v: "Swiggy" },
+                          { k: "Category", v: "Food" },
+                          { k: "Date", v: "29 Apr" },
+                        ].map(row => (
+                          <div key={row.k} className="flex justify-between text-[11px]">
+                            <span className="text-muted-foreground">{row.k}</span>
+                            <span className="font-semibold">{row.v}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    <h3 className="text-sm sm:text-lg font-bold mb-1.5 sm:mb-3">{item.title}</h3>
-                    <p className="text-muted-foreground leading-relaxed text-[11px] sm:text-sm">{item.desc}</p>
+                    <div className="mt-3 text-center text-[11px] font-semibold bg-foreground/5 rounded-lg py-1.5 border border-border/30">
+                      Confirm &amp; save →
+                    </div>
+                  </div>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {["Swiggy · Zomato", "Kirana bills", "Petrol slips"].map(chip => (
+                      <span key={chip} className="text-[10px] font-medium px-2.5 py-1 rounded-full border border-border/50 text-muted-foreground">
+                        {chip}
+                      </span>
+                    ))}
                   </div>
                 </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ═══════ FAQ ═══════ */}
-      <section className="py-16 sm:py-24 md:py-36 relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-muted/20 via-transparent to-transparent" />
-        <div className="container mx-auto px-4 sm:px-6 relative">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
-            variants={staggerContainer}
-            className="max-w-3xl mx-auto"
-          >
-            <motion.div variants={fadeUp} className="text-center mb-12 sm:mb-20">
-              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-4 sm:mb-6">
-                Frequently Asked Questions
-              </h2>
-              <p className="text-muted-foreground text-sm sm:text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
-                Here are answers to some common questions about how Trackora works and how it helps you track your daily expenses.
-              </p>
-            </motion.div>
-
-            <motion.div variants={fadeUp}>
-              <Accordion type="single" collapsible className="space-y-3 sm:space-y-4">
-                {[
-                  { q: "What is Trackora?", a: "Trackora is a simple expense tracking platform that helps individuals record their daily spending and understand where their money goes. It keeps expenses organized in one place so users can easily review their financial activity." },
-                  { q: "How do I add expenses in Trackora?", a: "You can add expenses manually, upload a receipt image, or use voice input to record your spending quickly. Trackora is designed to make expense entry fast and convenient." },
-                  { q: "Can I view summaries of my expenses?", a: "Yes. Trackora provides summaries and simple charts that help you understand your spending habits and review how your expenses change over time." },
-                  { q: "Is Trackora suitable for personal expense tracking?", a: "Yes. Trackora is built specifically for individuals who want a simple and organized way to track daily expenses and improve financial awareness." },
-                  { q: "Do I need financial knowledge to use Trackora?", a: "No. Trackora is designed to be simple and easy to use, even for people who have never used financial tracking tools before." }
-                ].map((faq, idx) => (
-                  <AccordionItem
-                    key={idx}
-                    value={`faq-${idx}`}
-                    className="rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm px-5 sm:px-6 data-[state=open]:shadow-lg transition-all duration-300"
-                  >
-                    <AccordionTrigger className="text-sm sm:text-base font-bold hover:no-underline py-5 sm:py-6">
-                      {faq.q}
-                    </AccordionTrigger>
-                    <AccordionContent className="text-xs sm:text-sm text-muted-foreground leading-relaxed pb-5 sm:pb-6">
-                      {faq.a}
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ═══════ WHAT IS TRACKORA ═══════ */}
-      <section className="py-16 sm:py-24 md:py-36 relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-muted/30 via-transparent to-transparent" />
-        <div className="container mx-auto px-4 sm:px-6 relative">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
-            variants={staggerContainer}
-            className="max-w-5xl mx-auto"
-          >
-            <motion.div variants={fadeUp} className="text-center mb-10 sm:mb-16">
-              <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-foreground/5 border border-border/50 text-xs sm:text-sm font-bold mb-4 sm:mb-5">
-                <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                About Trackora
               </div>
-              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-3 sm:mb-4">
-                What is Trackora?
-              </h2>
             </motion.div>
+          </div>
+        </section>
 
-            <div className="grid md:grid-cols-3 gap-4 sm:gap-6">
-              {[
-                { icon: Globe, title: "Complete Finance Platform", desc: "Trackora is a comprehensive personal finance management platform designed to help individuals and families take complete control of their money. Unlike simple expense trackers that only record transactions, Trackora provides a complete financial ecosystem." },
-                { icon: Users, title: "For Everyone", desc: "Whether you're a college student managing a tight budget, a working professional juggling multiple financial responsibilities, or a family planning for the future, Trackora adapts to your unique financial situation." },
-                { icon: Lightbulb, title: "Powerful Insights", desc: "Instantly see where your money goes each month, identify spending patterns you weren't aware of, receive gentle alerts before subscription renewals, and track your debt payoff journey with visual progress indicators." }
-              ].map((item, idx) => (
-                <motion.div key={item.title} variants={fadeUp} custom={idx}>
-                  <div className="h-full rounded-2xl sm:rounded-3xl bg-card/50 backdrop-blur-sm border border-border/50 p-5 sm:p-8 hover:shadow-xl hover:border-border transition-all duration-500 hover:-translate-y-1">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-foreground/5 flex items-center justify-center mb-4 sm:mb-5">
-                      <item.icon className="w-5 h-5 sm:w-6 sm:h-6 text-foreground" />
-                    </div>
-                    <h3 className="text-base sm:text-lg font-bold mb-2 sm:mb-3">{item.title}</h3>
-                    <p className="text-muted-foreground leading-relaxed text-xs sm:text-sm">{item.desc}</p>
+        {/* ═══════ 4. AUTO-CATEGORISATION ═══════ */}
+        <section className="py-16 sm:py-24 md:py-32 relative">
+          <div className="absolute inset-0 bg-gradient-to-b from-muted/20 via-transparent to-transparent" />
+          <div className="container mx-auto px-4 sm:px-6 relative">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-80px" }}
+              variants={staggerContainer}
+              className="max-w-6xl mx-auto"
+            >
+              <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+
+                {/* Left — copy */}
+                <motion.div variants={slideInLeft}>
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-foreground/5 border border-border/50 text-xs font-bold mb-5 sm:mb-6">
+                    <Sparkles className="h-3.5 w-3.5" />
+                    Built for India
                   </div>
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight mb-4 sm:mb-6 leading-tight">
+                    Say Swiggy.{" "}
+                    <span className="text-muted-foreground/70">We know it's food.</span>
+                  </h2>
+                  <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mb-4 sm:mb-6 font-medium">
+                    No category dropdowns. No manual sorting. Trackora recognises Indian brands
+                    and apps automatically — and assigns the right category before you even tap confirm.
+                  </p>
+                  <p className="text-sm sm:text-base text-muted-foreground leading-relaxed font-medium">
+                    Works whether you log by voice, text, or receipt scan. The moment you say
+                    "Ola" — it's already Travel.
+                  </p>
                 </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </section>
 
-      {/* ═══════ WHY TRACKING MATTERS ═══════ */}
-      <section className="py-16 sm:py-24 md:py-36">
-        <div className="container mx-auto px-4 sm:px-6">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
-            variants={staggerContainer}
-          >
-            <motion.div variants={fadeUp} className="text-center mb-10 sm:mb-16">
-              <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-foreground/5 border border-border/50 text-xs sm:text-sm font-bold mb-4 sm:mb-5">
-                <Lightbulb className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                Financial Education
+                {/* Right — brand grid */}
+                <motion.div variants={slideInRight}>
+                  <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                    {brandMap.map((item, idx) => (
+                      <motion.div
+                        key={item.brand}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.4, delay: idx * 0.05, ease: [0.16, 1, 0.3, 1] }}
+                        className="rounded-xl sm:rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 p-3 sm:p-4 flex flex-col gap-2 hover:border-border hover:shadow-md transition-all duration-300"
+                      >
+                        <span className="text-xs sm:text-sm font-bold">{item.brand}</span>
+                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full w-fit ${categoryColors[item.category] || "bg-foreground/8 text-foreground"}`}>
+                          {item.category}
+                        </span>
+                      </motion.div>
+                    ))}
+                  </div>
+                  <p className="text-[11px] text-muted-foreground text-center mt-4 font-medium">
+                    Recognised automatically — no setup needed
+                  </p>
+                </motion.div>
               </div>
-              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-3 sm:mb-4">
-                Why Tracking Expenses Matters
-              </h2>
-              <p className="text-muted-foreground text-sm sm:text-base md:text-lg max-w-3xl mx-auto">
-                Understanding where your money goes is the foundation of financial wellness
-              </p>
             </motion.div>
+          </div>
+        </section>
 
-            <div className="grid md:grid-cols-2 gap-4 sm:gap-8 max-w-6xl mx-auto">
-              <motion.div variants={slideInLeft}>
-                <div className="h-full rounded-2xl sm:rounded-3xl border border-destructive/20 bg-destructive/5 p-5 sm:p-8 md:p-10">
-                  <div className="flex items-center gap-3 mb-4 sm:mb-6">
-                    <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-destructive/10">
-                      <AlertCircle className="h-5 w-5 sm:h-7 sm:w-7 text-destructive" />
-                    </div>
-                    <h3 className="text-lg sm:text-2xl font-extrabold">The Problem</h3>
-                  </div>
-                  <div className="space-y-3 sm:space-y-5">
-                    <p className="text-muted-foreground leading-relaxed text-xs sm:text-sm md:text-base">
-                      Studies show that most people have no clear idea where their money actually goes. Small daily purchases add up to <strong className="text-foreground">hundreds or even thousands</strong> each month that simply "disappear."
-                    </p>
-                    <p className="text-muted-foreground leading-relaxed text-xs sm:text-sm md:text-base">
-                      Without tracking, the <strong className="text-foreground">gap between perception and reality</strong> prevents people from saving money, paying off debts, and reaching their financial goals.
-                    </p>
-                  </div>
-                </div>
+        {/* ═══════ 5. PROBLEM / SOLUTION ═══════ */}
+        <section className="py-16 sm:py-24 md:py-32">
+          <div className="container mx-auto px-4 sm:px-6">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-80px" }}
+              variants={staggerContainer}
+            >
+              <motion.div variants={fadeUp} className="text-center mb-10 sm:mb-16">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight mb-3 sm:mb-4">
+                  The problem every Indian knows
+                </h2>
+                <p className="text-muted-foreground text-sm sm:text-base md:text-lg max-w-2xl mx-auto">
+                  UPI made paying ₹40 as easy as breathing — and that's the problem.
+                </p>
               </motion.div>
 
-              <motion.div variants={slideInRight}>
-                <div className="h-full rounded-2xl sm:rounded-3xl border border-foreground/20 bg-foreground/5 p-5 sm:p-8 md:p-10">
-                  <div className="flex items-center gap-3 mb-4 sm:mb-6">
-                    <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-foreground/10">
-                      <CheckCircle2 className="h-5 w-5 sm:h-7 sm:w-7 text-foreground" />
+              <div className="grid md:grid-cols-2 gap-4 sm:gap-8 max-w-6xl mx-auto">
+                <motion.div variants={slideInLeft}>
+                  <div className="h-full rounded-2xl sm:rounded-3xl border border-destructive/20 bg-destructive/5 p-5 sm:p-8 md:p-10">
+                    <div className="flex items-center gap-3 mb-4 sm:mb-6">
+                      <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-destructive/10">
+                        <AlertCircle className="h-5 w-5 sm:h-7 sm:w-7 text-destructive" />
+                      </div>
+                      <h3 className="text-lg sm:text-2xl font-extrabold">The problem</h3>
                     </div>
-                    <h3 className="text-lg sm:text-2xl font-extrabold">The Solution</h3>
+                    <div className="space-y-3 sm:space-y-5">
+                      <p className="text-muted-foreground leading-relaxed text-xs sm:text-sm md:text-base">
+                        Salary credited on the 1st. By the 20th, ₹4,000 left and no memory of where the rest went.
+                        It wasn't one big purchase — it was a hundred small ones.
+                      </p>
+                      <p className="text-muted-foreground leading-relaxed text-xs sm:text-sm md:text-base">
+                        A Swiggy order here. A UPI transfer there. A subscription you forgot about.
+                        <strong className="text-foreground"> UPI makes spending invisible.</strong> And you can't fix what you can't see.
+                      </p>
+                    </div>
                   </div>
-                  <div className="space-y-3 sm:space-y-5">
-                    <p className="text-muted-foreground leading-relaxed text-xs sm:text-sm md:text-base">
-                      <strong className="text-foreground">Trackora makes financial awareness effortless.</strong> Quick-add features, intelligent categorization, and beautiful visualizations make tracking a natural habit—taking seconds, not minutes.
-                    </p>
-                    <p className="text-muted-foreground leading-relaxed text-xs sm:text-sm md:text-base">
-                      Research shows that simply becoming aware of spending patterns leads to a natural <strong className="text-foreground">15-20% reduction</strong> in unnecessary expenses.
-                    </p>
+                </motion.div>
+
+                <motion.div variants={slideInRight}>
+                  <div className="h-full rounded-2xl sm:rounded-3xl border border-foreground/20 bg-foreground/5 p-5 sm:p-8 md:p-10">
+                    <div className="flex items-center gap-3 mb-4 sm:mb-6">
+                      <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-foreground/10">
+                        <CheckCircle2 className="h-5 w-5 sm:h-7 sm:w-7 text-foreground" />
+                      </div>
+                      <h3 className="text-lg sm:text-2xl font-extrabold">The solution</h3>
+                    </div>
+                    <div className="space-y-3 sm:space-y-5">
+                      <p className="text-muted-foreground leading-relaxed text-xs sm:text-sm md:text-base">
+                        <strong className="text-foreground">Trackora makes every rupee visible.</strong> Log in seconds.
+                        Review in minutes. Understand in a week.
+                      </p>
+                      <p className="text-muted-foreground leading-relaxed text-xs sm:text-sm md:text-base">
+                        No bank linking. No complicated setup. Just a simple habit of logging what you spend —
+                        and a dashboard that shows you the truth clearly.
+                      </p>
+                      <div className="space-y-2 mt-2">
+                        {[
+                          "Works with cash and UPI both",
+                          "No bank account linking needed",
+                          "See patterns in 7 days of logging",
+                        ].map((item, idx) => (
+                          <div key={idx} className="flex items-center gap-2.5">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-foreground shrink-0" />
+                            <span className="text-xs sm:text-sm text-muted-foreground">{item}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                </div>
+                </motion.div>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* ═══════ 6. FEATURES — 6 CARDS ═══════ */}
+        <section className="py-16 sm:py-24 md:py-32 relative">
+          <div className="absolute inset-0 bg-gradient-to-b from-muted/20 via-transparent to-transparent" />
+          <div className="container mx-auto px-4 sm:px-6 relative">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-80px" }}
+              variants={staggerContainer}
+              className="max-w-6xl mx-auto"
+            >
+              <motion.div variants={fadeUp} className="text-center mb-12 sm:mb-16">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight mb-3 sm:mb-4">
+                  Everything in one place
+                </h2>
+                <p className="text-muted-foreground text-sm sm:text-base md:text-lg max-w-3xl mx-auto leading-relaxed">
+                  Every tool you need to understand and manage your money — free, no bank linking required.
+                </p>
               </motion.div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
 
-      {/* ═══════ FEATURES ═══════ */}
-      <section className="py-16 sm:py-24 md:py-36 relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-muted/20 via-transparent to-transparent" />
-        <div className="container mx-auto px-4 sm:px-6 relative">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
-            variants={fadeUp}
-            className="text-center mb-12 sm:mb-20"
-          >
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-3 sm:mb-4">
-              Complete Financial Management
-            </h2>
-            <p className="text-muted-foreground text-sm sm:text-base md:text-lg max-w-3xl mx-auto">
-              Every tool you need to understand, manage, and grow your finances
-            </p>
-          </motion.div>
-
-          <FeatureBlock icon={Wallet} emoji="💰" title="Smart Expense Tracking" subtitle="Every rupee accounted for—without effort" reverse={false}
-            paragraphs={[
-              { text: <><strong className="text-foreground">Record daily expenses with minimal effort.</strong> Automatically categorize transactions to identify spending habits and reduce unnecessary costs.</> },
-              { text: <>⚡ The quick-add feature lets you log expenses in <strong className="text-foreground">under 5 seconds</strong>—enter the amount, select a category, done.</>, highlight: true },
-            ]}
-            checks={["Quick-add buttons", "Auto-categorization", "Color-coded categories", "Notes & tags", "Date & amount filters", "Easy edit & delete"]}
-          />
-          <FeatureBlock icon={TrendingUp} emoji="📈" title="Income Tracking" subtitle="See the complete picture of your earnings" reverse={true}
-            paragraphs={[
-              { text: <><strong className="text-foreground">Understanding income is just as important as tracking expenses.</strong> Record all sources—salary, freelance, dividends—for a complete cash flow picture.</> },
-              { text: <>📈 For freelancers: identify high/low months and calculate your <strong className="text-foreground">true average monthly income</strong> for better budgeting.</>, highlight: true },
-            ]}
-            checks={["Multiple income sources", "Categorize by type", "Monthly summaries", "Income vs expense view", "Seasonal patterns", "Variable income planning"]}
-          />
-          <FeatureBlock icon={DollarSign} emoji="💳" title="Loans & Debt Tracker" subtitle="Complete debt visibility" reverse={false}
-            paragraphs={[
-              { text: <><strong className="text-foreground">Managing debt shouldn't feel overwhelming.</strong> All your loans in one unified view—personal, student, home, car, and credit card balances.</> },
-              { text: <>🎯 Track principal, interest rate, EMI, and remaining balance. Know exactly <strong className="text-foreground">when you'll be debt-free</strong>.</>, highlight: true },
-            ]}
-            checks={["All loan types in one place", "Interest rate monitoring", "EMI payment reminders", "Debt payoff timelines", "Multiple creditors", "Total debt burden"]}
-          />
-          <FeatureBlock icon={Repeat} emoji="🔄" title="Subscription Management" subtitle="No more surprise charges" reverse={true}
-            paragraphs={[
-              { text: <>⚠️ <strong className="text-foreground">The average person spends thousands monthly</strong> on subscriptions they barely use. Streaming, gym, software—these charges silently drain your account.</>, highlight: true },
-              { text: <>Unified view with costs and renewal dates. Before each renewal: <strong className="text-foreground">"Do you still need this?"</strong></> },
-            ]}
-            checks={["All subscriptions in one view", "Renewal alerts", "Total monthly & yearly costs", "Find unused subscriptions", "Billing cycle tracking", "Payment method tracking"]}
-          />
-          <FeatureBlock icon={Target} emoji="🎯" title="Savings Goals" subtitle="Celebrate every step toward your dreams" reverse={false}
-            paragraphs={[
-              { text: <><strong className="text-foreground">Saving becomes exciting with clear goals.</strong> Create custom goals for anything—emergency fund, vacation, education, or home down payment.</> },
-              { text: <>🏆 Visualizing progress increases goal completion by <strong className="text-foreground">over 40%</strong>. Progress rings make every contribution rewarding.</>, highlight: true },
-            ]}
-            checks={["Unlimited savings goals", "Visual progress rings", "Target amounts & deadlines", "Contribution tracking", "Milestone celebrations", "Priority ordering"]}
-          />
-          <FeatureBlock icon={Calculator} emoji="📊" title="Budget Planning" subtitle="Spend intentionally, not accidentally" reverse={true}
-            paragraphs={[
-              { text: <><strong className="text-foreground">A budget gives every rupee a purpose.</strong> Allocate income across categories, ensuring you spend on what truly matters.</> },
-              { text: <>📋 Set limits per category or an <strong className="text-foreground">overall monthly limit</strong>. Progress bars show how close you are.</>, highlight: true },
-            ]}
-            checks={["Category-wise budgets", "Overall monthly limits", "Visual progress bars", "Gentle alerts", "Historical comparison", "Smart suggestions"]}
-          />
-          <FeatureBlock icon={BarChart3} emoji="📈" title="Analytics & Insights" subtitle="Numbers that help, not stress" reverse={false}
-            paragraphs={[
-              { text: <><strong className="text-foreground">Data becomes powerful when presented clearly.</strong> Beautiful charts reveal patterns you might never notice otherwise.</> },
-              { text: <>💡 Insights like <strong className="text-foreground">"You spent 35% more on dining out this month"</strong> help you spot issues early.</>, highlight: true },
-            ]}
-            checks={["Category breakdowns", "Monthly trend analysis", "Income vs expense charts", "Pattern identification", "Export reports", "Historical access"]}
-            isLast
-          />
-        </div>
-      </section>
-
-      {/* ═══════ WHO USES TRACKORA ═══════ */}
-      <section className="py-16 sm:py-24 md:py-36">
-        <div className="container mx-auto px-4 sm:px-6">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} variants={staggerContainer}>
-            <motion.div variants={fadeUp} className="text-center mb-10 sm:mb-16">
-              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-3 sm:mb-4">
-                Who Uses Trackora?
-              </h2>
-              <p className="text-muted-foreground text-sm sm:text-base md:text-lg max-w-3xl mx-auto">
-                Real people with real financial goals
-              </p>
-            </motion.div>
-
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 max-w-6xl mx-auto">
-              {[
-                { icon: GraduationCap, title: "Students", description: "Managing limited budgets while building financial habits that last a lifetime." },
-                { icon: Briefcase, title: "Professionals", description: "Balancing salary, bonuses, and side income while managing EMIs and subscriptions." },
-                { icon: Home, title: "Families", description: "Managing household budgets, education expenses, and long-term savings." },
-                { icon: Users, title: "Freelancers", description: "Handling variable income and maintaining stability despite irregular payments." },
-                { icon: CreditCard, title: "Debt-Free Seekers", description: "Actively paying down loans and visualizing the payoff journey." },
-                { icon: Target, title: "Goal Setters", description: "Saving for specific targets with visual progress tracking." }
-              ].map((useCase, idx) => (
-                <motion.div key={useCase.title} variants={scaleIn} custom={idx}>
-                  <div className="h-full rounded-xl sm:rounded-3xl bg-card/50 backdrop-blur-sm border border-border/50 p-4 sm:p-7 hover:shadow-xl hover:border-border transition-all duration-500 hover:-translate-y-1">
-                    <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-foreground/5 w-fit mb-3 sm:mb-5">
-                      <useCase.icon className="h-4 w-4 sm:h-6 sm:w-6 text-foreground" />
-                    </div>
-                    <h3 className="text-sm sm:text-xl font-extrabold mb-1 sm:mb-3">{useCase.title}</h3>
-                    <p className="text-muted-foreground leading-relaxed text-[11px] sm:text-sm">{useCase.description}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ═══════ SECURITY ═══════ */}
-      <section className="py-16 sm:py-24 md:py-36 bg-foreground text-background relative overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute top-0 left-1/4 w-[300px] sm:w-[400px] h-[300px] sm:h-[400px] bg-background/5 rounded-full blur-[120px]" />
-          <div className="absolute bottom-0 right-1/4 w-[200px] sm:w-[300px] h-[200px] sm:h-[300px] bg-background/5 rounded-full blur-[100px]" />
-        </div>
-        <div className="container mx-auto px-4 sm:px-6 relative">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} variants={staggerContainer}>
-            <motion.div variants={fadeUp} className="text-center mb-10 sm:mb-16">
-              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-3 sm:mb-4 text-background">
-                Security & Privacy
-              </h2>
-              <p className="text-background/50 text-sm sm:text-base md:text-lg max-w-3xl mx-auto">
-                Your financial data deserves bank-level protection
-              </p>
-            </motion.div>
-
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-10 sm:mb-16">
-              {[
-                { icon: Shield, title: "256-bit Encryption", desc: "Same encryption used by major banks." },
-                { icon: Lock, title: "Privacy First", desc: "We never sell or share your data." },
-                { icon: Globe, title: "GDPR Compliant", desc: "Full international data protection." },
-                { icon: Zap, title: "Secure Sync", desc: "Encrypted access from any device." }
-              ].map((item, idx) => (
-                <motion.div key={item.title} variants={scaleIn} custom={idx}
-                  className="text-center p-4 sm:p-7 rounded-xl sm:rounded-3xl bg-background/5 border border-background/10 hover:bg-background/10 transition-all duration-500"
-                >
-                  <div className="w-10 h-10 sm:w-14 sm:h-14 mx-auto mb-3 sm:mb-5 rounded-xl sm:rounded-2xl bg-background/10 flex items-center justify-center">
-                    <item.icon className="w-5 h-5 sm:w-7 sm:h-7 text-background" />
-                  </div>
-                  <h3 className="text-xs sm:text-lg font-extrabold text-background mb-1 sm:mb-2">{item.title}</h3>
-                  <p className="text-background/50 text-[10px] sm:text-sm leading-relaxed">{item.desc}</p>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ═══════ HOW TO START ═══════ */}
-      <section className="py-16 sm:py-24 md:py-36">
-        <div className="container mx-auto px-4 sm:px-6">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} variants={staggerContainer}>
-            <motion.div variants={fadeUp} className="text-center mb-10 sm:mb-16">
-              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-3 sm:mb-4">
-                How to Get Started
-              </h2>
-              <p className="text-muted-foreground text-sm sm:text-base md:text-lg">
-                Three simple steps to financial clarity
-              </p>
-            </motion.div>
-
-            <div className="max-w-4xl mx-auto">
-              <div className="grid grid-cols-3 gap-3 sm:gap-8 relative">
-                <div className="hidden sm:block absolute top-10 sm:top-12 left-[16.6%] right-[16.6%] h-0.5 bg-gradient-to-r from-foreground/30 via-foreground/10 to-foreground/30" />
-                
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {[
-                  { step: "1", title: "Create Account", desc: "Sign up with just your email. Free forever, no credit card needed." },
-                  { step: "2", title: "Add Data", desc: "Log expenses, income, subscriptions, loans, and savings goals quickly." },
-                  { step: "3", title: "Track & Improve", desc: "View analytics, track progress, and make informed financial decisions." }
+                  {
+                    icon: Wallet,
+                    title: "Expense tracking",
+                    desc: "Log anything in seconds — voice, receipt, or manual. Every expense stays organised by category and date. Edit or delete any time.",
+                  },
+                  {
+                    icon: BarChart3,
+                    title: "Analytics & insights",
+                    desc: "Your money story — income vs expenses over 3, 6, or 12 months. See your savings rate, top spending categories, and smart alerts. No AI, just your real numbers.",
+                  },
+                  {
+                    icon: Wallet,
+                    title: "Budget planning",
+                    desc: "Set a monthly limit and limits per category. Progress bars show how close you are. Get a gentle alert before you cross — not after.",
+                  },
+                  {
+                    icon: PiggyBank,
+                    title: "Savings goals",
+                    desc: "Create a goal, set a target and deadline, track contributions. Progress bars fill as you save. Emergency fund, trip, gadget — whatever matters to you.",
+                  },
+                  {
+                    icon: Repeat,
+                    title: "Subscriptions",
+                    desc: "All your active subscriptions — Netflix, Spotify, Zomato Gold — in one view with monthly cost and renewal dates. Find the ones you forgot about.",
+                  },
+                  {
+                    icon: CreditCard,
+                    title: "Loans & debts",
+                    desc: "Track all your active loans — home, car, personal, credit card. See total outstanding, paid off percentage, and EMI details in one screen.",
+                  },
                 ].map((item, idx) => (
-                  <motion.div key={item.step} variants={fadeUp} custom={idx} className="text-center relative">
-                    <div className="w-16 h-16 sm:w-24 sm:h-24 mx-auto mb-3 sm:mb-6 rounded-2xl sm:rounded-3xl bg-foreground text-background flex items-center justify-center text-xl sm:text-3xl font-extrabold shadow-xl relative z-10">
-                      {item.step}
+                  <motion.div
+                    key={item.title}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-40px" }}
+                    transition={{ duration: 0.6, delay: idx * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                  >
+                    <div className="h-full rounded-2xl sm:rounded-3xl bg-card/50 backdrop-blur-sm border border-border/50 p-5 sm:p-8 hover:shadow-xl hover:border-border transition-all duration-500 hover:-translate-y-1">
+                      <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-primary/10 flex items-center justify-center mb-4 sm:mb-5">
+                        <item.icon className="w-4 h-4 sm:w-5 sm:h-5 text-primary" strokeWidth={2} />
+                      </div>
+                      <h3 className="text-sm sm:text-lg font-bold mb-2 sm:mb-3">{item.title}</h3>
+                      <p className="text-muted-foreground leading-relaxed text-[11px] sm:text-sm">{item.desc}</p>
                     </div>
-                    <h3 className="text-xs sm:text-xl font-extrabold mb-1 sm:mb-3">{item.title}</h3>
-                    <p className="text-muted-foreground text-[10px] sm:text-sm leading-relaxed">{item.desc}</p>
                   </motion.div>
                 ))}
               </div>
-            </div>
-
-            <motion.div variants={fadeUp} className="text-center mt-8 sm:mt-14">
-              <Link to="/how-it-works">
-                <Button variant="outline" size="lg" className="gap-2 rounded-xl sm:rounded-2xl border-2 px-5 sm:px-8 py-4 sm:py-6 text-sm sm:text-base font-bold">
-                  <BookOpen className="h-4 w-4 sm:h-5 sm:w-5" />
-                  Full Step-by-Step Guide
-                </Button>
-              </Link>
             </motion.div>
-          </motion.div>
-        </div>
-      </section>
+          </div>
+        </section>
 
-      {/* ═══════ RESOURCES ═══════ */}
-      <section className="py-16 sm:py-24 md:py-36 relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-muted/20 via-transparent to-transparent" />
-        <div className="container mx-auto px-4 sm:px-6 relative">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} variants={staggerContainer}>
-            <motion.div variants={fadeUp} className="text-center mb-10 sm:mb-16">
-              <div className="inline-flex items-center gap-2 mb-3 sm:mb-4">
-                <GraduationCap className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
-                <span className="text-xs sm:text-sm font-bold">Free Resources</span>
-              </div>
-              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-3 sm:mb-4">
-                Learn & Grow
-              </h2>
-              <p className="text-muted-foreground text-sm sm:text-base md:text-lg max-w-2xl mx-auto">
-                Explore guides and articles to build lasting financial skills.
-              </p>
-            </motion.div>
-
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-              {[
-                { icon: BookOpen, title: "Budgeting Guide", desc: "Master budgets that work for your lifestyle", link: "/budgeting-guide" },
-                { icon: Target, title: "Savings Guide", desc: "Proven strategies for reaching financial goals", link: "/savings-guide" },
-                { icon: CreditCard, title: "Debt Management", desc: "Strategies for paying off debt effectively", link: "/debt-management-guide" },
-                { icon: FileText, title: "Finance Blog", desc: "Tips on personal finance and money management", link: "/blog" }
-              ].map((resource, idx) => (
-                <motion.div key={resource.title} variants={scaleIn} custom={idx}>
-                  <Link to={resource.link}>
-                    <div className="h-full rounded-xl sm:rounded-3xl border border-border/50 bg-card/50 backdrop-blur-sm p-4 sm:p-7 hover:shadow-xl hover:border-foreground/20 transition-all duration-500 hover:-translate-y-1 group cursor-pointer">
-                      <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-foreground/5 w-fit mb-3 sm:mb-5 group-hover:bg-foreground/10 transition-colors">
-                        <resource.icon className="h-4 w-4 sm:h-6 sm:w-6 text-foreground" />
-                      </div>
-                      <h3 className="text-xs sm:text-base font-extrabold mb-1 sm:mb-2 group-hover:text-foreground transition-colors">{resource.title}</h3>
-                      <p className="text-[10px] sm:text-sm text-muted-foreground leading-relaxed">{resource.desc}</p>
-                      <div className="mt-2 sm:mt-4 flex items-center gap-1 text-[10px] sm:text-sm text-foreground font-bold opacity-0 group-hover:opacity-100 transition-opacity">
-                        Read more <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
-                      </div>
-                    </div>
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ═══════ FINAL CTA ═══════ */}
-      <section className="py-16 sm:py-24 md:py-36">
-        <div className="container mx-auto px-4 sm:px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.8, ease: [0.25, 0.4, 0.25, 1] }}
-          >
-            <div className="relative rounded-2xl sm:rounded-[2rem] overflow-hidden border border-border/50 bg-card/50 backdrop-blur-sm">
-              <div className="relative p-6 sm:p-10 md:p-16 text-center">
-                <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-3 sm:mb-5">
-                  Start Tracking Your Expenses Today
+        {/* ═══════ 7. HOW IT WORKS — 3 STEPS ═══════ */}
+        <section className="py-16 sm:py-24 md:py-32">
+          <div className="container mx-auto px-4 sm:px-6">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-80px" }}
+              variants={staggerContainer}
+              className="max-w-6xl mx-auto"
+            >
+              <motion.div variants={fadeUp} className="text-center mb-12 sm:mb-16">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight mb-3 sm:mb-4">
+                  Start in under 60 seconds
                 </h2>
-                <p className="text-sm sm:text-base md:text-lg text-muted-foreground mb-6 sm:mb-10 max-w-2xl mx-auto leading-relaxed">
-                  Take control of your daily spending with Trackora. Record your expenses, stay organized, and understand your financial habits with a simple and easy-to-use expense tracking dashboard.
+                <p className="text-muted-foreground text-sm sm:text-base md:text-lg">
+                  No setup. No bank linking. No credit card.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-                  <Button
-                    onClick={enterAsGuest}
-                    size="lg"
-                    className="text-sm sm:text-lg px-8 sm:px-12 py-5 sm:py-7 rounded-xl sm:rounded-2xl shadow-xl hover:shadow-2xl transition-all group font-extrabold"
-                  >
-                    Get Started Free
-                    <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                  <Link to="/faq">
-                    <Button variant="outline" size="lg" className="text-sm sm:text-lg px-8 sm:px-12 py-5 sm:py-7 rounded-xl sm:rounded-2xl border-2 font-bold w-full sm:w-auto">
-                      View FAQ
-                    </Button>
-                  </Link>
-                </div>
-                <p className="text-sm text-muted-foreground mt-6">
-                  Start tracking your expenses in just a few simple steps.
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+              </motion.div>
 
-      <Footer />
-    </div>
+              <div className="max-w-4xl mx-auto">
+                <div className="grid grid-cols-3 gap-3 sm:gap-8 relative">
+                  <div className="hidden sm:block absolute top-10 sm:top-12 left-[16.6%] right-[16.6%] h-0.5 bg-gradient-to-r from-foreground/30 via-foreground/10 to-foreground/30" />
+
+                  {[
+                    {
+                      step: "1",
+                      title: "Enter free",
+                      desc: "No signup needed to explore. Guest mode is instant — just tap and go.",
+                    },
+                    {
+                      step: "2",
+                      title: "Log expenses",
+                      desc: "Speak it, snap it, or type it. Every entry takes under 5 seconds.",
+                    },
+                    {
+                      step: "3",
+                      title: "See where it goes",
+                      desc: "Dashboard shows spending by category, your safe-to-spend, and trends over time.",
+                    },
+                  ].map((item, idx) => (
+                    <motion.div
+                      key={item.step}
+                      variants={fadeUp}
+                      custom={idx}
+                      className="text-center relative"
+                    >
+                      <div className="w-16 h-16 sm:w-24 sm:h-24 mx-auto mb-3 sm:mb-6 rounded-2xl sm:rounded-3xl bg-foreground text-background flex items-center justify-center text-xl sm:text-3xl font-extrabold shadow-xl relative z-10">
+                        {item.step}
+                      </div>
+                      <h3 className="text-xs sm:text-xl font-extrabold mb-1 sm:mb-3">{item.title}</h3>
+                      <p className="text-muted-foreground text-[10px] sm:text-sm leading-relaxed">{item.desc}</p>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+
+              <motion.div variants={fadeUp} className="text-center mt-10 sm:mt-14">
+                <Button
+                  onClick={enterAsGuest}
+                  size="lg"
+                  className="text-sm sm:text-base px-8 sm:px-12 py-5 sm:py-6 rounded-xl font-extrabold tracking-tight shadow-lg group"
+                >
+                  Try it now — no signup needed
+                  <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-300" />
+                </Button>
+              </motion.div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* ═══════ 8. WHO IT'S FOR ═══════ */}
+        <section className="py-16 sm:py-24 md:py-32 relative">
+          <div className="absolute inset-0 bg-gradient-to-b from-muted/20 via-transparent to-transparent" />
+          <div className="container mx-auto px-4 sm:px-6 relative">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-80px" }}
+              variants={staggerContainer}
+              className="max-w-6xl mx-auto"
+            >
+              <motion.div variants={fadeUp} className="text-center mb-10 sm:mb-16">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight mb-3 sm:mb-4">
+                  Built for how Indians actually spend
+                </h2>
+                <p className="text-muted-foreground text-sm sm:text-base md:text-lg max-w-3xl mx-auto">
+                  Swiggy orders, UPI transfers, EMIs, OTT subscriptions — Trackora understands your real life.
+                </p>
+              </motion.div>
+
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
+                {[
+                  {
+                    icon: GraduationCap,
+                    title: "Students",
+                    description: "Managing pocket money or first salary. No financial background needed — Trackora is simple by design.",
+                  },
+                  {
+                    icon: Briefcase,
+                    title: "Professionals",
+                    description: "EMIs, subscriptions, dining out. You earn well. Trackora shows you exactly where it goes.",
+                  },
+                  {
+                    icon: Home,
+                    title: "Families",
+                    description: "Track household expenses without a spreadsheet war. One place for rent, groceries, school fees, and more.",
+                  },
+                  {
+                    icon: Users,
+                    title: "Freelancers",
+                    description: "Variable income, fixed expenses. Knowing your baseline spend is survival. Trackora shows your real monthly net.",
+                  },
+                  {
+                    icon: CreditCard,
+                    title: "Debt-free seekers",
+                    description: "Find the extra ₹5,000 a month hiding in plain sight. Log everything and watch the loans shrink.",
+                  },
+                  {
+                    icon: Target,
+                    title: "Goal setters",
+                    description: "Saving for something specific? Set a goal, track contributions, and protect it every single month.",
+                  },
+                ].map((useCase, idx) => (
+                  <motion.div key={useCase.title} variants={scaleIn} custom={idx}>
+                    <div className="h-full rounded-xl sm:rounded-3xl bg-card/50 backdrop-blur-sm border border-border/50 p-4 sm:p-7 hover:shadow-xl hover:border-border transition-all duration-500 hover:-translate-y-1">
+                      <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-foreground/5 w-fit mb-3 sm:mb-5">
+                        <useCase.icon className="h-4 w-4 sm:h-6 sm:w-6 text-foreground" />
+                      </div>
+                      <h3 className="text-sm sm:text-xl font-extrabold mb-1 sm:mb-3">{useCase.title}</h3>
+                      <p className="text-muted-foreground leading-relaxed text-[11px] sm:text-sm">{useCase.description}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* ═══════ 9. FOUNDER NOTE ═══════ */}
+        <section className="py-16 sm:py-24 md:py-32">
+          <div className="container mx-auto px-4 sm:px-6">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-80px" }}
+              variants={staggerContainer}
+              className="max-w-4xl mx-auto"
+            >
+              <motion.div variants={fadeUp} className="text-center mb-10 sm:mb-14">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-foreground/5 border border-border/50 text-xs font-bold mb-4">
+                  <Users className="h-3.5 w-3.5" />
+                  The builder
+                </div>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight mb-3">
+                  Built from something I witnessed at home
+                </h2>
+                <p className="text-muted-foreground text-sm sm:text-base max-w-2xl mx-auto">
+                  No investors. No startup. A student from Hyderabad.
+                </p>
+              </motion.div>
+
+              <motion.div
+                variants={fadeUp}
+                className="rounded-2xl sm:rounded-3xl bg-card/50 backdrop-blur-sm border border-border/50 p-6 sm:p-10 grid sm:grid-cols-[auto_1fr] gap-6 sm:gap-10 items-start"
+              >
+                {/* Avatar + name */}
+                <div className="flex sm:flex-col items-center sm:items-center gap-4 sm:gap-3">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-foreground/8 border border-border/50 flex items-center justify-center text-2xl font-bold text-foreground flex-shrink-0">
+                    S
+                  </div>
+                  <div className="sm:text-center">
+                    <p className="text-sm font-bold">Sriyaan</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">Student · Hyderabad, India</p>
+                    <span className="mt-2 inline-block text-[10px] font-medium text-muted-foreground border border-border/40 rounded-full px-2.5 py-0.5">
+                      Builder · Not a startup
+                    </span>
+                  </div>
+                </div>
+
+                {/* Quote + body */}
+                <div>
+                  <div className="rounded-xl bg-foreground/5 border border-border/40 px-4 py-3 mb-5 sm:mb-6">
+                    <p className="text-sm sm:text-base text-foreground font-semibold leading-relaxed">
+                      "UPI is making money invisible" — I didn't just read that. I saw it happen with my own parents.
+                    </p>
+                  </div>
+
+                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-4">
+                    I'm Sriyaan, a student from Hyderabad. I didn't build Trackora because of a lecture on personal finance.
+                    I built it because I watched my parents — hardworking, careful people — repeatedly reach the end of the
+                    month not knowing where the money went.
+                  </p>
+
+                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-4">
+                    It wasn't reckless spending. It was UPI making every ₹80 grocery run and ₹340 Swiggy order
+                    frictionless and forgettable.{" "}
+                    <strong className="text-foreground">So I built something that makes it visible.</strong>
+                  </p>
+
+                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                    If this sounds like your house too, Trackora is for you.
+                  </p>
+
+                  <div className="mt-5 sm:mt-6 pt-4 border-t border-border/30 flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground">— Sriyaan, Hyderabad</span>
+                    <span className="text-[10px] text-muted-foreground/60">Created by Sriyaan Karthikeya</span>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* ═══════ 10. FAQ + FINAL CTA ═══════ */}
+        <section className="py-16 sm:py-24 md:py-32 relative">
+          <div className="absolute inset-0 bg-gradient-to-b from-muted/20 via-transparent to-transparent" />
+          <div className="container mx-auto px-4 sm:px-6 relative">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-80px" }}
+              variants={staggerContainer}
+              className="max-w-3xl mx-auto"
+            >
+              <motion.div variants={fadeUp} className="text-center mb-10 sm:mb-14">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight mb-3 sm:mb-4">
+                  Common questions
+                </h2>
+                <p className="text-muted-foreground text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
+                  Honest answers — no marketing fluff.
+                </p>
+              </motion.div>
+
+              <motion.div variants={fadeUp}>
+                <Accordion type="single" collapsible className="space-y-3 sm:space-y-4 mb-14 sm:mb-20">
+                  {[
+                    {
+                      q: "Is Trackora free?",
+                      a: "Yes. Trackora is completely free to use. No credit card, no trial period, no hidden limits. If that ever changes, existing users will be told well in advance.",
+                    },
+                    {
+                      q: "Do I need to link my bank account?",
+                      a: "No. Trackora never connects to your bank. You log expenses yourself — manually, by voice, or by scanning a receipt. Your banking details stay entirely with you.",
+                    },
+                    {
+                      q: "What if I forget to log some expenses?",
+                      a: "That's completely fine. Approximate it and move on. A slightly imprecise record you maintain for 6 months is far more useful than a perfect one you abandon in week two. Consistency always beats accuracy.",
+                    },
+                    {
+                      q: "Is my data safe?",
+                      a: "Your data is stored securely and never shared, sold, or used for ads. You can delete your account and all associated data at any time from settings.",
+                    },
+                  ].map((faq, idx) => (
+                    <AccordionItem
+                      key={idx}
+                      value={`faq-${idx}`}
+                      className="rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm px-5 sm:px-6 data-[state=open]:shadow-lg transition-all duration-300"
+                    >
+                      <AccordionTrigger className="text-sm sm:text-base font-bold hover:no-underline py-5 sm:py-6">
+                        {faq.q}
+                      </AccordionTrigger>
+                      <AccordionContent className="text-xs sm:text-sm text-muted-foreground leading-relaxed pb-5 sm:pb-6">
+                        {faq.a}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </motion.div>
+
+              {/* Final CTA */}
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.8, ease: [0.25, 0.4, 0.25, 1] }}
+              >
+                <div className="relative rounded-2xl sm:rounded-[2rem] overflow-hidden border border-border/50 bg-card/50 backdrop-blur-sm">
+                  <div className="relative p-6 sm:p-10 md:p-14 text-center">
+                    <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight mb-3 sm:mb-4">
+                      Start knowing where your money goes
+                    </h2>
+                    <p className="text-sm sm:text-base text-muted-foreground mb-6 sm:mb-8 max-w-xl mx-auto leading-relaxed">
+                      No signup needed to explore. No bank linking. No credit card.
+                      Just open it and start logging.
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+                      <Button
+                        onClick={enterAsGuest}
+                        size="lg"
+                        className="text-sm sm:text-lg px-8 sm:px-12 py-5 sm:py-7 rounded-xl sm:rounded-2xl shadow-xl hover:shadow-2xl transition-all group font-extrabold"
+                      >
+                        Start tracking free
+                        <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform" />
+                      </Button>
+                      <Link to="/faq">
+                        <Button
+                          variant="outline"
+                          size="lg"
+                          className="text-sm sm:text-lg px-8 sm:px-12 py-5 sm:py-7 rounded-xl sm:rounded-2xl border-2 font-bold w-full sm:w-auto"
+                        >
+                          Read the FAQ
+                        </Button>
+                      </Link>
+                    </div>
+                    {/* Inline trust signals */}
+                    <div className="flex flex-wrap items-center justify-center gap-4 mt-6 text-xs text-muted-foreground">
+                      {["Free forever", "No bank linking", "Built in Hyderabad, India"].map(pill => (
+                        <span key={pill} className="flex items-center gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-foreground/60" />
+                          {pill}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          </div>
+        </section>
+
+        <Footer />
+      </div>
     </>
   );
 };
-
-/* ——— Reusable Feature Block ——— */
-interface FeatureParagraph { text: React.ReactNode; highlight?: boolean; }
-interface FeatureBlockProps {
-  icon: LucideIcon; emoji: string; title: string; subtitle: string;
-  reverse: boolean; paragraphs: FeatureParagraph[]; checks: string[]; isLast?: boolean;
-}
-
-function FeatureBlock({ icon: Icon, emoji, title, subtitle, reverse, paragraphs, checks, isLast }: FeatureBlockProps) {
-  return (
-    <motion.div
-      initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }} variants={staggerContainer}
-      className={isLast ? "" : "mb-12 sm:mb-20 md:mb-28"}
-    >
-      <div className={`grid md:grid-cols-2 gap-6 sm:gap-10 items-center ${reverse ? "md:grid-flow-dense" : ""}`}>
-        <motion.div variants={reverse ? slideInRight : slideInLeft} className={reverse ? "md:col-start-2" : ""}>
-          <div className="rounded-2xl sm:rounded-3xl bg-card/50 backdrop-blur-sm border border-border/50 p-5 sm:p-8 md:p-10">
-            <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-foreground/5 flex items-center justify-center mb-3 sm:mb-5">
-              <Icon className="w-5 h-5 sm:w-7 sm:h-7 text-foreground" />
-            </div>
-            <h3 className="text-lg sm:text-2xl md:text-3xl font-extrabold mb-1 sm:mb-2">
-              {emoji} {title}
-            </h3>
-            <p className="text-muted-foreground font-bold text-xs sm:text-sm mb-4 sm:mb-6">{subtitle}</p>
-            <div className="space-y-3 sm:space-y-4">
-              {paragraphs.map((p, i) => (
-                p.highlight ? (
-                  <div key={i} className="rounded-xl sm:rounded-2xl bg-foreground/5 p-3 sm:p-5 border border-border/50">
-                    <p className="text-muted-foreground leading-relaxed text-xs sm:text-sm">{p.text}</p>
-                  </div>
-                ) : (
-                  <p key={i} className="text-muted-foreground leading-relaxed text-xs sm:text-sm md:text-base">{p.text}</p>
-                )
-              ))}
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div variants={reverse ? slideInLeft : slideInRight} className={reverse ? "md:col-start-1 md:row-start-1" : ""}>
-          <motion.div variants={staggerContainer} className="grid grid-cols-2 gap-2 sm:gap-4">
-            {checks.map((item, i) => (
-              <motion.div key={i} variants={scaleIn} custom={i}
-                className="flex items-start gap-2 sm:gap-3 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 hover:border-foreground/20 hover:shadow-md transition-all duration-300 group"
-              >
-                <div className="mt-0.5 p-1 sm:p-1.5 rounded-md sm:rounded-lg bg-foreground/5 group-hover:bg-foreground/10 transition-colors flex-shrink-0">
-                  <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-foreground" />
-                </div>
-                <span className="text-[10px] sm:text-sm font-bold">{item}</span>
-              </motion.div>
-            ))}
-          </motion.div>
-        </motion.div>
-      </div>
-    </motion.div>
-  );
-}
 
 export default Welcome;
