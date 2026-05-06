@@ -158,6 +158,27 @@ export function AddSubscriptionDialog({ onSuccess }: AddSubscriptionDialogProps)
             </div>
           </div>
 
+          <div className="flex items-start gap-3 rounded-lg border border-border/50 bg-muted/30 p-3">
+            <div className="h-8 w-8 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <Wallet className="h-4 w-4 text-primary" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between gap-2">
+                <Label htmlFor="count-as-expense" className="text-sm font-semibold cursor-pointer">
+                  Count as expense
+                </Label>
+                <Switch
+                  id="count-as-expense"
+                  checked={countAsExpense}
+                  onCheckedChange={setCountAsExpense}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Deducts from your balance and updates safe-to-spend.
+              </p>
+            </div>
+          </div>
+
           <div className="flex gap-3 pt-2">
             <Button type="button" variant="outline" onClick={() => setOpen(false)} className="flex-1">
               Cancel
