@@ -19,6 +19,7 @@ const billingCycles = ["Monthly", "Yearly"];
 export function AddSubscriptionDialog({ onSuccess }: AddSubscriptionDialogProps) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [countAsExpense, setCountAsExpense] = useState(true);
   const [formData, setFormData] = useState({
     name: "",
     amount: "",
