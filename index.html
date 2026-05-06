@@ -9,8 +9,22 @@
     <meta name="author" content="Trackora" />
     <link rel="canonical" href="https://trackorapp.in" />
     
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <meta name="theme-color" content="#ffffff">
+    <link rel="manifest" href="/site.webmanifest">
+    
+    <script>
+      // Only load favicon when hosted, not in local development
+      (function() {
+        const hostname = window.location.hostname;
+        if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
+          const link = document.createElement('link');
+          link.rel = 'icon';
+          link.type = 'image/x-icon';
+          link.href = '/favicon.ico';
+          document.head.appendChild(link);
+        }
+      })();
+    </script>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -112,8 +126,8 @@
     
     <meta property="og:title" content="Trackora - Smart Expense Tracker &amp; Budget Analytics Platform">
   <meta name="twitter:title" content="Trackora - Smart Expense Tracker &amp; Budget Analytics Platform">
-  <meta property="og:description" content="Take control of your finances with Trackora - the modern expense tracking and budget analytics platform. Track daily spending, manage budgets, monitor subscriptions, set savings goals, and get intelligent insights. Free during beta with bank-level security.">
-  <meta name="twitter:description" content="Take control of your finances with Trackora - the modern expense tracking and budget analytics platform. Track daily spending, manage budgets, monitor subscriptions, set savings goals, and get intelligent insights. Free during beta with bank-level security.">
+  <meta property="og:description" content="Take control of your finances with Trackora - the modern expense tracking and budget analytics platform. Track daily spending, manage budgets, monitor subscriptions, and achieve your financial goals.">
+  <meta name="twitter:description" content="Take control of your finances with Trackora - the modern expense tracking and budget analytics platform. Track daily spending, manage budgets, monitor subscriptions, and achieve your financial goals.">
   <meta property="og:image" content="https://trackorapp.in/og-image.png">
   <meta name="twitter:image" content="https://trackorapp.in/og-image.png">
 </head>
