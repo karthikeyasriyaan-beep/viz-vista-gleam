@@ -53,13 +53,16 @@ export function AddSubscriptionDialog({ onSuccess }: AddSubscriptionDialogProps)
       if (error) throw error;
 
       if (countAsExpense) {
+        const rawAmount = parseFloat(formData.amount);
+        // Yearly subs → divide by 12 for monthly expense
+        const monthlyExpenseAmount = formData.billing_cycle === "Yearly" ? rawAmount / 12 : rawAmount;
         const { error: expError } = await supabase.from("expenses").insert({
           user_id: user.id,
           name: `${formData.name} (Subscription)`,
-          amount: parseFloat(formData.amount),
-          category: "Subscriptions",
-          date: formData.next_billing_date || new Date().toISOString().slice(0, 10),
-          notes: `Auto-added from subscription · ${formData.billing_cycle}`,
+          amount: Number(monthlyExpenseAmount.toFixed(2)),
+          category: "Subscription",
+          date: new Date().toISOString().slice(0, 10),
+          notes: `Auto-added from subscription · ${formData.billing_cycle}${formData.billing_cycle === "Yearly" ? " (monthly portion)" : ""}`,
         });
         if (expError) throw expError;
       }

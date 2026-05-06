@@ -56,8 +56,9 @@ export default function EditSavingsDialog({ saving, open, onOpenChange, onSucces
 
     setLoading(true);
     try {
-      const newAmount = parseFloat(formData.current_amount) + parseFloat(addAmount);
-      
+      const addValue = parseFloat(addAmount);
+      const newAmount = parseFloat(formData.current_amount) + addValue;
+
       const { error } = await supabase
         .from('savings')
         .update({ current_amount: newAmount })
@@ -65,7 +66,19 @@ export default function EditSavingsDialog({ saving, open, onOpenChange, onSucces
 
       if (error) throw error;
 
-      toast.success('Progress added successfully');
+      // Auto-log savings contribution as expense
+      if (saving.user_id) {
+        await supabase.from('expenses').insert({
+          user_id: saving.user_id,
+          name: `${saving.name} (Savings)`,
+          amount: addValue,
+          category: 'Savings',
+          date: new Date().toISOString().slice(0, 10),
+          notes: 'Auto-added from savings contribution',
+        });
+      }
+
+      toast.success('Progress added — counted as expense');
       setFormData({ ...formData, current_amount: newAmount.toString() });
       setAddAmount('');
       setShowProgressUpdate(false);
