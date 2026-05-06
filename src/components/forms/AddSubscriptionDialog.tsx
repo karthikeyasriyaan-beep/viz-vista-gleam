@@ -51,8 +51,27 @@ export function AddSubscriptionDialog({ onSuccess }: AddSubscriptionDialogProps)
         status: "active",
       });
       if (error) throw error;
-      toast({ title: "Subscription added successfully ✓", description: `${formData.name} is now being tracked.` });
+
+      if (countAsExpense) {
+        const { error: expError } = await supabase.from("expenses").insert({
+          user_id: user.id,
+          name: `${formData.name} (Subscription)`,
+          amount: parseFloat(formData.amount),
+          category: "Subscriptions",
+          date: formData.next_billing_date || new Date().toISOString().slice(0, 10),
+          notes: `Auto-added from subscription · ${formData.billing_cycle}`,
+        });
+        if (expError) throw expError;
+      }
+
+      toast({
+        title: "Subscription added successfully ✓",
+        description: countAsExpense
+          ? `${formData.name} is tracked and counted as an expense.`
+          : `${formData.name} is now being tracked.`,
+      });
       setFormData({ name: "", amount: "", billing_cycle: "", next_billing_date: "" });
+      setCountAsExpense(true);
       setOpen(false);
       onSuccess?.();
     } catch (error) {
