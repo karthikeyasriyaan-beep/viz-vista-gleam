@@ -205,7 +205,10 @@ export default function Dashboard() {
                 </p>
               </div>
               <p className="text-xs text-muted-foreground mt-2 font-medium">
-                Based on income · {formatAmount(safeToSpend)} left · {daysLeft} days remaining
+                Based on income · expenses, EMIs, subscriptions &amp; savings included
+              </p>
+              <p className="text-[11px] text-muted-foreground/70 mt-1">
+                {formatAmount(safeToSpend)} left · {daysLeft} days remaining
               </p>
             </div>
 

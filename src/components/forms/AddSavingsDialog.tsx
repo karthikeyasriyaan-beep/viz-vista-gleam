@@ -37,14 +37,27 @@ export function AddSavingsDialog({ onSuccess }: AddSavingsDialogProps) {
     }
     setLoading(true);
     try {
+      const startingAmount = parseFloat(formData.current_amount || "0");
       const { error } = await supabase.from("savings").insert({
         user_id: user.id,
         name: formData.name,
         target_amount: parseFloat(formData.target_amount),
-        current_amount: parseFloat(formData.current_amount || "0"),
+        current_amount: startingAmount,
         deadline: formData.deadline || null,
       });
       if (error) throw error;
+
+      // Auto-log starting amount as a savings expense
+      if (startingAmount > 0) {
+        await supabase.from("expenses").insert({
+          user_id: user.id,
+          name: `${formData.name} (Savings)`,
+          amount: startingAmount,
+          category: "Savings",
+          date: new Date().toISOString().slice(0, 10),
+          notes: "Auto-added from savings goal start",
+        });
+      }
       toast({ title: "Savings goal created successfully 🎯", description: `${formData.name} is ready to track.` });
       setFormData({ name: "", target_amount: "", current_amount: "", deadline: "" });
       setOpen(false);

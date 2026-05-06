@@ -51,6 +51,20 @@ function PartialPaymentDialog({ loan, open, onOpenChange, onSuccess }: { loan: a
       if (newBalance <= 0) updates.status = "paid_off";
       const { error } = await supabase.from("loans").update(updates).eq("id", loan.id);
       if (error) throw error;
+
+      // Auto-log EMI as expense (only for debts you owe, not money owed to you)
+      const isCredit = loan.notes?.includes("Owed to you");
+      if (!isCredit && loan.user_id) {
+        await supabase.from("expenses").insert({
+          user_id: loan.user_id,
+          name: `${loan.name} (EMI Payment)`,
+          amount: payAmount,
+          category: "Loan EMI",
+          date: new Date().toISOString().slice(0, 10),
+          notes: "Auto-added from loan payment",
+        });
+      }
+
       toast.success(`${formatAmount(payAmount)} paid off!`);
       onSuccess(); onOpenChange(false);
     } catch (err: any) { toast.error(err.message || "Failed to update"); }
@@ -107,8 +121,22 @@ export default function Loans() {
 
   const handleSettle = async (loan: any) => {
     if (!confirm(`Mark "${loan.name}" as settled?`)) return;
+    const remaining = Number(loan.current_balance) || 0;
     const { error } = await supabase.from("loans").update({ status: "paid_off", current_balance: 0 }).eq("id", loan.id);
     if (error) { toast.error(error.message); return; }
+
+    // Auto-log remaining balance as expense for debts you owe
+    const isCredit = loan.notes?.includes("Owed to you");
+    if (!isCredit && remaining > 0 && user) {
+      await supabase.from("expenses").insert({
+        user_id: user.id,
+        name: `${loan.name} (Loan Settled)`,
+        amount: remaining,
+        category: "Loan EMI",
+        date: new Date().toISOString().slice(0, 10),
+        notes: "Auto-added from loan settlement",
+      });
+    }
     toast.success(`${loan.name} settled!`); refetchAll();
   };
 
