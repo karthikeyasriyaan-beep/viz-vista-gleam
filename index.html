@@ -13,9 +13,10 @@
     <link rel="manifest" href="/site.webmanifest">
     
     <script>
-      // Only load favicon when hosted, not in local development
+      // Load favicon everywhere EXCEPT localhost
       (function() {
         const hostname = window.location.hostname;
+        // Only hide favicon on local development
         if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
           const link = document.createElement('link');
           link.rel = 'icon';
