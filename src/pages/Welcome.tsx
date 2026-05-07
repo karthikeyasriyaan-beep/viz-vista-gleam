@@ -20,7 +20,7 @@ import { SEOHead } from "@/components/SEOHead";
 import { useRef, useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 
-import dashboardPreview from "../assets/dashboard-preview.png";
+import dashboardPreview from "../assets/welcome-dashboard.png";
 
 /* ——— Animation Variants ——— */
 const fadeUp = {
