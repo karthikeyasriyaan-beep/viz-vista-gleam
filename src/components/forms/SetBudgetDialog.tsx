@@ -104,7 +104,7 @@ export function SetBudgetDialog({ open, onOpenChange, editingBudget }: SetBudget
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
-                      {EXPENSE_CATEGORIES.map((cat) => (
+                      {EXPENSE_CATEGORIES_LIST.map((cat) => (
                         <SelectItem key={cat} value={cat}>
                           {cat}
                         </SelectItem>
