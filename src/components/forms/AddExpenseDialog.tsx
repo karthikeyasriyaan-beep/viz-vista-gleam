@@ -15,16 +15,13 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { addGuestExpense } from "@/lib/guest-storage";
+import { EXPENSE_CATEGORIES } from "@/lib/categories";
 
 interface AddExpenseDialogProps {
   onSuccess?: () => void;
 }
 
-const expenseCategories = [
-  "Groceries", "Rent", "Utilities", "Fuel", "Subscription",
-  "Dining Out", "Shopping", "Medical", "Education", "Travel",
-  "Entertainment", "Transport", "Other",
-];
+const expenseCategories = EXPENSE_CATEGORIES;
 
 export function AddExpenseDialog({ onSuccess }: AddExpenseDialogProps) {
   const [open, setOpen] = useState(false);

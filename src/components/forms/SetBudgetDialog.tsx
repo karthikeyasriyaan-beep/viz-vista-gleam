@@ -11,24 +11,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { EXPENSE_CATEGORIES } from "@/lib/categories";
 
 const budgetSchema = z.object({
   category: z.string().min(1, "Category is required"),
   monthly_limit: z.string().min(1, "Budget limit is required"),
 });
 
-const EXPENSE_CATEGORIES = [
-  "Food & Dining",
-  "Transportation",
-  "Shopping",
-  "Entertainment",
-  "Bills & Utilities",
-  "Healthcare",
-  "Education",
-  "Travel",
-  "Personal Care",
-  "Other"
-];
+const EXPENSE_CATEGORIES_LIST = EXPENSE_CATEGORIES;
 
 interface SetBudgetDialogProps {
   open: boolean;
@@ -114,7 +104,7 @@ export function SetBudgetDialog({ open, onOpenChange, editingBudget }: SetBudget
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
-                      {EXPENSE_CATEGORIES.map((cat) => (
+                      {EXPENSE_CATEGORIES_LIST.map((cat) => (
                         <SelectItem key={cat} value={cat}>
                           {cat}
                         </SelectItem>
