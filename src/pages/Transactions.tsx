@@ -23,40 +23,36 @@ import {
 } from "@/lib/guest-storage";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
+import { detectExpenseCategory, type ExpenseCategory } from "@/lib/categories";
 
-/* ——— Category helpers ——— */
-const CATEGORY_MAP: Record<string, { category: string; icon: typeof Utensils }> = {
-  food: { category: "Food", icon: Utensils }, zomato: { category: "Food", icon: Utensils },
-  swiggy: { category: "Food", icon: Utensils }, restaurant: { category: "Food", icon: Utensils },
-  lunch: { category: "Food", icon: Utensils }, dinner: { category: "Food", icon: Utensils },
-  breakfast: { category: "Food", icon: Utensils }, coffee: { category: "Food", icon: Utensils },
-  snack: { category: "Food", icon: Utensils }, grocery: { category: "Food", icon: Utensils },
-  uber: { category: "Travel", icon: Car }, ola: { category: "Travel", icon: Car },
-  petrol: { category: "Travel", icon: Car }, fuel: { category: "Travel", icon: Car },
-  travel: { category: "Travel", icon: Plane }, flight: { category: "Travel", icon: Plane },
-  train: { category: "Travel", icon: Car }, bus: { category: "Travel", icon: Car },
-  electricity: { category: "Bills", icon: Zap }, bill: { category: "Bills", icon: Zap },
-  wifi: { category: "Bills", icon: Zap }, internet: { category: "Bills", icon: Zap },
-  phone: { category: "Bills", icon: Smartphone }, recharge: { category: "Bills", icon: Smartphone },
-  rent: { category: "Housing", icon: HomeIcon }, housing: { category: "Housing", icon: HomeIcon },
-  shopping: { category: "Shopping", icon: ShoppingBag }, clothes: { category: "Shopping", icon: ShoppingBag },
-  amazon: { category: "Shopping", icon: ShoppingBag }, flipkart: { category: "Shopping", icon: ShoppingBag },
-  salary: { category: "Salary", icon: Briefcase }, freelance: { category: "Freelance", icon: Briefcase },
-  gift: { category: "Gift", icon: Gift }, health: { category: "Health", icon: Heart },
-  medical: { category: "Health", icon: Heart }, medicine: { category: "Health", icon: Heart },
+/* ——— Category icon map (uses unified category names) ——— */
+const CATEGORY_ICON: Record<string, typeof Utensils> = {
+  Food: Utensils,
+  Transport: Car,
+  Housing: HomeIcon,
+  Bills: Zap,
+  Shopping: ShoppingBag,
+  Health: Heart,
+  Entertainment: Sparkles,
+  Education: Briefcase,
+  Savings: Gift,
+  "Loan EMI": Briefcase,
+  Subscription: Smartphone,
+  Other: ArrowRightLeft,
+  // Income-side categories (kept for icon display only)
+  Salary: Briefcase,
+  Freelance: Briefcase,
+  Gift: Gift,
 };
 
-function detectCategory(text: string) {
-  const lower = text.toLowerCase();
-  for (const [kw, val] of Object.entries(CATEGORY_MAP)) { if (lower.includes(kw)) return val; }
-  return { category: "Other", icon: ArrowRightLeft };
+function detectCategory(text: string): { category: string; icon: typeof Utensils } {
+  const cat = detectExpenseCategory(text, "Other" as ExpenseCategory);
+  return { category: cat, icon: CATEGORY_ICON[cat] || ArrowRightLeft };
 }
 
 function getCategoryIcon(category: string | null): typeof Utensils {
   if (!category) return ArrowRightLeft;
-  const lower = category.toLowerCase();
-  for (const [, val] of Object.entries(CATEGORY_MAP)) { if (val.category.toLowerCase() === lower) return val.icon; }
-  return ArrowRightLeft;
+  return CATEGORY_ICON[category] || ArrowRightLeft;
 }
 
 /* ——— Smart input parser ——— */
