@@ -241,7 +241,7 @@ export default function Dashboard() {
                 </p>
               </div>
               <p className="text-xs text-muted-foreground mt-2 font-medium">
-                Based on income · expenses, EMIs, subscriptions &amp; savings included
+                Freely available after budgets, EMIs, subscriptions and savings
               </p>
               <p className="text-[11px] text-muted-foreground/70 mt-1">
                 {formatAmount(safeToSpend)} left · {daysLeft} days remaining
@@ -252,6 +252,33 @@ export default function Dashboard() {
             <div className="flex gap-3 flex-shrink-0 flex-wrap">
               <VoiceInput variant="inline" label="Voice Input" onSuccess={refetchAll} />
               <AddExpenseDialog onSuccess={refetchAll} />
+            </div>
+          </motion.div>
+
+          {/* ——— Envelope Breakdown ——— */}
+          <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06, ease }}
+            className="rounded-2xl bg-card border border-border/40 px-5 py-5">
+            <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-medium mb-4">This month's money</p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="px-3 py-3 rounded-xl bg-muted/20 border border-border/30">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium mb-1">Income</p>
+                <p className="text-base font-bold text-success">{formatAmount(totalIncome)}</p>
+              </div>
+              <div className="px-3 py-3 rounded-xl bg-muted/20 border border-border/30">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium mb-1">Budgeted</p>
+                <p className="text-base font-bold text-primary">{formatAmount(totalBudgeted)}</p>
+                <p className="text-[10px] text-muted-foreground/70 mt-0.5">reserved</p>
+              </div>
+              <div className="px-3 py-3 rounded-xl bg-muted/20 border border-border/30">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium mb-1">Spent</p>
+                <p className="text-base font-bold text-destructive">{formatAmount(totalExpenses)}</p>
+                <p className="text-[10px] text-muted-foreground/70 mt-0.5">so far</p>
+              </div>
+              <div className="px-3 py-3 rounded-xl bg-muted/20 border border-border/30">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium mb-1">Free</p>
+                <p className={`text-base font-bold ${safeToSpend > 0 ? "text-success" : "text-destructive"}`}>{formatAmount(safeToSpend)}</p>
+                <p className="text-[10px] text-muted-foreground/70 mt-0.5">unbudgeted</p>
+              </div>
             </div>
           </motion.div>
 
