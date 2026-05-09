@@ -57,27 +57,10 @@ const MULTIPLIERS: Record<string, number> = {
 };
 
 /* Categorisation keyword map */
-const CATEGORY_KEYWORDS: Record<string, string> = {
-  food: "Food", grocery: "Food", lunch: "Food", dinner: "Food",
-  breakfast: "Food", coffee: "Food", restaurant: "Food", snack: "Food",
-  zomato: "Food", swiggy: "Food",
-  travel: "Travel", uber: "Travel", ola: "Travel", petrol: "Travel",
-  fuel: "Travel", flight: "Travel", train: "Travel", bus: "Travel",
-  rent: "Housing", housing: "Housing",
-  electricity: "Bills", bill: "Bills", wifi: "Bills", internet: "Bills",
-  phone: "Bills", recharge: "Bills",
-  shopping: "Shopping", clothes: "Shopping", amazon: "Shopping", flipkart: "Shopping",
-  health: "Health", medical: "Health", medicine: "Health", doctor: "Health",
-  gift: "Gift", entertainment: "Entertainment", movie: "Entertainment",
-  salary: "Salary", freelance: "Freelance", bonus: "Salary",
-};
+import { detectExpenseCategory } from "@/lib/categories";
 
 function detectCategory(text: string, fallback: string): string {
-  const lower = text.toLowerCase();
-  for (const [kw, cat] of Object.entries(CATEGORY_KEYWORDS)) {
-    if (lower.includes(kw)) return cat;
-  }
-  return fallback;
+  return detectExpenseCategory(text, (fallback as any) || "Other");
 }
 
 /* Extract a numeric amount from spoken text (English digits + basic Hindi) */
