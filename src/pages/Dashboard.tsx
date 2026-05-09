@@ -145,12 +145,29 @@ export default function Dashboard() {
     enabled: !!user && !isGuest,
   });
 
+  const { data: categoryBudgets = [] } = useQuery({
+    queryKey: ["budgets", user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const now = new Date();
+      const { data } = await supabase
+        .from("budgets")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("month", now.getMonth() + 1)
+        .eq("year", now.getFullYear());
+      return data || [];
+    },
+    enabled: !!user && !isGuest,
+  });
+
   const refetchAll = () => {
     if (isGuest) { refreshGuestData(); return; }
     queryClient.invalidateQueries({ queryKey: ["income", user?.id] });
     queryClient.invalidateQueries({ queryKey: ["expenses", user?.id] });
     queryClient.invalidateQueries({ queryKey: ["loans", user?.id] });
     queryClient.invalidateQueries({ queryKey: ["monthly_budgets", user?.id] });
+    queryClient.invalidateQueries({ queryKey: ["budgets", user?.id] });
   };
 
   const displayedExpenses = isGuest ? guestExpenses : (expenses as any[]);
