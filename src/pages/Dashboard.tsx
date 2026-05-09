@@ -183,9 +183,28 @@ export default function Dashboard() {
   const totalExpenses = monthExpenses.reduce((s: number, e: any) => s + Number(e.amount), 0);
   const totalIncome = monthIncome.reduce((s: number, i: any) => s + Number(i.amount), 0);
 
+  // ——— Envelope budgeting ———
+  // Spend per category this month
+  const spendByCategory = monthExpenses.reduce((acc: Record<string, number>, e: any) => {
+    const c = e.category || "Other";
+    acc[c] = (acc[c] || 0) + Number(e.amount);
+    return acc;
+  }, {});
+  const budgetedCategories = new Set((categoryBudgets as any[]).map((b) => b.category));
+  const totalBudgeted = (categoryBudgets as any[]).reduce((s, b) => s + Number(b.monthly_limit || 0), 0);
+  // Reserved deduction: max(limit, spent_in_cat) — reservation holds, overspend extends it
+  const totalReservedDeduction = (categoryBudgets as any[]).reduce(
+    (s, b) => s + Math.max(Number(b.monthly_limit || 0), spendByCategory[b.category] || 0),
+    0
+  );
+  // Unbudgeted spend (categories without a budget) hits safe-to-spend directly
+  const unbudgetedSpend = Object.entries(spendByCategory)
+    .filter(([cat]) => !budgetedCategories.has(cat))
+    .reduce((s, [, amt]) => s + (amt as number), 0);
+
   const budgetLimit = monthlyBudget?.total_limit || 0;
-  // Dashboard's safe-to-spend is always income-based (budget-based version lives on Budget page)
-  const safeToSpend = Math.max(totalIncome - totalExpenses, 0);
+  // Freely available (envelope safe-to-spend)
+  const safeToSpend = Math.max(totalIncome - totalReservedDeduction - unbudgetedSpend, 0);
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const dayOfMonth = now.getDate();
   const daysLeft = daysInMonth - dayOfMonth;
