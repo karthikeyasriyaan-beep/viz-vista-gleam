@@ -145,12 +145,29 @@ export default function Dashboard() {
     enabled: !!user && !isGuest,
   });
 
+  const { data: categoryBudgets = [] } = useQuery({
+    queryKey: ["budgets", user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const now = new Date();
+      const { data } = await supabase
+        .from("budgets")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("month", now.getMonth() + 1)
+        .eq("year", now.getFullYear());
+      return data || [];
+    },
+    enabled: !!user && !isGuest,
+  });
+
   const refetchAll = () => {
     if (isGuest) { refreshGuestData(); return; }
     queryClient.invalidateQueries({ queryKey: ["income", user?.id] });
     queryClient.invalidateQueries({ queryKey: ["expenses", user?.id] });
     queryClient.invalidateQueries({ queryKey: ["loans", user?.id] });
     queryClient.invalidateQueries({ queryKey: ["monthly_budgets", user?.id] });
+    queryClient.invalidateQueries({ queryKey: ["budgets", user?.id] });
   };
 
   const displayedExpenses = isGuest ? guestExpenses : (expenses as any[]);
@@ -166,9 +183,28 @@ export default function Dashboard() {
   const totalExpenses = monthExpenses.reduce((s: number, e: any) => s + Number(e.amount), 0);
   const totalIncome = monthIncome.reduce((s: number, i: any) => s + Number(i.amount), 0);
 
+  // ——— Envelope budgeting ———
+  // Spend per category this month
+  const spendByCategory = monthExpenses.reduce((acc: Record<string, number>, e: any) => {
+    const c = e.category || "Other";
+    acc[c] = (acc[c] || 0) + Number(e.amount);
+    return acc;
+  }, {});
+  const budgetedCategories = new Set((categoryBudgets as any[]).map((b) => b.category));
+  const totalBudgeted = (categoryBudgets as any[]).reduce((s, b) => s + Number(b.monthly_limit || 0), 0);
+  // Reserved deduction: max(limit, spent_in_cat) — reservation holds, overspend extends it
+  const totalReservedDeduction = (categoryBudgets as any[]).reduce(
+    (s, b) => s + Math.max(Number(b.monthly_limit || 0), spendByCategory[b.category] || 0),
+    0
+  );
+  // Unbudgeted spend (categories without a budget) hits safe-to-spend directly
+  const unbudgetedSpend = Object.entries(spendByCategory)
+    .filter(([cat]) => !budgetedCategories.has(cat))
+    .reduce((s, [, amt]) => s + (amt as number), 0);
+
   const budgetLimit = monthlyBudget?.total_limit || 0;
-  // Dashboard's safe-to-spend is always income-based (budget-based version lives on Budget page)
-  const safeToSpend = Math.max(totalIncome - totalExpenses, 0);
+  // Freely available (envelope safe-to-spend)
+  const safeToSpend = Math.max(totalIncome - totalReservedDeduction - unbudgetedSpend, 0);
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const dayOfMonth = now.getDate();
   const daysLeft = daysInMonth - dayOfMonth;
@@ -205,7 +241,7 @@ export default function Dashboard() {
                 </p>
               </div>
               <p className="text-xs text-muted-foreground mt-2 font-medium">
-                Based on income · expenses, EMIs, subscriptions &amp; savings included
+                Freely available after budgets, EMIs, subscriptions and savings
               </p>
               <p className="text-[11px] text-muted-foreground/70 mt-1">
                 {formatAmount(safeToSpend)} left · {daysLeft} days remaining
@@ -216,6 +252,33 @@ export default function Dashboard() {
             <div className="flex gap-3 flex-shrink-0 flex-wrap">
               <VoiceInput variant="inline" label="Voice Input" onSuccess={refetchAll} />
               <AddExpenseDialog onSuccess={refetchAll} />
+            </div>
+          </motion.div>
+
+          {/* ——— Envelope Breakdown ——— */}
+          <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06, ease }}
+            className="rounded-2xl bg-card border border-border/40 px-5 py-5">
+            <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-medium mb-4">This month's money</p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="px-3 py-3 rounded-xl bg-muted/20 border border-border/30">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium mb-1">Income</p>
+                <p className="text-base font-bold text-success">{formatAmount(totalIncome)}</p>
+              </div>
+              <div className="px-3 py-3 rounded-xl bg-muted/20 border border-border/30">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium mb-1">Budgeted</p>
+                <p className="text-base font-bold text-primary">{formatAmount(totalBudgeted)}</p>
+                <p className="text-[10px] text-muted-foreground/70 mt-0.5">reserved</p>
+              </div>
+              <div className="px-3 py-3 rounded-xl bg-muted/20 border border-border/30">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium mb-1">Spent</p>
+                <p className="text-base font-bold text-destructive">{formatAmount(totalExpenses)}</p>
+                <p className="text-[10px] text-muted-foreground/70 mt-0.5">so far</p>
+              </div>
+              <div className="px-3 py-3 rounded-xl bg-muted/20 border border-border/30">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium mb-1">Free</p>
+                <p className={`text-base font-bold ${safeToSpend > 0 ? "text-success" : "text-destructive"}`}>{formatAmount(safeToSpend)}</p>
+                <p className="text-[10px] text-muted-foreground/70 mt-0.5">unbudgeted</p>
+              </div>
             </div>
           </motion.div>
 

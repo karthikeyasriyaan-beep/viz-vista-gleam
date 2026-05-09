@@ -220,18 +220,28 @@ export default function Budget() {
                       className="rounded-xl bg-card border border-border/40 hover:border-border/60 hover:shadow-md transition-all duration-200 cursor-pointer overflow-hidden"
                     >
                       <div className="px-4 py-4">
-                        <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center justify-between mb-3">
                           <p className="text-sm font-semibold">{budget.category}</p>
                           <div className="flex items-center gap-1.5">
                             {progress >= 80 && <AlertCircle className={`h-3.5 w-3.5 ${progress >= 100 ? "text-destructive" : "text-warning"}`} />}
                             <ChevronDown className={`h-3.5 w-3.5 text-muted-foreground transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} />
                           </div>
                         </div>
-                        <Progress value={Math.min(progress, 100)} className="h-1.5" indicatorClassName={getProgressColor(progress)} />
-                        <div className="flex justify-between mt-1.5 text-[11px] text-muted-foreground">
-                          <span>{formatAmount(spent)}</span>
-                          <span>{formatAmount(limit)}</span>
+                        <div className="grid grid-cols-3 gap-2 mb-3">
+                          <div className="text-center">
+                            <p className="text-[9px] text-muted-foreground uppercase tracking-wider font-medium">Reserved</p>
+                            <p className="text-sm font-bold text-primary">{formatAmount(limit)}</p>
+                          </div>
+                          <div className="text-center">
+                            <p className="text-[9px] text-muted-foreground uppercase tracking-wider font-medium">Spent</p>
+                            <p className="text-sm font-bold text-destructive">{formatAmount(spent)}</p>
+                          </div>
+                          <div className="text-center">
+                            <p className="text-[9px] text-muted-foreground uppercase tracking-wider font-medium">Left</p>
+                            <p className={`text-sm font-bold ${limit - spent < 0 ? "text-destructive" : "text-success"}`}>{formatAmount(limit - spent)}</p>
+                          </div>
                         </div>
+                        <Progress value={Math.min(progress, 100)} className="h-1.5" indicatorClassName={getProgressColor(progress)} />
                       </div>
 
                       <AnimatePresence>
