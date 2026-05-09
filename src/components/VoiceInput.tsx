@@ -58,8 +58,6 @@ const MULTIPLIERS: Record<string, number> = {
 };
 
 /* Categorisation keyword map */
-import { detectExpenseCategory } from "@/lib/categories";
-
 function detectCategory(text: string, fallback: string): string {
   return detectExpenseCategory(text, (fallback as any) || "Other");
 }
