@@ -104,7 +104,7 @@ export default function Budget() {
             <p className="text-xs text-muted-foreground mt-0.5">Control spending with gentle guidance</p>
           </motion.div>
 
-          {/* Top Grid: Safe to Spend + Monthly Budget side by side */}
+          {/* Top Grid: Safe to Spend + Category Totals side by side */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Safe to Spend */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.06, ease }}
@@ -117,25 +117,22 @@ export default function Budget() {
                 </p>
               </div>
               <p className="text-xs text-muted-foreground mt-3 font-medium">
-                Based on your budget · {daysLeft} days left
+                Based on your category budgets · {daysLeft} days left
               </p>
             </motion.div>
 
-            {/* Monthly Budget */}
+            {/* Category Budgets Total */}
             <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1, ease }}
               className="rounded-2xl bg-card border border-border/40 overflow-hidden">
               <div className="px-5 py-5">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
                     <DollarSign className="h-4 w-4 text-primary" />
-                    <p className="text-sm font-bold">Monthly Budget</p>
+                    <p className="text-sm font-bold">Total Reserved (Categories)</p>
                   </div>
-                  <Button variant="ghost" size="sm" onClick={() => setSetMonthlyOpen(true)} className="h-8 px-3 text-xs font-bold rounded-lg gap-1.5">
-                    <Edit className="h-3.5 w-3.5" /> {monthlyBudget ? "Edit" : "Set"}
-                  </Button>
                 </div>
 
-                {monthlyBudget ? (
+                {totalBudgetLimit > 0 ? (
                   <div className="space-y-4">
                     <div className="flex gap-3">
                       <div className="flex-1 px-4 py-3 rounded-xl bg-muted/20 border border-border/30 text-center">
@@ -154,19 +151,19 @@ export default function Budget() {
                     <div className="space-y-1.5">
                       <div className="flex justify-between text-xs text-muted-foreground">
                         <span>{Math.min(budgetProgress, 100).toFixed(0)}% used</span>
-                        <span>{formatAmount(totalBudgetLimit)} limit</span>
+                        <span>{formatAmount(totalBudgetLimit)} reserved</span>
                       </div>
                       <Progress value={Math.min(budgetProgress, 100)} className="h-2.5" indicatorClassName={getProgressColor(budgetProgress)} />
                       <p className="text-[11px] text-center text-muted-foreground mt-1">
-                        {budgetProgress >= 100 ? "Budget limit reached" : budgetProgress >= 80 ? "Getting close — spend wisely" : "You're doing great this month!"}
+                        {budgetProgress >= 100 ? "Reserved limit reached" : budgetProgress >= 80 ? "Getting close — spend wisely" : "You're doing great this month!"}
                       </p>
                     </div>
                   </div>
                 ) : (
                   <div className="text-center py-6 text-muted-foreground">
-                    <p className="text-sm mb-3">No monthly budget set yet</p>
-                    <Button onClick={() => setSetMonthlyOpen(true)} className="rounded-xl h-10 px-5">
-                      <Plus className="h-4 w-4 mr-2" /> Set Monthly Budget
+                    <p className="text-sm mb-3">No category budgets yet</p>
+                    <Button onClick={() => { setEditingBudget(null); setSetBudgetOpen(true); }} className="rounded-xl h-10 px-5">
+                      <Plus className="h-4 w-4 mr-2" /> Add Category Budget
                     </Button>
                   </div>
                 )}
