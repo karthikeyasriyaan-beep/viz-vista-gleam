@@ -38,7 +38,6 @@ export default function Budget() {
   const { user } = useAuth();
   const { formatAmount } = useCurrency();
   const [setBudgetOpen, setSetBudgetOpen] = useState(false);
-  const [setMonthlyOpen, setSetMonthlyOpen] = useState(false);
   const [editingBudget, setEditingBudget] = useState<any>(null);
   const [expandedCat, setExpandedCat] = useState<string | null>(null);
 
@@ -54,12 +53,6 @@ export default function Budget() {
     enabled: !!user,
   });
 
-  const { data: monthlyBudgets = [] } = useQuery({
-    queryKey: ["monthly_budgets", user?.id, currentMonth, currentYear],
-    queryFn: async () => { if (!user) return []; const { data } = await supabase.from("monthly_budgets").select("*").eq("user_id", user.id).eq("month", currentMonth).eq("year", currentYear); return data || []; },
-    enabled: !!user,
-  });
-
   const { data: expenses = [] } = useQuery({
     queryKey: ["expenses", user?.id],
     queryFn: async () => {
@@ -72,22 +65,21 @@ export default function Budget() {
     enabled: !!user,
   });
 
-  const monthlyBudget = monthlyBudgets[0];
-  const totalSpending = expenses.reduce((sum, exp) => sum + exp.amount, 0);
-  const totalBudgetLimit = monthlyBudget?.total_limit || 0;
+  const totalSpending = expenses.reduce((sum, exp) => sum + Number(exp.amount), 0);
+  const totalBudgetLimit = budgets.reduce((sum: number, b: any) => sum + Number(b.monthly_limit || 0), 0);
   const remainingBudget = totalBudgetLimit - totalSpending;
   const budgetProgress = totalBudgetLimit > 0 ? (totalSpending / totalBudgetLimit) * 100 : 0;
   const dailySafe = daysLeft > 0 && remainingBudget > 0 ? remainingBudget / daysLeft : 0;
 
   const categorySpending = expenses.reduce((acc: Record<string, number>, exp) => {
     const cat = exp.category || "Uncategorized";
-    acc[cat] = (acc[cat] || 0) + exp.amount;
+    acc[cat] = (acc[cat] || 0) + Number(exp.amount);
     return acc;
   }, {});
 
   const insight = useMemo(() => {
-    if (totalBudgetLimit === 0) return "Set a budget to get daily spending guidance";
-    if (budgetProgress >= 100) return "You've exceeded your budget this month";
+    if (totalBudgetLimit === 0) return "Add a category budget to get daily spending guidance";
+    if (budgetProgress >= 100) return "You've exceeded your category budgets this month";
     if (budgetProgress >= 80) return "You're close to your budget limit — spend wisely";
     const topCat = Object.entries(categorySpending).sort((a, b) => b[1] - a[1])[0];
     if (topCat) return `Most spending on ${topCat[0]} (${formatAmount(topCat[1])})`;
