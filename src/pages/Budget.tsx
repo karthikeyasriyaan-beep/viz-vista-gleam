@@ -259,7 +259,7 @@ export default function Budget() {
       </div>
 
       <SetBudgetDialog open={setBudgetOpen} onOpenChange={setSetBudgetOpen} editingBudget={editingBudget} />
-      <SetMonthlyBudgetDialog open={setMonthlyOpen} onOpenChange={setSetMonthlyOpen} existingBudget={monthlyBudget} />
+      
     </>
   );
 }
