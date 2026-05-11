@@ -9,7 +9,6 @@ import { DollarSign, AlertCircle, Plus, Edit, ChevronDown, Sparkles } from "luci
 import { NoIndexMeta } from "@/components/NoIndexMeta";
 import { useState, useMemo, useRef, useEffect } from "react";
 import { SetBudgetDialog } from "@/components/forms/SetBudgetDialog";
-import { SetMonthlyBudgetDialog } from "@/components/forms/SetMonthlyBudgetDialog";
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
@@ -39,7 +38,6 @@ export default function Budget() {
   const { user } = useAuth();
   const { formatAmount } = useCurrency();
   const [setBudgetOpen, setSetBudgetOpen] = useState(false);
-  const [setMonthlyOpen, setSetMonthlyOpen] = useState(false);
   const [editingBudget, setEditingBudget] = useState<any>(null);
   const [expandedCat, setExpandedCat] = useState<string | null>(null);
 
@@ -55,12 +53,6 @@ export default function Budget() {
     enabled: !!user,
   });
 
-  const { data: monthlyBudgets = [] } = useQuery({
-    queryKey: ["monthly_budgets", user?.id, currentMonth, currentYear],
-    queryFn: async () => { if (!user) return []; const { data } = await supabase.from("monthly_budgets").select("*").eq("user_id", user.id).eq("month", currentMonth).eq("year", currentYear); return data || []; },
-    enabled: !!user,
-  });
-
   const { data: expenses = [] } = useQuery({
     queryKey: ["expenses", user?.id],
     queryFn: async () => {
@@ -73,22 +65,21 @@ export default function Budget() {
     enabled: !!user,
   });
 
-  const monthlyBudget = monthlyBudgets[0];
-  const totalSpending = expenses.reduce((sum, exp) => sum + exp.amount, 0);
-  const totalBudgetLimit = monthlyBudget?.total_limit || 0;
+  const totalSpending = expenses.reduce((sum, exp) => sum + Number(exp.amount), 0);
+  const totalBudgetLimit = budgets.reduce((sum: number, b: any) => sum + Number(b.monthly_limit || 0), 0);
   const remainingBudget = totalBudgetLimit - totalSpending;
   const budgetProgress = totalBudgetLimit > 0 ? (totalSpending / totalBudgetLimit) * 100 : 0;
   const dailySafe = daysLeft > 0 && remainingBudget > 0 ? remainingBudget / daysLeft : 0;
 
   const categorySpending = expenses.reduce((acc: Record<string, number>, exp) => {
     const cat = exp.category || "Uncategorized";
-    acc[cat] = (acc[cat] || 0) + exp.amount;
+    acc[cat] = (acc[cat] || 0) + Number(exp.amount);
     return acc;
   }, {});
 
   const insight = useMemo(() => {
-    if (totalBudgetLimit === 0) return "Set a budget to get daily spending guidance";
-    if (budgetProgress >= 100) return "You've exceeded your budget this month";
+    if (totalBudgetLimit === 0) return "Add a category budget to get daily spending guidance";
+    if (budgetProgress >= 100) return "You've exceeded your category budgets this month";
     if (budgetProgress >= 80) return "You're close to your budget limit — spend wisely";
     const topCat = Object.entries(categorySpending).sort((a, b) => b[1] - a[1])[0];
     if (topCat) return `Most spending on ${topCat[0]} (${formatAmount(topCat[1])})`;
@@ -113,7 +104,7 @@ export default function Budget() {
             <p className="text-xs text-muted-foreground mt-0.5">Control spending with gentle guidance</p>
           </motion.div>
 
-          {/* Top Grid: Safe to Spend + Monthly Budget side by side */}
+          {/* Top Grid: Safe to Spend + Category Totals side by side */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Safe to Spend */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.06, ease }}
@@ -126,25 +117,22 @@ export default function Budget() {
                 </p>
               </div>
               <p className="text-xs text-muted-foreground mt-3 font-medium">
-                Based on your budget · {daysLeft} days left
+                Based on your category budgets · {daysLeft} days left
               </p>
             </motion.div>
 
-            {/* Monthly Budget */}
+            {/* Category Budgets Total */}
             <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1, ease }}
               className="rounded-2xl bg-card border border-border/40 overflow-hidden">
               <div className="px-5 py-5">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
                     <DollarSign className="h-4 w-4 text-primary" />
-                    <p className="text-sm font-bold">Monthly Budget</p>
+                    <p className="text-sm font-bold">Total Reserved (Categories)</p>
                   </div>
-                  <Button variant="ghost" size="sm" onClick={() => setSetMonthlyOpen(true)} className="h-8 px-3 text-xs font-bold rounded-lg gap-1.5">
-                    <Edit className="h-3.5 w-3.5" /> {monthlyBudget ? "Edit" : "Set"}
-                  </Button>
                 </div>
 
-                {monthlyBudget ? (
+                {totalBudgetLimit > 0 ? (
                   <div className="space-y-4">
                     <div className="flex gap-3">
                       <div className="flex-1 px-4 py-3 rounded-xl bg-muted/20 border border-border/30 text-center">
@@ -163,19 +151,19 @@ export default function Budget() {
                     <div className="space-y-1.5">
                       <div className="flex justify-between text-xs text-muted-foreground">
                         <span>{Math.min(budgetProgress, 100).toFixed(0)}% used</span>
-                        <span>{formatAmount(totalBudgetLimit)} limit</span>
+                        <span>{formatAmount(totalBudgetLimit)} reserved</span>
                       </div>
                       <Progress value={Math.min(budgetProgress, 100)} className="h-2.5" indicatorClassName={getProgressColor(budgetProgress)} />
                       <p className="text-[11px] text-center text-muted-foreground mt-1">
-                        {budgetProgress >= 100 ? "Budget limit reached" : budgetProgress >= 80 ? "Getting close — spend wisely" : "You're doing great this month!"}
+                        {budgetProgress >= 100 ? "Reserved limit reached" : budgetProgress >= 80 ? "Getting close — spend wisely" : "You're doing great this month!"}
                       </p>
                     </div>
                   </div>
                 ) : (
                   <div className="text-center py-6 text-muted-foreground">
-                    <p className="text-sm mb-3">No monthly budget set yet</p>
-                    <Button onClick={() => setSetMonthlyOpen(true)} className="rounded-xl h-10 px-5">
-                      <Plus className="h-4 w-4 mr-2" /> Set Monthly Budget
+                    <p className="text-sm mb-3">No category budgets yet</p>
+                    <Button onClick={() => { setEditingBudget(null); setSetBudgetOpen(true); }} className="rounded-xl h-10 px-5">
+                      <Plus className="h-4 w-4 mr-2" /> Add Category Budget
                     </Button>
                   </div>
                 )}
@@ -271,7 +259,7 @@ export default function Budget() {
       </div>
 
       <SetBudgetDialog open={setBudgetOpen} onOpenChange={setSetBudgetOpen} editingBudget={editingBudget} />
-      <SetMonthlyBudgetDialog open={setMonthlyOpen} onOpenChange={setSetMonthlyOpen} existingBudget={monthlyBudget} />
+      
     </>
   );
 }
