@@ -9,7 +9,6 @@ import { DollarSign, AlertCircle, Plus, Edit, ChevronDown, Sparkles } from "luci
 import { NoIndexMeta } from "@/components/NoIndexMeta";
 import { useState, useMemo, useRef, useEffect } from "react";
 import { SetBudgetDialog } from "@/components/forms/SetBudgetDialog";
-import { SetMonthlyBudgetDialog } from "@/components/forms/SetMonthlyBudgetDialog";
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
 
