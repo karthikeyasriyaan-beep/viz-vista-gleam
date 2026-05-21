@@ -4,14 +4,14 @@ import { ArrowLeft, Calendar, Clock } from "lucide-react";
 import { Footer } from "@/components/Footer";
 import { SEOHead } from "@/components/SEOHead";
 
-export default function DigitalVsManualTracking() {
+export default function NeedsVsWants() {
   return (
     <>
       <SEOHead
-        title="Digital vs Manual Expense Tracking"
-        description="Compare digital and manual expense tracking methods to understand which system fits your financial habits."
-        keywords="expense tracking, budgeting apps, manual tracking, finance tools"
-        canonicalUrl="https://trackorapp.in/blog/digital-vs-manual-tracking"
+        title="Understanding Needs vs Wants in Personal Finance"
+        description="Learn the difference between needs and wants and how it improves budgeting and financial decision-making."
+        keywords="needs vs wants, budgeting, personal finance, spending habits"
+        canonicalUrl="https://trackorapp.in/blog/needs-vs-wants"
       />
 
       <div className="min-h-screen bg-background">
@@ -27,68 +27,73 @@ export default function DigitalVsManualTracking() {
           <article className="space-y-8">
 
             <div className="space-y-4">
-
               <div className="inline-flex px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium">
-                Finance Tools
+                Budgeting
               </div>
 
               <h1 className="text-4xl font-bold leading-tight">
-                Digital vs Manual Expense Tracking
+                Understanding Needs vs Wants in Personal Finance
               </h1>
 
               <div className="flex items-center gap-6 text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4" />
-                  3 May 2026
+                  6 May 2026
                 </div>
 
                 <div className="flex items-center gap-2">
                   <Clock className="h-4 w-4" />
-                  8 min read
+                  7 min read
                 </div>
               </div>
             </div>
 
             <div className="prose prose-neutral dark:prose-invert max-w-none">
-
               <p className="text-lg leading-relaxed">
-                Expense tracking can be done manually or using digital tools.
+                One of the most important financial skills is understanding the
+                difference between needs and wants.
               </p>
 
-              <h2>Manual Expense Tracking</h2>
+              <h2>What Are Needs?</h2>
 
               <p>
-                Manual tracking usually involves notebooks or spreadsheets.
+                Needs are essential expenses required for daily living and
+                survival.
               </p>
 
-              <h2>Digital Expense Tracking</h2>
+              <ul>
+                <li>Food</li>
+                <li>Housing</li>
+                <li>Transportation</li>
+                <li>Healthcare</li>
+              </ul>
+
+              <h2>What Are Wants?</h2>
 
               <p>
-                Digital tools provide faster tracking and automatic
-                categorization.
+                Wants are non-essential purchases that improve comfort or
+                enjoyment.
               </p>
 
-              <h2>Advantages of Manual Tracking</h2>
-
               <ul>
-                <li>Simple setup</li>
-                <li>More intentional awareness</li>
+                <li>Luxury shopping</li>
+                <li>Entertainment upgrades</li>
+                <li>Impulse purchases</li>
               </ul>
 
-              <h2>Advantages of Digital Tracking</h2>
+              <h2>Why This Difference Matters</h2>
 
-              <ul>
-                <li>Convenience</li>
-                <li>Speed</li>
-                <li>Better organization</li>
-              </ul>
+              <p>
+                Understanding spending priorities improves budgeting and
+                financial awareness.
+              </p>
 
               <h2>Final Thoughts</h2>
 
               <p>
-                The best tracking system is the one people can consistently use.
+                Better financial decisions often begin with understanding what
+                is necessary and what is optional.
               </p>
-
             </div>
           </article>
         </div>

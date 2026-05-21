@@ -83,9 +83,6 @@ export default function Settings() {
 
   /* ——— Sign out ——— */
   const handleSignOut = async () => {
-    // Clear local state so next session starts fresh
-    localStorage.removeItem("trackora_onboarded");
-    // Sign out from Supabase (a new anon session will be created on next load)
     await supabase.auth.signOut();
     navigate("/");
   };

@@ -17,42 +17,42 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { NoIndexMeta } from "@/components/NoIndexMeta";
 import { VoiceInput } from "@/components/VoiceInput";
+import {
+  getGuestExpenses, getGuestIncome, addGuestExpense, addGuestIncome,
+  type GuestExpense, type GuestIncome
+} from "@/lib/guest-storage";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
+import { detectExpenseCategory, type ExpenseCategory } from "@/lib/categories";
 
-/* ——— Category helpers ——— */
-const CATEGORY_MAP: Record<string, { category: string; icon: typeof Utensils }> = {
-  food: { category: "Food", icon: Utensils }, zomato: { category: "Food", icon: Utensils },
-  swiggy: { category: "Food", icon: Utensils }, restaurant: { category: "Food", icon: Utensils },
-  lunch: { category: "Food", icon: Utensils }, dinner: { category: "Food", icon: Utensils },
-  breakfast: { category: "Food", icon: Utensils }, coffee: { category: "Food", icon: Utensils },
-  snack: { category: "Food", icon: Utensils }, grocery: { category: "Food", icon: Utensils },
-  uber: { category: "Travel", icon: Car }, ola: { category: "Travel", icon: Car },
-  petrol: { category: "Travel", icon: Car }, fuel: { category: "Travel", icon: Car },
-  travel: { category: "Travel", icon: Plane }, flight: { category: "Travel", icon: Plane },
-  train: { category: "Travel", icon: Car }, bus: { category: "Travel", icon: Car },
-  electricity: { category: "Bills", icon: Zap }, bill: { category: "Bills", icon: Zap },
-  wifi: { category: "Bills", icon: Zap }, internet: { category: "Bills", icon: Zap },
-  phone: { category: "Bills", icon: Smartphone }, recharge: { category: "Bills", icon: Smartphone },
-  rent: { category: "Housing", icon: HomeIcon }, housing: { category: "Housing", icon: HomeIcon },
-  shopping: { category: "Shopping", icon: ShoppingBag }, clothes: { category: "Shopping", icon: ShoppingBag },
-  amazon: { category: "Shopping", icon: ShoppingBag }, flipkart: { category: "Shopping", icon: ShoppingBag },
-  salary: { category: "Salary", icon: Briefcase }, freelance: { category: "Freelance", icon: Briefcase },
-  gift: { category: "Gift", icon: Gift }, health: { category: "Health", icon: Heart },
-  medical: { category: "Health", icon: Heart }, medicine: { category: "Health", icon: Heart },
+/* ——— Category icon map (uses unified category names) ——— */
+const CATEGORY_ICON: Record<string, typeof Utensils> = {
+  Food: Utensils,
+  Transport: Car,
+  Housing: HomeIcon,
+  Bills: Zap,
+  Shopping: ShoppingBag,
+  Health: Heart,
+  Entertainment: Sparkles,
+  Education: Briefcase,
+  Savings: Gift,
+  "Loan EMI": Briefcase,
+  Subscription: Smartphone,
+  Other: ArrowRightLeft,
+  // Income-side categories (kept for icon display only)
+  Salary: Briefcase,
+  Freelance: Briefcase,
+  Gift: Gift,
 };
 
-function detectCategory(text: string) {
-  const lower = text.toLowerCase();
-  for (const [kw, val] of Object.entries(CATEGORY_MAP)) { if (lower.includes(kw)) return val; }
-  return { category: "Other", icon: ArrowRightLeft };
+function detectCategory(text: string): { category: string; icon: typeof Utensils } {
+  const cat = detectExpenseCategory(text, "Other" as ExpenseCategory);
+  return { category: cat, icon: CATEGORY_ICON[cat] || ArrowRightLeft };
 }
 
 function getCategoryIcon(category: string | null): typeof Utensils {
   if (!category) return ArrowRightLeft;
-  const lower = category.toLowerCase();
-  for (const [, val] of Object.entries(CATEGORY_MAP)) { if (val.category.toLowerCase() === lower) return val.icon; }
-  return ArrowRightLeft;
+  return CATEGORY_ICON[category] || ArrowRightLeft;
 }
 
 /* ——— Smart input parser ——— */
@@ -83,7 +83,7 @@ function parseAppDate(value: string | Date) {
 /* ——— Component ——— */
 export default function Transactions() {
   const { formatAmount } = useCurrency();
-  const { user } = useAuth();
+  const { user, isGuest } = useAuth();
   const queryClient = useQueryClient();
 
   const [selectedIncome, setSelectedIncome] = useState<any>(null);
@@ -94,44 +94,57 @@ export default function Transactions() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const { data: income = [], refetch: refetchIncome } = useQuery({
+  const [guestIncome, setGuestIncome] = useState<GuestIncome[]>([]);
+  const [guestExpenses, setGuestExpenses] = useState<GuestExpense[]>([]);
+
+  const refreshGuestData = () => {
+    setGuestIncome(getGuestIncome());
+    setGuestExpenses(getGuestExpenses());
+  };
+  useEffect(() => { if (isGuest) refreshGuestData(); }, [isGuest]);
+
+  const { data: supabaseIncome = [], refetch: refetchIncome } = useQuery({
     queryKey: ["income", user?.id],
     queryFn: async () => {
       if (!user) return [];
       const { data } = await supabase.from("income").select("*").eq("user_id", user.id).order("date", { ascending: false });
       return data || [];
     },
-    enabled: !!user,
-    staleTime: 1000 * 60 * 2,
+    enabled: !!user && !isGuest,
   });
 
-  const { data: expenses = [], refetch: refetchExpenses } = useQuery({
+  const { data: supabaseExpenses = [], refetch: refetchExpenses } = useQuery({
     queryKey: ["expenses", user?.id],
     queryFn: async () => {
       if (!user) return [];
       const { data } = await supabase.from("expenses").select("*").eq("user_id", user.id).order("date", { ascending: false });
       return data || [];
     },
-    enabled: !!user,
-    staleTime: 1000 * 60 * 2,
+    enabled: !!user && !isGuest,
   });
 
+  const income = isGuest ? guestIncome : supabaseIncome;
+  const expenses = isGuest ? guestExpenses : supabaseExpenses;
+
   const refetchAll = useCallback(() => {
+    if (isGuest) { refreshGuestData(); return; }
     refetchIncome();
     refetchExpenses();
     queryClient.invalidateQueries({ queryKey: ["income", user?.id] });
     queryClient.invalidateQueries({ queryKey: ["expenses", user?.id] });
-  }, [refetchIncome, refetchExpenses, queryClient, user?.id]);
+  }, [isGuest, refetchIncome, refetchExpenses, queryClient, user?.id]);
 
   const handleSmartAdd = async () => {
     const parsed = parseSmartInput(smartInput);
     if (!parsed) { toast.error('Try: "500 food" or "2000 salary"'); return; }
     const today = new Date().toISOString().split("T")[0];
     if (parsed.type === "income") {
-      if (user) await supabase.from("income").insert({ user_id: user.id, source: parsed.description, amount: parsed.amount, date: today, category: parsed.category });
+      if (isGuest) addGuestIncome({ source: parsed.description, amount: parsed.amount, date: today, category: parsed.category });
+      else if (user) await supabase.from("income").insert({ user_id: user.id, source: parsed.description, amount: parsed.amount, date: today, category: parsed.category });
       toast.success(`+${formatAmount(parsed.amount)} income added`);
     } else {
-      if (user) await supabase.from("expenses").insert({ user_id: user.id, name: parsed.description, amount: parsed.amount, date: today, category: parsed.category });
+      if (isGuest) addGuestExpense({ name: parsed.description, amount: parsed.amount, date: today, category: parsed.category });
+      else if (user) await supabase.from("expenses").insert({ user_id: user.id, name: parsed.description, amount: parsed.amount, date: today, category: parsed.category });
       toast.success(`-${formatAmount(parsed.amount)} expense recorded`);
     }
     setSmartInput("");
@@ -175,6 +188,7 @@ export default function Transactions() {
   }, [expenses, income]);
 
   const handleDelete = async (t: any) => {
+    if (isGuest) { toast.info("Delete not available in guest mode"); return; }
     await supabase.from(t.type === "income" ? "income" : "expenses").delete().eq("id", t.id);
     toast.success("Deleted");
     refetchAll();

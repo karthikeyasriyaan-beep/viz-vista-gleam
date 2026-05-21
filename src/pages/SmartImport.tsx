@@ -17,6 +17,7 @@ import { addGuestExpense } from "@/lib/guest-storage";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { NoIndexMeta } from "@/components/NoIndexMeta";
+import { EXPENSE_CATEGORIES, detectExpenseCategory } from "@/lib/categories";
 
 interface DraftExpense {
   id: string;
@@ -27,29 +28,10 @@ interface DraftExpense {
   source?: "screenshot" | "text" | "manual";
 }
 
-const CATEGORIES = [
-  "Food", "Travel", "Bills", "Housing", "Shopping",
-  "Health", "Entertainment", "Salary", "Gift", "Other",
-];
-
-const KEYWORD_CATEGORY: Record<string, string> = {
-  food: "Food", lunch: "Food", dinner: "Food", coffee: "Food",
-  zomato: "Food", swiggy: "Food", grocery: "Food", restaurant: "Food",
-  uber: "Travel", ola: "Travel", taxi: "Travel", petrol: "Travel",
-  fuel: "Travel", flight: "Travel", train: "Travel", bus: "Travel",
-  rent: "Housing", electricity: "Bills", wifi: "Bills", internet: "Bills",
-  phone: "Bills", recharge: "Bills",
-  amazon: "Shopping", flipkart: "Shopping", clothes: "Shopping", shopping: "Shopping",
-  medical: "Health", medicine: "Health", health: "Health", doctor: "Health",
-  movie: "Entertainment", netflix: "Entertainment",
-};
+const CATEGORIES: readonly string[] = EXPENSE_CATEGORIES;
 
 function detectCategoryFromText(text: string): string {
-  const lower = text.toLowerCase();
-  for (const [kw, cat] of Object.entries(KEYWORD_CATEGORY)) {
-    if (lower.includes(kw)) return cat;
-  }
-  return "Other";
+  return detectExpenseCategory(text);
 }
 
 function parseQuickEntries(input: string): DraftExpense[] {

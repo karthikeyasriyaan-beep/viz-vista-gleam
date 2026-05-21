@@ -4,14 +4,14 @@ import { ArrowLeft, Calendar, Clock } from "lucide-react";
 import { Footer } from "@/components/Footer";
 import { SEOHead } from "@/components/SEOHead";
 
-export default function DigitalVsManualTracking() {
+export default function ImpulseSpending() {
   return (
     <>
       <SEOHead
-        title="Digital vs Manual Expense Tracking"
-        description="Compare digital and manual expense tracking methods to understand which system fits your financial habits."
-        keywords="expense tracking, budgeting apps, manual tracking, finance tools"
-        canonicalUrl="https://trackorapp.in/blog/digital-vs-manual-tracking"
+        title="How Impulse Spending Affects Your Finances"
+        description="Learn how impulse spending affects budgeting, savings, and long-term financial habits."
+        keywords="impulse spending, budgeting, spending habits, personal finance"
+        canonicalUrl="https://trackorapp.in/blog/impulse-spending"
       />
 
       <div className="min-h-screen bg-background">
@@ -29,22 +29,22 @@ export default function DigitalVsManualTracking() {
             <div className="space-y-4">
 
               <div className="inline-flex px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium">
-                Finance Tools
+                Spending Habits
               </div>
 
               <h1 className="text-4xl font-bold leading-tight">
-                Digital vs Manual Expense Tracking
+                How Impulse Spending Affects Your Finances
               </h1>
 
               <div className="flex items-center gap-6 text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4" />
-                  3 May 2026
+                  4 May 2026
                 </div>
 
                 <div className="flex items-center gap-2">
                   <Clock className="h-4 w-4" />
-                  8 min read
+                  7 min read
                 </div>
               </div>
             </div>
@@ -52,41 +52,39 @@ export default function DigitalVsManualTracking() {
             <div className="prose prose-neutral dark:prose-invert max-w-none">
 
               <p className="text-lg leading-relaxed">
-                Expense tracking can be done manually or using digital tools.
+                Impulse spending refers to purchases made without planning or
+                careful consideration.
               </p>
 
-              <h2>Manual Expense Tracking</h2>
-
-              <p>
-                Manual tracking usually involves notebooks or spreadsheets.
-              </p>
-
-              <h2>Digital Expense Tracking</h2>
-
-              <p>
-                Digital tools provide faster tracking and automatic
-                categorization.
-              </p>
-
-              <h2>Advantages of Manual Tracking</h2>
+              <h2>Why Impulse Spending Happens</h2>
 
               <ul>
-                <li>Simple setup</li>
-                <li>More intentional awareness</li>
+                <li>Emotions</li>
+                <li>Online shopping convenience</li>
+                <li>Discount offers</li>
+                <li>Instant digital payments</li>
               </ul>
 
-              <h2>Advantages of Digital Tracking</h2>
+              <h2>How It Affects Finances</h2>
+
+              <p>
+                Frequent impulse purchases can reduce savings and disrupt
+                budgets.
+              </p>
+
+              <h2>How to Reduce Impulse Spending</h2>
 
               <ul>
-                <li>Convenience</li>
-                <li>Speed</li>
-                <li>Better organization</li>
+                <li>Wait before buying</li>
+                <li>Track expenses</li>
+                <li>Create spending limits</li>
               </ul>
 
               <h2>Final Thoughts</h2>
 
               <p>
-                The best tracking system is the one people can consistently use.
+                Awareness and planning can reduce unnecessary spending and
+                improve financial discipline.
               </p>
 
             </div>

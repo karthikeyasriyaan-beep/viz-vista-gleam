@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { 
   DollarSign, Repeat, Target, BarChart3, 
   Shield, Zap, CheckCircle2, ArrowRight,
-  Sparkles, Globe, Wallet
+  Globe, Wallet
 } from "lucide-react";
 import { Footer } from "@/components/Footer";
 import { useNavigate } from "react-router-dom";
@@ -16,27 +16,27 @@ const Features = () => {
   const mainFeatures = [
     {
       icon: DollarSign,
-      title: "💰 Loans & Debts Tracker — Breathe Easy",
-      description: "Managing debt shouldn't feel overwhelming. Trackora makes it calm and clear:",
+      title: "💰 Loans & Debts Tracker",
+      description: "All your loans in one place — no more scattered EMI notes:",
       features: [
-        "Track multiple loans: personal, student, home, car, credit cards",
-        "Monitor interest rates and total interest paid",
-        "Set up EMI reminders with friendly notifications",
+        "Track multiple loans: personal, home, car, credit cards",
+        "Monitor interest rates and remaining balance",
+        "Track EMI amounts and due dates in one place",
         "Visualize debt payoff timelines",
-        "See your progress month-by-month with encouraging insights"
+        "See your progress month-by-month"
       ],
-      highlight: "Stay on top of debts comfortably, with peace of mind.",
+      highlight: "Know exactly when you'll be debt-free.",
       color: "from-accent/20 to-primary/20"
     },
     {
       icon: Repeat,
-      title: "🔄 Subscription Management — No Surprises",
+      title: "🔄 Subscription Management",
       description: "Streaming services, gym memberships, software tools — track them all:",
       features: [
         "See all subscriptions in one unified view",
-        "Get alerts before auto-renewals",
+        "See renewal dates before they hit your account",
         "Calculate total monthly and yearly subscription costs",
-        "Identify subscriptions you might want to cancel",
+        "Identify subscriptions you no longer use",
         "Track billing cycles and payment methods"
       ],
       highlight: "No more surprise charges — you're always in control.",
@@ -44,16 +44,16 @@ const Features = () => {
     },
     {
       icon: Target,
-      title: "🎯 Goals & Progress — Celebrate Every Step",
-      description: "Set financial goals that matter to you and watch your progress grow:",
+      title: "🎯 Savings Goals",
+      description: "Set goals that matter and track every contribution:",
       features: [
-        "Create custom savings goals (vacation, emergency fund, gadget, etc.)",
-        "Visual progress rings that feel rewarding",
+        "Create custom savings goals — vacation, emergency fund, gadget",
+        "Visual progress bars that show how close you are",
         "Set target amounts and deadlines",
         "Track contributions over time",
-        "Get gentle encouragement and milestone celebrations"
+        "Voice entry for savings — say 'Save 2000 for trip'"
       ],
-      highlight: "You're getting closer — keep going softly.",
+      highlight: "Every contribution gets you closer.",
       color: "from-accent/20 to-primary/20"
     },
     {
@@ -61,11 +61,10 @@ const Features = () => {
       title: "📝 Smart Expense & Income Tracking",
       description: "Every rupee accounted for — without the effort:",
       features: [
-        "Quick-add buttons for common expenses",
-        "Intelligent auto-categorization (food, transport, bills, etc.)",
+        "Log by voice, receipt scan, or manual entry",
+        "Automatic categorisation — say Swiggy, it knows it's Food",
         "Track multiple income sources",
         "Color-coded categories for easy visual scanning",
-        "Add notes, tags, and custom fields",
         "Filter by date, category, or amount"
       ],
       highlight: "Tracking so simple, it feels automatic.",
@@ -73,17 +72,17 @@ const Features = () => {
     },
     {
       icon: BarChart3,
-      title: "📊 Friendly Analytics — Insights, Not Judgment",
-      description: "Beautiful charts that help you understand your money story:",
+      title: "📊 Analytics & Insights",
+      description: "Your money story — shown clearly:",
       features: [
         "Monthly spending breakdowns by category",
-        "Income vs. expenses comparison",
-        "Trend analysis over weeks, months, and years",
+        "Income vs expenses comparison",
+        "Trend analysis over 3, 6, or 12 months",
         "Identify spending patterns and habits",
-        "Export reports for budgeting or tax purposes",
-        "All presented in warm, easy-to-read visualizations"
+        "Savings rate calculation",
+        "Smart alerts when spending jumps month-on-month"
       ],
-      highlight: "Numbers that help, not stress.",
+      highlight: "No AI — just your real numbers, shown clearly.",
       color: "from-accent/20 to-primary/20"
     }
   ];
@@ -92,22 +91,22 @@ const Features = () => {
     {
       icon: Shield,
       title: "Bank-Level Security",
-      description: "256-bit encryption protects your data like a fortress."
+      description: "256-bit encryption protects your data. Never shared or sold."
     },
     {
       icon: Globe,
       title: "Works Everywhere",
-      description: "Access from any device, anywhere in the world."
+      description: "Access from any device. No app store download required."
     },
     {
       icon: Zap,
       title: "Lightning Fast",
-      description: "Add expenses in seconds, not minutes."
+      description: "Add expenses in under 5 seconds — voice, snap, or type."
     },
     {
       icon: CheckCircle2,
       title: "Free to Use",
-      description: "Access all features at no cost—track your finances today."
+      description: "No credit card. No bank linking. Free forever."
     }
   ];
 
@@ -115,8 +114,8 @@ const Features = () => {
     <>
       <SEOHead
         title="Trackora Features - Expense Tracking, Budgeting & Savings Tools"
-        description="Explore Trackora's powerful features: expense tracking, budget management, subscription monitoring, loan tracking, savings goals, and spending analytics. All free to use."
-        keywords="expense tracking features, budget management tools, subscription tracker, loan management, savings goals, spending analytics"
+        description="Explore Trackora's features: voice expense entry, smart receipt import, budget planning, subscription tracking, loan management, savings goals, and spending analytics. All free."
+        keywords="expense tracking features, budget management tools, subscription tracker, loan management, savings goals, spending analytics, voice expense entry India"
         canonicalUrl="https://trackorapp.in/features"
       />
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
@@ -124,7 +123,6 @@ const Features = () => {
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <button onClick={() => navigate("/")} className="flex items-center gap-2">
-            <Sparkles className="h-6 w-6 text-primary" />
             <span className="font-bold text-xl">Trackora</span>
           </button>
           <Button onClick={() => navigate("/")} variant="ghost">
@@ -141,7 +139,7 @@ const Features = () => {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6"
         >
           <CheckCircle2 className="h-4 w-4" />
-          Every feature designed for peace of mind
+          Everything built and working
         </motion.div>
 
         <motion.h1
@@ -150,7 +148,8 @@ const Features = () => {
           transition={{ delay: 0.1 }}
           className="text-4xl md:text-6xl font-bold mb-6"
         >
-          Features that make finance <span className="text-primary">feel simple</span>
+          Every feature you need.{" "}
+          <span className="text-primary">Nothing you don't.</span>
         </motion.h1>
 
         <motion.p
@@ -159,8 +158,8 @@ const Features = () => {
           transition={{ delay: 0.2 }}
           className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed"
         >
-          Trackora brings together everything you need to manage your money with confidence and calm. 
-          From expense tracking to debt management, every feature is designed to reduce stress, not add to it.
+          Trackora is built for how Indians actually spend — UPI, Swiggy, EMIs, OTT subscriptions. 
+          Every feature solves a real problem. No fluff.
         </motion.p>
       </section>
 
@@ -216,10 +215,10 @@ const Features = () => {
       <section className="container mx-auto px-6 py-20">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Built for your <span className="text-primary">comfort</span>
+            Built for <span className="text-primary">real life</span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Every detail designed to make financial management feel safe and simple
+            No bank linking. No complicated setup. Works the moment you open it.
           </p>
         </div>
 
@@ -254,10 +253,10 @@ const Features = () => {
               viewport={{ once: true }}
             >
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Ready to take control of your finances?
+                Ready to see where your money goes?
               </h2>
               <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-                Join thousands of users who have transformed their relationship with money. Free to use, secure forever.
+                Free to use. No bank linking. No credit card. Start in under 60 seconds.
               </p>
               <Button
                 onClick={() => navigate("/")}

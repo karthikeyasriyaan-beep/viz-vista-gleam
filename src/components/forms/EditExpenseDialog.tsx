@@ -10,12 +10,9 @@ import { toast } from 'sonner';
 import { Trash2 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { updateGuestExpense, deleteGuestExpense } from '@/lib/guest-storage';
+import { EXPENSE_CATEGORIES } from '@/lib/categories';
 
-const expenseCategories = [
-  "Groceries", "Rent", "Utilities", "Fuel", "Subscription",
-  "Dining Out", "Shopping", "Medical", "Education", "Travel",
-  "Entertainment", "Transport", "Other"
-];
+const expenseCategories = EXPENSE_CATEGORIES;
 
 export default function EditExpenseDialog({ expense, open, onOpenChange, onSuccess }: any) {
   const { isGuest } = useAuth();

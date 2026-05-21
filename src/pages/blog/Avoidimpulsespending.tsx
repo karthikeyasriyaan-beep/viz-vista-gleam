@@ -5,14 +5,14 @@ import { ArrowLeft, Calendar, Clock } from "lucide-react";
 import { Footer } from "@/components/Footer";
 import { SEOHead } from "@/components/SEOHead";
 
-export default function UnderstandingFinancialDiscipline() {
+export default function AvoidingImpulseSpending() {
   return (
     <>
       <SEOHead
-        title="Understanding Financial Discipline"
-        description="Learn why financial discipline matters and how habits shape long-term financial stability."
-        keywords="financial discipline, budgeting, money habits"
-        canonicalUrl="https://trackorapp.in/blog/understanding-financial-discipline"
+        title="How to Avoid Impulse Spending"
+        description="Learn practical strategies to reduce unnecessary purchases and improve financial discipline."
+        keywords="impulse spending, money habits, budgeting, saving money"
+        canonicalUrl="https://trackorapp.in/blog/avoiding-impulse-spending"
       />
 
       <div className="min-h-screen bg-background">
@@ -30,70 +30,68 @@ export default function UnderstandingFinancialDiscipline() {
                 <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-4">
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4" />
-                    18 April 2026
+                    20 April 2026
                   </div>
 
                   <div className="flex items-center gap-2">
                     <Clock className="h-4 w-4" />
-                    7 min read
+                    8 min read
                   </div>
                 </div>
 
                 <h1 className="text-4xl font-bold mb-4">
-                  Understanding Financial Discipline
+                  How to Avoid Impulse Spending
                 </h1>
 
                 <p className="text-muted-foreground text-lg leading-relaxed">
-                  Financial discipline plays an important role in long-term money
-                  management and financial stability.
+                  Impulse spending can slowly damage savings without people
+                  realizing how often it happens.
                 </p>
               </div>
 
               <div className="p-4 rounded-lg border bg-muted/40 text-sm">
-                Disclaimer: This article is for educational purposes only and
-                should not be considered financial advice.
+                Disclaimer: Spending decisions depend on personal financial
+                situations. This article is for educational purposes only.
               </div>
 
-              <h2 className="text-2xl font-semibold text-foreground">
-                What Is Financial Discipline?
-              </h2>
-
               <p>
-                Financial discipline means managing money consistently and making
-                spending decisions carefully instead of emotionally.
+                Online shopping, instant UPI payments, and one-click purchases
+                make spending extremely convenient. Because transactions happen
+                quickly, people often spend emotionally instead of logically.
               </p>
 
               <h2 className="text-2xl font-semibold text-foreground">
-                Why Discipline Matters
+                Use the 24-Hour Rule
               </h2>
 
               <p>
-                Good financial habits improve budgeting, increase savings, and
-                reduce unnecessary financial stress.
-              </p>
-
-              <p>
-                People with better financial discipline are usually more aware of
-                where their money goes each month.
+                Before purchasing non-essential items, wait at least 24 hours.
+                This creates time to decide whether the purchase is actually
+                necessary.
               </p>
 
               <h2 className="text-2xl font-semibold text-foreground">
-                Consistency Is More Important Than Perfection
+                Track Small Purchases
               </h2>
 
               <p>
-                Sustainable money habits are usually more effective than extreme
-                short-term budgeting.
+                Small purchases often feel harmless, but repeated spending adds
+                up quickly over time.
+              </p>
+
+              <p>
+                Tracking these expenses increases awareness and helps reduce
+                unnecessary spending habits.
               </p>
 
               <h2 className="text-2xl font-semibold text-foreground">
-                Build Better Habits Gradually
+                Avoid Emotional Spending
               </h2>
 
               <p>
-                Tracking expenses, reducing impulse purchases, and saving
-                regularly are simple ways to improve financial discipline over
-                time.
+                Many impulse purchases happen during boredom, stress, or
+                frustration. Identifying emotional triggers can reduce
+                unnecessary buying behavior.
               </p>
 
               <h2 className="text-2xl font-semibold text-foreground">
@@ -101,8 +99,9 @@ export default function UnderstandingFinancialDiscipline() {
               </h2>
 
               <p>
-                Financial discipline is not about avoiding all spending. It is
-                about making informed financial decisions consistently.
+                Avoiding impulse spending is not about never buying enjoyable
+                things. It is about spending more intentionally and understanding
+                where money goes.
               </p>
             </CardContent>
           </Card>

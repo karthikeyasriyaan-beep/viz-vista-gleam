@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { 
   ArrowLeft, ArrowRight, UserPlus, PlusCircle, BarChart3, 
-  Target, Bell, Shield, Lightbulb, CheckCircle2, 
+  Target, Shield, Lightbulb, CheckCircle2, 
   Wallet, PieChart, TrendingUp, Clock, Smartphone, Laptop
 } from "lucide-react";
 import { Footer } from "@/components/Footer";
@@ -46,10 +46,10 @@ export default function HowItWorks() {
       subtitle: "Customize Trackora to match your financial life",
       description: "Configure your preferred currency, set your monthly budget limits, and define spending categories that make sense for your lifestyle. The more personalized your setup, the better insights you'll receive.",
       details: [
-        "Choose from 30+ supported currencies",
+        "Choose from 9 supported currencies",
         "Set custom spending categories",
         "Define monthly budget limits",
-        "Configure notification preferences"
+        "Personalize your dashboard"
       ],
       tip: "Pro Tip: Start with broad categories (Food, Transport, Bills) and add specific ones as you learn your patterns."
     },
@@ -79,7 +79,7 @@ export default function HowItWorks() {
         "Optional notes for context",
         "Edit or delete any transaction easily"
       ],
-      tip: "Pro Tip: Set a daily reminder to log expenses. Consistency is more important than perfection."
+      tip: "Pro Tip: Log expenses the moment they happen. The longer you wait the more you forget."
     },
     {
       number: "05",
@@ -114,42 +114,42 @@ export default function HowItWorks() {
   const benefits = [
     {
       icon: Clock,
-      title: "Save 5+ Hours Monthly",
-      description: "Automated categorization and quick-add features eliminate the tedious parts of financial tracking."
+      title: "Spend less time worrying about money",
+      description: "Automated categorization and quick-add features make tracking fast and effortless."
     },
     {
       icon: Shield,
       title: "Bank-Level Security",
-      description: "256-bit AES encryption protects your data. Your financial information is safer than in most banking apps."
+      description: "256-bit AES encryption protects your data. Your financial information is stored securely."
     },
     {
       icon: Lightbulb,
       title: "Actionable Insights",
-      description: "Not just charts—specific recommendations based on your spending patterns and goals."
+      description: "Not just charts — clear answers about where your money goes and what to do about it."
     },
     {
-      icon: Bell,
-      title: "Smart Reminders",
-      description: "Get notified before subscription renewals and when you're approaching budget limits."
+      icon: Target,
+      title: "Subscription Tracking",
+      description: "See all your subscription renewal dates in one place before they hit your account."
     }
   ];
 
   const faqs = [
     {
       q: "How long does it take to see results?",
-      a: "Most users notice improved financial awareness within the first week. Significant behavior changes and savings typically occur within 30-60 days of consistent tracking."
+      a: "Most users notice improved financial awareness within the first week. Significant behavior changes typically occur within 30-60 days of consistent tracking."
     },
     {
       q: "Do I need to track every single expense?",
-      a: "Not necessarily. Focus on capturing at least 80% of your spending, especially larger purchases. Over time, tracking becomes second nature and you'll naturally capture more."
+      a: "Not necessarily. Focus on capturing at least 80% of your spending, especially larger purchases. Consistency over time matters more than perfection."
     },
     {
       q: "What if I forget to track for a few days?",
-      a: "No problem! You can add past transactions by changing the date. Review your bank statement or receipts to catch up. Consistency over time matters more than daily perfection."
+      a: "No problem. You can add past transactions by changing the date. Consistency over time matters more than daily perfection."
     },
     {
       q: "Can I use Trackora on my phone?",
-      a: "Absolutely! Trackora is a Progressive Web App (PWA) that works beautifully on all devices. Add it to your home screen for instant access—no app store download required."
+      a: "Absolutely. Trackora is a Progressive Web App (PWA) that works on all devices. Add it to your home screen for instant access — no app store download required."
     }
   ];
 
@@ -203,8 +203,7 @@ export default function HowItWorks() {
           </h1>
           
           <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Transform your financial life in six simple steps. From creating your account to achieving your 
-            financial goals, here's exactly how Trackora helps you take control of your money.
+            Six simple steps to take control of your money. Built for India, designed for real life.
           </p>
         </motion.div>
 
@@ -222,8 +221,7 @@ export default function HowItWorks() {
                 <Smartphone className="h-5 w-5 text-primary" />
               </div>
               <p className="text-muted-foreground">
-                <strong className="text-foreground">Works everywhere:</strong> Access Trackora from any device—desktop, tablet, or smartphone. 
-                Your data syncs automatically across all your devices.
+                <strong className="text-foreground">Works everywhere:</strong> Access Trackora from any device — desktop, tablet, or smartphone. No app store download required.
               </p>
             </CardContent>
           </Card>
@@ -242,7 +240,6 @@ export default function HowItWorks() {
               <Card className="overflow-hidden hover:shadow-lg transition-shadow">
                 <CardContent className="p-0">
                   <div className="flex flex-col lg:flex-row">
-                    {/* Step Number */}
                     <div className="bg-gradient-to-br from-primary to-secondary p-6 lg:p-8 lg:w-48 flex flex-col items-center justify-center text-center">
                       <span className="text-4xl lg:text-5xl font-bold text-primary-foreground opacity-80">
                         {step.number}
@@ -250,7 +247,6 @@ export default function HowItWorks() {
                       <step.icon className="h-8 w-8 text-primary-foreground mt-2" />
                     </div>
                     
-                    {/* Content */}
                     <div className="flex-1 p-6 lg:p-8">
                       <div className="mb-4">
                         <h2 className="text-2xl font-bold mb-1">{step.title}</h2>
@@ -296,8 +292,7 @@ export default function HowItWorks() {
               Why This <span className="text-primary">Approach Works</span>
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Trackora is designed based on behavioral science principles that make financial 
-              tracking sustainable and effective.
+              Trackora is designed to make financial awareness a natural habit — not a chore.
             </p>
           </div>
           
@@ -367,8 +362,7 @@ export default function HowItWorks() {
                 Ready to Take Control?
               </h2>
               <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-                Join thousands who have transformed their financial lives with Trackora. 
-                Start your journey to financial clarity today—it's completely free.
+                Free to use. No bank linking. No credit card. Start in under 60 seconds.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button

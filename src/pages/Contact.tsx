@@ -1,49 +1,11 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft } from "lucide-react";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
 import { Footer } from "@/components/Footer";
 
 export default function Contact() {
-  const [loading, setLoading] = useState(false);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
-  const { toast } = useToast();
   const navigate = useNavigate();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!name.trim() || !email.trim() || !message.trim()) {
-      toast({ title: "Please fill in all fields.", variant: "destructive" });
-      return;
-    }
-
-    setLoading(true);
-
-    const subject = encodeURIComponent(`Trackora Contact: Message from ${name}`);
-    const body = encodeURIComponent(
-      `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`
-    );
-    window.location.href = `mailto:trackorateam@trackorapp.in?subject=${subject}&body=${body}`;
-
-    setTimeout(() => {
-      toast({
-        title: "Email client opened",
-        description: "Your message is pre-filled — just hit Send in your email app.",
-      });
-      setName("");
-      setEmail("");
-      setMessage("");
-      setLoading(false);
-    }, 800);
-  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -53,76 +15,36 @@ export default function Contact() {
           Back
         </Button>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="text-4xl font-bold text-foreground mb-4">Contact</h1>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <h1 className="text-4xl font-bold text-foreground mb-4">
+            Contact
+          </h1>
 
-          <p className="text-muted-foreground leading-relaxed mb-10">
-            If you have questions about Trackora, feedback about the platform, or need assistance, you can contact the Trackora team using the form below.
-          </p>
-
-          {/* Contact Form */}
-          <form onSubmit={handleSubmit} className="space-y-6 mb-12">
-            <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                placeholder="Your name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                maxLength={100}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="email">Email Address</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                maxLength={255}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="message">Message</Label>
-              <Textarea
-                id="message"
-                placeholder="Write your message here..."
-                rows={6}
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                maxLength={1000}
-                required
-                className="resize-none"
-              />
-            </div>
-
-            <Button type="submit" size="lg" disabled={loading}>
-              {loading ? "Sending..." : "Send Message"}
-            </Button>
-          </form>
-
-          {/* Contact Information */}
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-foreground">Contact Information</h2>
-            <p className="text-muted-foreground leading-relaxed">
-              You can also reach the Trackora team through the following contact email.
+          <div className="space-y-6 text-muted-foreground leading-relaxed text-lg">
+            <p>
+              Have questions about Trackora, feedback about the platform, or
+              need help with something?
             </p>
-            <p className="text-foreground font-medium">
-              Email:{" "}
+
+            <div className="rounded-2xl border border-border bg-card p-6">
+              <p className="text-sm uppercase tracking-wider text-muted-foreground mb-2">
+                Contact Email
+              </p>
+
               <a
                 href="mailto:trackorateam@trackorapp.in"
-                className="text-primary hover:underline"
+                className="text-xl font-semibold text-primary hover:underline break-all"
               >
                 trackorateam@trackorapp.in
               </a>
-            </p>
-            <p className="text-sm text-muted-foreground">
-              We aim to respond to inquiries as soon as possible.
+            </div>
+
+            <p>
+              You can send us an email anytime and we’ll get back to you as
+              soon as possible.
             </p>
           </div>
         </motion.div>

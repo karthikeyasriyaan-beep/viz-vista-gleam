@@ -1,17 +1,15 @@
 import { Link } from "react-router-dom";
-import { BarChart3, Mail } from "lucide-react";
+import { Mail } from "lucide-react";
 
 export function Footer() {
   return (
     <footer className="w-full border-t bg-background/95 backdrop-blur">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Main Footer Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-10">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
           {/* Brand Column */}
           <div className="col-span-2 md:col-span-1">
             <Link to="/" className="flex items-center gap-2 mb-4">
-              <BarChart3 className="h-6 w-6 text-primary" />
-              <span className="font-display font-bold text-xl">Trackora</span>
+              <span className="font-bold text-xl">Trackora</span>
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed mb-4">
               Your personal finance companion. Track expenses, manage budgets, and achieve your financial goals with clarity.
@@ -25,36 +23,9 @@ export function Footer() {
             </a>
           </div>
 
-          {/* Product Links */}
-          <div>
-            <h3 className="font-display font-semibold mb-4">Product</h3>
-            <ul className="space-y-3">
-              <li>
-                <Link to="/features" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Features
-                </Link>
-              </li>
-              <li>
-                <Link to="/features" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Expense Tracking
-                </Link>
-              </li>
-              <li>
-                <Link to="/features" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Budget Analytics
-                </Link>
-              </li>
-              <li>
-                <Link to="/features" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Savings Goals
-                </Link>
-              </li>
-            </ul>
-          </div>
-          
           {/* Resources Links */}
           <div>
-            <h3 className="font-display font-semibold mb-4">Resources</h3>
+            <h3 className="font-semibold mb-4">Resources</h3>
             <ul className="space-y-3">
               <li>
                 <Link to="/blog" className="text-sm text-muted-foreground hover:text-primary transition-colors">
@@ -86,17 +57,12 @@ export function Footer() {
                   Debt Management
                 </Link>
               </li>
-              <li>
-                <Link to="/resources" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Resources
-                </Link>
-              </li>
             </ul>
           </div>
           
           {/* Company Links */}
           <div>
-            <h3 className="font-display font-semibold mb-4">Company</h3>
+            <h3 className="font-semibold mb-4">Company</h3>
             <ul className="space-y-3">
               <li>
                 <Link to="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors">
@@ -108,20 +74,12 @@ export function Footer() {
                   Contact
                 </Link>
               </li>
-              <li>
-                <a 
-                  href="mailto:trackorateam@trackorapp.in" 
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                >
-                  Business Inquiries
-                </a>
-              </li>
             </ul>
           </div>
           
           {/* Legal Links */}
           <div>
-            <h3 className="font-display font-semibold mb-4">Legal</h3>
+            <h3 className="font-semibold mb-4">Legal</h3>
             <ul className="space-y-3">
               <li>
                 <Link to="/privacy" className="text-sm text-muted-foreground hover:text-primary transition-colors">
