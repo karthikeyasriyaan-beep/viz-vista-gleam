@@ -65,6 +65,8 @@ export function SetMonthlyBudgetDialog({ open, onOpenChange, existingBudget }: S
         toast.success("Monthly budget set successfully");
       }
 
+      queryClient.invalidateQueries({ queryKey: ["monthly_budgets", user.id, currentMonth, currentYear] });
+      queryClient.invalidateQueries({ queryKey: ["monthly_budgets", user.id] });
       queryClient.invalidateQueries({ queryKey: ["monthly_budgets"] });
       onOpenChange(false);
       form.reset();

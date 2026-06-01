@@ -107,16 +107,46 @@ export default function Loans() {
     enabled: !!user,
   });
 
-  const refetchAll = useCallback(() => { refetch(); queryClient.invalidateQueries({ queryKey: ["loans", user?.id] }); }, [refetch, queryClient, user?.id]);
+  const refetchAll = useCallback(() => {
+    refetch();
+    queryClient.invalidateQueries({ queryKey: ["loans", user?.id] });
+    queryClient.invalidateQueries({ queryKey: ["expenses", user?.id] });
+  }, [refetch, queryClient, user?.id]);
 
   const handleSmartAdd = async () => {
     const parsed = parseLoanInput(smartInput);
     if (!parsed || !user) { toast.error('Try: "5000 to Rahul" or "2000 from John"'); return; }
     const today = new Date().toISOString().split("T")[0];
-    const { error } = await supabase.from("loans").insert({ user_id: user.id, name: parsed.name, initial_amount: parsed.amount, current_balance: parsed.amount, start_date: today, status: "active", notes: parsed.type === "owed" ? "Owed to you" : "You owe" });
-    if (error) { toast.error(error.message); return; }
+
+    const { error: loanError } = await supabase.from("loans").insert({
+      user_id: user.id,
+      name: parsed.name,
+      initial_amount: parsed.amount,
+      current_balance: parsed.amount,
+      start_date: today,
+      status: "active",
+      notes: parsed.type === "owed" ? "Owed to you" : "You owe",
+    });
+    if (loanError) { toast.error(loanError.message); return; }
+
+    if (parsed.type === "owe") {
+      const { error: expenseError } = await supabase.from("expenses").insert({
+        user_id: user.id,
+        name: `Loan to ${parsed.name}`,
+        amount: parsed.amount,
+        category: "Loan EMI",
+        date: today,
+        notes: "Auto-added from loan creation",
+      });
+      if (expenseError) {
+        toast.error(expenseError.message);
+        return;
+      }
+    }
+
     toast.success(`${parsed.type === "owed" ? "Credit" : "Debt"} added: ${formatAmount(parsed.amount)}`);
-    setSmartInput(""); refetchAll();
+    setSmartInput("");
+    refetchAll();
   };
 
   const handleSettle = async (loan: any) => {

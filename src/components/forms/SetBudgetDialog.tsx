@@ -72,6 +72,8 @@ export function SetBudgetDialog({ open, onOpenChange, editingBudget }: SetBudget
         toast.success("Budget created successfully");
       }
 
+      queryClient.invalidateQueries({ queryKey: ["budgets", user.id, currentMonth, currentYear] });
+      queryClient.invalidateQueries({ queryKey: ["budgets", user.id] });
       queryClient.invalidateQueries({ queryKey: ["budgets"] });
       onOpenChange(false);
       form.reset();

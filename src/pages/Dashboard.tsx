@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useCurrency } from "@/components/currency-selector";
 import {
-  Plus, Mic, TrendingUp, TrendingDown, ChevronDown, ChevronUp, X, Wallet, ArrowRight
+  Plus, Mic, TrendingUp, TrendingDown, ChevronDown, ChevronUp, X, Wallet, ArrowRight, Target, Repeat
 } from "lucide-react";
 import { VoiceInput } from "@/components/VoiceInput";
 import { NoIndexMeta } from "@/components/NoIndexMeta";
@@ -116,6 +116,10 @@ export default function Dashboard() {
   const refreshGuestData = () => { setGuestIncome(getGuestIncome()); setGuestExpenses(getGuestExpenses()); };
   useEffect(() => { if (isGuest) refreshGuestData(); }, [isGuest]);
 
+  const now = new Date();
+  const currentMonth = now.getMonth() + 1;
+  const currentYear = now.getFullYear();
+
   const { data: income = [] } = useQuery({
     queryKey: ["income", user?.id],
     queryFn: async () => { if (!user) return []; const { data } = await supabase.from("income").select("*").eq("user_id", user.id); return data || []; },
@@ -135,27 +139,60 @@ export default function Dashboard() {
   });
 
   const { data: monthlyBudget } = useQuery({
-    queryKey: ["monthly_budgets", user?.id],
+    queryKey: ["monthly_budgets", user?.id, currentMonth, currentYear],
     queryFn: async () => {
       if (!user) return null;
-      const now = new Date();
-      const { data } = await supabase.from("monthly_budgets").select("*").eq("user_id", user.id).eq("month", now.getMonth() + 1).eq("year", now.getFullYear()).single();
+      const { data } = await supabase
+        .from("monthly_budgets")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("month", currentMonth)
+        .eq("year", currentYear)
+        .single();
       return data;
     },
     enabled: !!user && !isGuest,
   });
 
   const { data: categoryBudgets = [] } = useQuery({
-    queryKey: ["budgets", user?.id],
+    queryKey: ["budgets", user?.id, currentMonth, currentYear],
     queryFn: async () => {
       if (!user) return [];
-      const now = new Date();
       const { data } = await supabase
         .from("budgets")
         .select("*")
         .eq("user_id", user.id)
-        .eq("month", now.getMonth() + 1)
-        .eq("year", now.getFullYear());
+        .eq("month", currentMonth)
+        .eq("year", currentYear);
+      return data || [];
+    },
+    enabled: !!user && !isGuest,
+  });
+
+  const { data: subscriptions = [] } = useQuery({
+    queryKey: ["subscriptions", user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const { data } = await supabase
+        .from("subscriptions")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("status", "active")
+        .order("created_at", { ascending: false });
+      return data || [];
+    },
+    enabled: !!user && !isGuest,
+  });
+
+  const { data: savingsGoals = [] } = useQuery({
+    queryKey: ["savings", user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const { data } = await supabase
+        .from("savings")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
       return data || [];
     },
     enabled: !!user && !isGuest,
@@ -166,19 +203,25 @@ export default function Dashboard() {
     queryClient.invalidateQueries({ queryKey: ["income", user?.id] });
     queryClient.invalidateQueries({ queryKey: ["expenses", user?.id] });
     queryClient.invalidateQueries({ queryKey: ["loans", user?.id] });
+    queryClient.invalidateQueries({ queryKey: ["monthly_budgets", user?.id, currentMonth, currentYear] });
     queryClient.invalidateQueries({ queryKey: ["monthly_budgets", user?.id] });
+    queryClient.invalidateQueries({ queryKey: ["budgets", user?.id, currentMonth, currentYear] });
     queryClient.invalidateQueries({ queryKey: ["budgets", user?.id] });
+    queryClient.invalidateQueries({ queryKey: ["subscriptions", user?.id] });
+    queryClient.invalidateQueries({ queryKey: ["savings", user?.id] });
   };
 
   const displayedExpenses = isGuest ? guestExpenses : (expenses as any[]);
   const displayedIncome = isGuest ? guestIncome : (income as any[]);
 
-  const now = new Date();
-  const currentMonth = now.getMonth();
-  const currentYear = now.getFullYear();
-
-  const monthExpenses = displayedExpenses.filter((e: any) => { const d = parseAppDate(e.date); return d.getMonth() === currentMonth && d.getFullYear() === currentYear; });
-  const monthIncome = displayedIncome.filter((i: any) => { const d = parseAppDate(i.date); return d.getMonth() === currentMonth && d.getFullYear() === currentYear; });
+  const monthExpenses = displayedExpenses.filter((e: any) => {
+    const d = parseAppDate(e.date);
+    return d.getMonth() + 1 === currentMonth && d.getFullYear() === currentYear;
+  });
+  const monthIncome = displayedIncome.filter((i: any) => {
+    const d = parseAppDate(i.date);
+    return d.getMonth() + 1 === currentMonth && d.getFullYear() === currentYear;
+  });
 
   const totalExpenses = monthExpenses.reduce((s: number, e: any) => s + Number(e.amount), 0);
   const totalIncome = monthIncome.reduce((s: number, i: any) => s + Number(i.amount), 0);
@@ -202,16 +245,30 @@ export default function Dashboard() {
     .filter(([cat]) => !budgetedCategories.has(cat))
     .reduce((s, [, amt]) => s + (amt as number), 0);
 
+  const totalYouOwe = (loans as any[])
+    .filter((l: any) => !l.notes?.includes("Owed to you"))
+    .reduce((s: number, l: any) => s + Number(l.current_balance || 0), 0);
+  const totalOwedToYou = (loans as any[])
+    .filter((l: any) => l.notes?.includes("Owed to you"))
+    .reduce((s: number, l: any) => s + Number(l.current_balance || 0), 0);
+  const totalEMIObligations = (loans as any[])
+    .filter((l: any) => l.status !== "paid_off" && !l.notes?.includes("Owed to you"))
+    .reduce((s: number, l: any) => s + Math.min(Number(l.monthly_payment || 0), Number(l.current_balance || 0)), 0);
+  const emiPaidThisMonth = monthExpenses
+    .filter((e: any) => e.category === "Loan EMI")
+    .reduce((s: number, e: any) => s + Number(e.amount), 0);
+  const remainingEMIObligations = Math.max(totalEMIObligations - emiPaidThisMonth, 0);
+
   const budgetLimit = monthlyBudget?.total_limit || 0;
   // Freely available (envelope safe-to-spend)
-  const safeToSpend = Math.max(totalIncome - totalReservedDeduction - unbudgetedSpend, 0);
+  const safeToSpend = Math.max(totalIncome - totalReservedDeduction - unbudgetedSpend - remainingEMIObligations, 0);
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const dayOfMonth = now.getDate();
   const daysLeft = daysInMonth - dayOfMonth;
   const dailySafe = daysLeft > 0 ? safeToSpend / daysLeft : safeToSpend;
   const budgetProgress = budgetLimit > 0 ? Math.min((totalExpenses / budgetLimit) * 100, 100) : 0;
 
-  const totalOwed = (loans as any[]).reduce((s: number, l: any) => s + Number(l.current_balance || 0), 0);
+  const totalOwed = totalYouOwe;
 
   const todayStr = now.toISOString().split("T")[0];
   const allTransactions = useMemo(() => {
@@ -381,12 +438,33 @@ export default function Dashboard() {
                   </Button>
                 </div>
                 <div className="px-5 pb-5">
-                  <p className="text-2xl font-bold text-destructive mb-3">{formatAmount(totalOwed)}</p>
+                  <p className="text-2xl font-bold text-destructive mb-3">{formatAmount(totalYouOwe)}</p>
+                  <div className="grid grid-cols-2 gap-2 mb-4">
+                    <div className="rounded-xl bg-muted/20 border border-border/30 px-3 py-3">
+                      <p className="text-[11px] uppercase tracking-wide text-muted-foreground mb-1">You owe</p>
+                      <p className="text-sm font-bold text-destructive">{formatAmount(totalYouOwe)}</p>
+                    </div>
+                    <div className="rounded-xl bg-muted/20 border border-border/30 px-3 py-3">
+                      <p className="text-[11px] uppercase tracking-wide text-muted-foreground mb-1">Owed to you</p>
+                      <p className="text-sm font-bold text-success">{formatAmount(totalOwedToYou)}</p>
+                    </div>
+                  </div>
+                  {totalEMIObligations > 0 && (
+                    <div className="rounded-xl bg-muted/20 border border-border/30 px-3 py-3 mb-4">
+                      <p className="text-[11px] uppercase tracking-wide text-muted-foreground mb-1">Monthly EMI reserve</p>
+                      <p className="text-sm font-bold">{formatAmount(totalEMIObligations)} / mo</p>
+                    </div>
+                  )}
                   {(loans as any[]).length > 0 ? (
                     <div className="space-y-2 max-h-[200px] overflow-y-auto pr-1">
                       {(loans as any[]).slice(0, 4).map((loan: any) => (
                         <div key={loan.id} className="flex items-center justify-between px-3 py-3 rounded-xl bg-muted/20 border border-border/30">
-                          <span className="text-sm font-medium truncate">{loan.name}</span>
+                          <div className="min-w-0">
+                            <p className="text-sm font-medium truncate">{loan.name}</p>
+                            {loan.monthly_payment ? (
+                              <p className="text-[11px] text-muted-foreground mt-0.5">EMI {formatAmount(Number(loan.monthly_payment))} / mo</p>
+                            ) : null}
+                          </div>
                           <span className="text-sm font-bold text-destructive">{formatAmount(loan.current_balance)}</span>
                         </div>
                       ))}
@@ -394,6 +472,69 @@ export default function Dashboard() {
                   ) : (
                     <p className="text-sm text-muted-foreground">No active loans</p>
                   )}
+                </div>
+              </motion.div>
+            )}
+          </div>
+
+          {/* ——— Subscriptions & Savings Grid ——— */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Upcoming Subscription Renewals */}
+            {!isGuest && subscriptions.length > 0 && (
+              <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.28, ease }}
+                className="rounded-2xl bg-card border border-border/40 overflow-hidden">
+                <div className="flex items-center justify-between px-5 pt-5 pb-3">
+                  <div className="flex items-center gap-2">
+                    <Repeat className="h-4 w-4 text-muted-foreground" />
+                    <p className="text-sm font-bold">Subscriptions</p>
+                  </div>
+                  <Button variant="ghost" size="sm" onClick={() => navigate("/subscriptions")} className="h-8 text-xs font-semibold text-muted-foreground gap-1 rounded-lg">
+                    View all <ArrowRight className="h-3 w-3" />
+                  </Button>
+                </div>
+                <div className="px-5 pb-5">
+                  {subscriptions.slice(0, 3).map((sub: any) => (
+                    <div key={sub.id} className="flex items-center justify-between px-3 py-3 rounded-xl bg-muted/20 border border-border/30 mb-2">
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium truncate">{sub.name}</p>
+                        <p className="text-[11px] text-muted-foreground mt-0.5">{sub.billing_cycle}</p>
+                      </div>
+                      <span className="text-sm font-bold text-destructive">-{formatAmount(sub.amount)}</span>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* Savings Target */}
+            {!isGuest && savingsGoals.length > 0 && (
+              <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.32, ease }}
+                className="rounded-2xl bg-card border border-border/40 overflow-hidden">
+                <div className="flex items-center justify-between px-5 pt-5 pb-3">
+                  <div className="flex items-center gap-2">
+                    <Target className="h-4 w-4 text-muted-foreground" />
+                    <p className="text-sm font-bold">Savings Goal</p>
+                  </div>
+                  <Button variant="ghost" size="sm" onClick={() => navigate("/savings")} className="h-8 text-xs font-semibold text-muted-foreground gap-1 rounded-lg">
+                    View all <ArrowRight className="h-3 w-3" />
+                  </Button>
+                </div>
+                <div className="px-5 pb-5">
+                  {savingsGoals.slice(0, 2).map((goal: any) => {
+                    const progress = (Number(goal.current_amount) / Number(goal.target_amount)) * 100;
+                    return (
+                      <div key={goal.id} className="mb-4 last:mb-0">
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="text-sm font-medium truncate">{goal.name}</p>
+                          <p className="text-xs font-bold text-muted-foreground">{Math.round(progress)}%</p>
+                        </div>
+                        <Progress value={progress} className="h-2 mb-1" />
+                        <div className="flex items-center justify-between">
+                          <p className="text-[11px] text-muted-foreground">{formatAmount(goal.current_amount)} / {formatAmount(goal.target_amount)}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </motion.div>
             )}

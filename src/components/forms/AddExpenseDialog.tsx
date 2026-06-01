@@ -69,12 +69,16 @@ export function AddExpenseDialog({ onSuccess }: AddExpenseDialogProps) {
         });
         if (error) throw error;
       }
+      const currentMonth = new Date().getMonth() + 1;
+      const currentYear = new Date().getFullYear();
       toast({ title: "Expense added", description: `${formData.name} added successfully.` });
-      // Refresh all expense-dependent views (Dashboard, Transactions, Analytics, Budget, LiveSummaryBar)
+      // Refresh all expense- and budget-dependent views
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ["expenses", user.id] }),
         queryClient.invalidateQueries({ queryKey: ["expenses"] }),
+        queryClient.invalidateQueries({ queryKey: ["monthly_budgets", user.id, currentMonth, currentYear] }),
         queryClient.invalidateQueries({ queryKey: ["monthly_budgets", user.id] }),
+        queryClient.invalidateQueries({ queryKey: ["budgets", user.id, currentMonth, currentYear] }),
         queryClient.invalidateQueries({ queryKey: ["budgets", user.id] }),
       ]);
       reset();

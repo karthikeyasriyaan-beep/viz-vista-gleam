@@ -72,6 +72,8 @@ export default function Settings() {
         supabase.from("subscriptions").delete().eq("user_id", user.id),
         supabase.from("receipts").delete().eq("user_id", user.id),
         supabase.from("savings").delete().eq("user_id", user.id),
+        supabase.from("budgets").delete().eq("user_id", user.id),
+        supabase.from("monthly_budgets").delete().eq("user_id", user.id),
       ]);
       toast({ title: "All data cleared", description: "Your financial data has been permanently deleted." });
     } catch {

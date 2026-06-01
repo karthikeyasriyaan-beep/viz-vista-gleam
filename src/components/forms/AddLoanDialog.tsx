@@ -10,6 +10,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Plus } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -30,21 +31,22 @@ export function AddLoanDialog({ onSuccess }: AddLoanDialogProps) {
   const [formData, setFormData] = useState({
     name: "",
     initial_amount: "",
-    interest_rate: "",
     monthly_payment: "",
     start_date: new Date().toISOString().split("T")[0],
     status: "active",
+    direction: "owe",
     notes: "",
   });
 
+  const queryClient = useQueryClient();
   const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
 
   const reset = () =>
     setFormData({
-      name: "", initial_amount: "", interest_rate: "",
+      name: "", initial_amount: "",
       monthly_payment: "", start_date: new Date().toISOString().split("T")[0],
-      status: "active", notes: "",
+      status: "active", direction: "owe", notes: "",
     });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -55,9 +57,8 @@ export function AddLoanDialog({ onSuccess }: AddLoanDialogProps) {
     }
 
     const initialAmount = parseFloat(formData.initial_amount) || 0;
-    const interestRate = parseFloat(formData.interest_rate) || 0;
-    const monthlyPayment = parseFloat(formData.monthly_payment) || 0;
-
+      const monthlyPayment = parseFloat(formData.monthly_payment) || 0;
+      const isCredit = formData.direction === "owed";
     if (initialAmount <= 0) {
       toast({ title: "Validation Error", description: "Loan amount must be greater than 0.", variant: "destructive" });
       return;
@@ -71,18 +72,7 @@ export function AddLoanDialog({ onSuccess }: AddLoanDialogProps) {
     try {
       // Auto-calculate end date
       let endDate: string | null = null;
-      if (interestRate > 0 && monthlyPayment > 0) {
-        const monthlyRate = interestRate / 12 / 100;
-        const principalTimesRate = initialAmount * monthlyRate;
-        if (monthlyPayment > principalTimesRate) {
-          const months = Math.ceil(Math.log(monthlyPayment / (monthlyPayment - principalTimesRate)) / Math.log(1 + monthlyRate));
-          if (months > 0 && months < 1200) {
-            const end = new Date(formData.start_date);
-            end.setMonth(end.getMonth() + months);
-            endDate = end.toISOString().split("T")[0];
-          }
-        }
-      } else if (monthlyPayment > 0) {
+      if (monthlyPayment > 0) {
         const months = Math.ceil(initialAmount / monthlyPayment);
         if (months > 0 && months < 1200) {
           const end = new Date(formData.start_date);
@@ -91,20 +81,25 @@ export function AddLoanDialog({ onSuccess }: AddLoanDialogProps) {
         }
       }
 
-      const { error } = await supabase.from("loans").insert({
+      const loanPayload = {
         user_id: user.id,
         name: formData.name.trim(),
         initial_amount: initialAmount,
         current_balance: initialAmount,
-        interest_rate: interestRate,
         monthly_payment: monthlyPayment,
         start_date: formData.start_date,
         end_date: endDate,
         status: formData.status,
-        notes: formData.notes.trim() || null,
-      });
+        notes: `${isCredit ? "Owed to you" : "You owe"}${formData.notes.trim() ? ` — ${formData.notes.trim()}` : ""}`,
+      };
 
+      const { error } = await supabase.from("loans").insert(loanPayload);
       if (error) throw error;
+
+      queryClient.invalidateQueries({ queryKey: ["loans", user.id] });
+      queryClient.invalidateQueries({ queryKey: ["loans"] });
+      queryClient.invalidateQueries({ queryKey: ["expenses", user.id] });
+      queryClient.invalidateQueries({ queryKey: ["income", user.id] });
 
       toast({ title: "Loan added", description: `${formData.name} added successfully.` });
       reset();
@@ -165,20 +160,18 @@ export function AddLoanDialog({ onSuccess }: AddLoanDialogProps) {
             />
           </div>
 
-          {/* Interest Rate + Monthly Payment */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label htmlFor="loan-rate" className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Interest (%)</Label>
-              <Input
-                id="loan-rate"
-                type="number"
-                step="0.01"
-                min="0"
-                placeholder="0.00"
-                value={formData.interest_rate}
-                onChange={(e) => setFormData({ ...formData, interest_rate: e.target.value })}
-                className="h-10 text-sm rounded-lg"
-              />
+              <Label htmlFor="loan-direction" className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Loan type</Label>
+              <Select value={formData.direction} onValueChange={(v) => setFormData({ ...formData, direction: v })}>
+                <SelectTrigger className="h-10 text-sm rounded-lg">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="owe">You owe money</SelectItem>
+                  <SelectItem value="owed">Someone owes you</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="loan-payment" className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Monthly EMI</Label>

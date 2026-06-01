@@ -10,6 +10,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Plus } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -35,6 +36,7 @@ export function AddIncomeDialog({ onSuccess }: AddIncomeDialogProps) {
     date: new Date().toISOString().split("T")[0],
   });
 
+  const queryClient = useQueryClient();
   const { user, isGuest, loading: authLoading } = useAuth();
   const { toast } = useToast();
 
@@ -69,6 +71,14 @@ export function AddIncomeDialog({ onSuccess }: AddIncomeDialogProps) {
         });
         if (error) throw error;
       }
+      const currentMonth = new Date().getMonth() + 1;
+      const currentYear = new Date().getFullYear();
+      queryClient.invalidateQueries({ queryKey: ["income", user.id] });
+      queryClient.invalidateQueries({ queryKey: ["income"] });
+      queryClient.invalidateQueries({ queryKey: ["monthly_budgets", user.id, currentMonth, currentYear] });
+      queryClient.invalidateQueries({ queryKey: ["monthly_budgets", user.id] });
+      queryClient.invalidateQueries({ queryKey: ["budgets", user.id, currentMonth, currentYear] });
+      queryClient.invalidateQueries({ queryKey: ["budgets", user.id] });
       toast({ title: "Income added", description: `${formData.source} added successfully.` });
       reset();
       setOpen(false);

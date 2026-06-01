@@ -28,17 +28,50 @@ export default function EditLoanDialog({
     e.preventDefault();
     setLoading(true);
     try {
-      const {
-        error
-      } = await supabase.from('loans').update({
+      const currentBalance = parseFloat(formData.current_balance);
+      const interestRate = formData.interest_rate ? parseFloat(formData.interest_rate) : 0;
+      const monthlyPayment = formData.monthly_payment ? parseFloat(formData.monthly_payment) : 0;
+
+      let endDate: string | null = null;
+      if (monthlyPayment > 0 && currentBalance > 0) {
+        if (interestRate > 0) {
+          const monthlyRate = interestRate / 12 / 100;
+          const principalTimesRate = currentBalance * monthlyRate;
+          if (monthlyPayment > principalTimesRate) {
+            const months = Math.ceil(Math.log(monthlyPayment / (monthlyPayment - principalTimesRate)) / Math.log(1 + monthlyRate));
+            if (months > 0 && months < 1200) {
+              const end = new Date(formData.start_date);
+              end.setMonth(end.getMonth() + months);
+              endDate = end.toISOString().split('T')[0];
+            }
+          }
+        } else {
+          const months = Math.ceil(currentBalance / monthlyPayment);
+          if (months > 0 && months < 1200) {
+            const end = new Date(formData.start_date);
+            end.setMonth(end.getMonth() + months);
+            endDate = end.toISOString().split('T')[0];
+          }
+        }
+      }
+
+      const updates: any = {
         name: formData.name,
         initial_amount: parseFloat(formData.initial_amount),
-        current_balance: parseFloat(formData.current_balance),
+        current_balance: currentBalance,
         interest_rate: formData.interest_rate ? parseFloat(formData.interest_rate) : null,
         monthly_payment: formData.monthly_payment ? parseFloat(formData.monthly_payment) : null,
         start_date: formData.start_date,
-        notes: formData.notes
-      }).eq('id', loan.id);
+        notes: formData.notes,
+        end_date: endDate,
+      };
+      if (currentBalance <= 0) {
+        updates.status = 'paid_off';
+      }
+
+      const {
+        error
+      } = await supabase.from('loans').update(updates).eq('id', loan.id);
       if (error) throw error;
       toast.success('Loan updated successfully');
       onSuccess?.();

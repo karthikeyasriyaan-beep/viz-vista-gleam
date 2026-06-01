@@ -160,14 +160,18 @@ export default function Transactions() {
 
   const filtered = useMemo(() => {
     const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const weekStart = new Date();
+    weekStart.setDate(weekStart.getDate() - 7);
     return allTransactions.filter((t) => {
       const d = parseAppDate(t.date);
       if (timeFilter === "today" && d.toDateString() !== now.toDateString()) return false;
-      if (timeFilter === "week") { const w = new Date(); w.setDate(w.getDate() - 7); if (d < w) return false; }
-      if (timeFilter === "month") { const m = new Date(); m.setMonth(m.getMonth() - 1); if (d < m) return false; }
+      if (timeFilter === "week" && d < weekStart) return false;
+      if (timeFilter === "month" && (d.getMonth() !== now.getMonth() || d.getFullYear() !== now.getFullYear())) return false;
       if (searchQuery) {
         const title = t.type === "income" ? t.source : t.name;
-        if (!title?.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+        const target = `${title || ""} ${t.category || ""} ${t.notes || ""}`.toLowerCase();
+        if (!target.includes(searchQuery.toLowerCase())) return false;
       }
       return true;
     });
