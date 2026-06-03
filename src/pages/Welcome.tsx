@@ -20,7 +20,7 @@ import { SEOHead } from "@/components/SEOHead";
 import { useRef, useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 
-import dashboardPreview from "../assets/welcome-dashboard.png.asset.json";
+import dashboardPreview from "../assets/welcome-dashboard.png";
 
 /* ——— Animation Variants ——— */
 const fadeUp = {
@@ -273,7 +273,7 @@ const Welcome = () => {
               >
                 <div className="rounded-2xl overflow-hidden border border-border/40 shadow-2xl bg-card/50 backdrop-blur-sm">
                   <img
-                    src={dashboardPreview.url}
+                    src={dashboardPreview}
                     alt="Trackora dashboard showing expense list, spending categories pie chart, and budget summary cards"
                     className="w-full h-auto"
                     loading="eager"
@@ -460,7 +460,7 @@ const Welcome = () => {
               <motion.div variants={slideInRight}>
                 <div className="rounded-2xl overflow-hidden border border-border/40 shadow-2xl bg-card/50 backdrop-blur-sm">
                   <img
-                    src={dashboardPreview.url}
+                    src={dashboardPreview}
                     alt="Trackora dashboard showing expense list, spending categories pie chart, and budget summary cards"
                     className="w-full h-auto"
                     loading="lazy"
