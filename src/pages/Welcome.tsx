@@ -460,7 +460,7 @@ const Welcome = () => {
               <motion.div variants={slideInRight}>
                 <div className="rounded-2xl overflow-hidden border border-border/40 shadow-2xl bg-card/50 backdrop-blur-sm">
                   <img
-                    src={dashboardPreview.url}
+                    src={dashboardPreview}
                     alt="Trackora dashboard showing expense list, spending categories pie chart, and budget summary cards"
                     className="w-full h-auto"
                     loading="lazy"
