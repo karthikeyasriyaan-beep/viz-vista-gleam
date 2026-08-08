@@ -9,9 +9,37 @@
     <meta name="author" content="Trackora" />
     <link rel="canonical" href="https://trackorapp.in" />
     
-    <meta name="theme-color" content="#ffffff">
-    <link rel="manifest" href="/site.webmanifest">
+    <meta name="monetag" content="073b07d7e7e49036e8ebffa1809edea5">
+    <script src="https://5gvci.com/act/files/tag.min.js?z=11202143" data-cfasync="false" async></script>
     
+    <meta name="theme-color" content="#ffffff">
+    <script>
+      (function() {
+        const hostname = window.location.hostname;
+        const isProductionHost = hostname === 'trackorapp.in' || hostname === 'www.trackorapp.in';
+
+        if (isProductionHost) {
+          const manifestLink = document.createElement('link');
+          manifestLink.rel = 'manifest';
+          manifestLink.href = '/site.webmanifest';
+          document.head.appendChild(manifestLink);
+
+          const script = document.createElement('script');
+          script.src = 'https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js';
+          script.defer = true;
+          document.head.appendChild(script);
+
+          window.OneSignalDeferred = window.OneSignalDeferred || [];
+          window.OneSignalDeferred.push(async function(OneSignal) {
+            await OneSignal.init({
+              appId: '8bb1bcca-a6e8-4947-9acd-07936b7ddea3',
+              notifyButton: { enable: false },
+              allowLocalhostAsSecureOrigin: false,
+            });
+          });
+        }
+      })();
+    </script>
     <script>
       // Load favicon everywhere EXCEPT localhost
       (function() {
@@ -31,7 +59,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Google Consent Mode v2 — must run BEFORE gtag loads -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
@@ -67,28 +94,12 @@
       })();
     </script>
 
-    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-66293FMNGF"></script>
     <script>
       gtag('js', new Date());
       gtag('config', 'G-66293FMNGF');
     </script>
 
-    <!-- AdSense — loads only after consent cookie is set to accepted -->
-    <script>
-      (function() {
-        var match = document.cookie.split('; ').find(function(r){ return r.startsWith('trackora_consent='); });
-        if (match && match.split('=')[1] === 'accepted') {
-          var s = document.createElement('script');
-          s.async = true;
-          s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9073321526391845';
-          s.crossOrigin = 'anonymous';
-          document.head.appendChild(s);
-        }
-      })();
-    </script>
-
-    <!-- Structured Data for SEO -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -116,22 +127,19 @@
     }
     </script>
 
-    
-    
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://trackorapp.in" />
     <meta property="og:site_name" content="Trackora" />
 
     <meta name="twitter:card" content="summary_large_image" />
     
-    
     <meta property="og:title" content="Trackora - Smart Expense Tracker &amp; Budget Analytics Platform">
-  <meta name="twitter:title" content="Trackora - Smart Expense Tracker &amp; Budget Analytics Platform">
-  <meta property="og:description" content="Take control of your finances with Trackora - the modern expense tracking and budget analytics platform. Track daily spending, manage budgets, monitor subscriptions, and achieve your financial goals.">
-  <meta name="twitter:description" content="Take control of your finances with Trackora - the modern expense tracking and budget analytics platform. Track daily spending, manage budgets, monitor subscriptions, and achieve your financial goals.">
-  <meta property="og:image" content="https://trackorapp.in/og-image.png">
-  <meta name="twitter:image" content="https://trackorapp.in/og-image.png">
-</head>
+    <meta name="twitter:title" content="Trackora - Smart Expense Tracker &amp; Budget Analytics Platform">
+    <meta property="og:description" content="Take control of your finances with Trackora - the modern expense tracking and budget analytics platform. Track daily spending, manage budgets, monitor subscriptions, and achieve your financial goals.">
+    <meta name="twitter:description" content="Take control of your finances with Trackora - the modern expense tracking and budget analytics platform. Track daily spending, manage budgets, monitor subscriptions, and achieve your financial goals.">
+    <meta property="og:image" content="https://trackorapp.in/og-image.png">
+    <meta name="twitter:image" content="https://trackorapp.in/og-image.png">
+  </head>
 
   <body>
     <div id="root"></div>

@@ -16,6 +16,7 @@ import { CookieConsent } from "@/components/CookieConsent";
 import { useAuth } from "@/hooks/useAuth";
 import { SEOHead } from "@/components/SEOHead";
 import { useRef } from "react";
+import { GoogleSignInButton } from "@/components/GoogleSignInButton";
 
 import dashboardPreview from "../assets/welcome-dashboard (1).png";
 
@@ -81,7 +82,7 @@ const categoryColors: Record<string, string> = {
 };
 
 const Welcome = () => {
-  const { enterAsGuest } = useAuth();
+  const { enterAsGuest, user } = useAuth();
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroOpacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
@@ -126,6 +127,11 @@ const Welcome = () => {
                 Trackora
               </span>
               <div className="flex items-center gap-2 sm:gap-3">
+                {user?.is_anonymous !== false && (
+                  <div className="hidden sm:block">
+                    <GoogleSignInButton />
+                  </div>
+                )}
                 <Button
                   onClick={enterAsGuest}
                   variant="ghost"
@@ -269,7 +275,7 @@ const Welcome = () => {
                       </p>
                     </div>
                     <p className="text-xs text-muted-foreground font-medium mb-6">
-                      Based on income · ₹12,400 left · 15 days remaining
+                      Freely available after budgets, EMIs, subscriptions and savings
                     </p>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="px-4 py-4 rounded-xl bg-muted/30 border border-border/30">
@@ -826,7 +832,7 @@ const Welcome = () => {
                   The builder
                 </div>
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight mb-3">
-                  Built from something I witnessed at home
+                  Built from something I noticed in everyday life
                 </h2>
                 <p className="text-muted-foreground text-sm sm:text-base max-w-2xl mx-auto">
                   No investors. No startup. A student from Hyderabad.
@@ -855,24 +861,23 @@ const Welcome = () => {
                 <div>
                   <div className="rounded-xl bg-foreground/5 border border-border/40 px-4 py-3 mb-5 sm:mb-6">
                     <p className="text-sm sm:text-base text-foreground font-semibold leading-relaxed">
-                      "UPI is making money invisible" — I didn't just read that. I saw it happen with my own parents.
+                      "UPI made spending effortless — but that also made it easy to lose track."
                     </p>
                   </div>
 
                   <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-4">
                     I'm Sriyaan, a student from Hyderabad. I didn't build Trackora because of a lecture on personal finance.
-                    I built it because I watched my parents — hardworking, careful people — repeatedly reach the end of the
-                    month not knowing where the money went.
+                    I built it because I noticed something in everyday life — UPI makes paying so seamless that
+                    it's easy to forget what you've spent by the end of the month.
                   </p>
 
                   <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-4">
-                    It wasn't reckless spending. It was UPI making every ₹80 grocery run and ₹340 Swiggy order
-                    frictionless and forgettable.{" "}
-                    <strong className="text-foreground">So I built something that makes it visible.</strong>
+                    Every ₹80 grocery run and ₹340 Swiggy order adds up quietly.{" "}
+                    <strong className="text-foreground">So I built something that makes it visible — clearly and simply.</strong>
                   </p>
 
                   <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                    If this sounds like your house too, Trackora is for you.
+                    If you've ever wondered where the month went, Trackora is for you.
                   </p>
 
                   <div className="mt-5 sm:mt-6 pt-4 border-t border-border/30 flex items-center justify-between">

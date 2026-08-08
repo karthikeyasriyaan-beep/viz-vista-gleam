@@ -45,10 +45,10 @@ export default function About() {
                   The builder
                 </div>
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight mb-3">
-                  Built from something I witnessed at home
+                  Built from something I noticed in everyday life
                 </h2>
                 <p className="text-muted-foreground text-sm sm:text-base max-w-2xl mx-auto">
-                  No investors. No startup. A student from Hyderabad.
+                  No investors. No startup. Just one builder.
                 </p>
               </motion.div>
 
@@ -74,29 +74,74 @@ export default function About() {
                 <div>
                   <div className="rounded-xl bg-foreground/5 border border-border/40 px-4 py-3 mb-5 sm:mb-6">
                     <p className="text-sm sm:text-base text-foreground font-semibold leading-relaxed">
-                      "UPI is making money invisible" — I didn't just read that. I saw it happen with my own parents.
+                      "UPI made spending effortless — but that also made it easy to lose track."
                     </p>
                   </div>
 
                   <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-4">
-                    I'm Sriyaan, a student from Hyderabad. I didn't build Trackora because of a lecture on personal finance.
-                    I built it because I watched my parents — hardworking, careful people — repeatedly reach the end of the
-                    month not knowing where the money went.
+                    I'm Sriyaan, a student building Trackora independently. I didn't build it because of a lecture on personal finance.
+                    I built it because I noticed something in everyday life — UPI makes paying so seamless that
+                    it's easy to forget what you've spent by the end of the month.
                   </p>
 
                   <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-4">
-                    It wasn't reckless spending. It was UPI making every ₹80 grocery run and ₹340 Swiggy order
-                    frictionless and forgettable.{" "}
-                    <strong className="text-foreground">So I built something that makes it visible.</strong>
+                    Every ₹80 grocery run and ₹340 Swiggy order adds up quietly.{" "}
+                    <strong className="text-foreground">So I built something that makes it visible — clearly and simply.</strong>
                   </p>
 
                   <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                    If this sounds like your house too, Trackora is for you.
+                    If you've ever wondered where the month went, Trackora is for you.
                   </p>
+
+                  <div className="mt-5 sm:mt-6 rounded-xl bg-foreground/5 border border-border/40 px-4 py-4">
+                    <p className="text-xs sm:text-sm font-semibold text-foreground mb-3">
+                      What Trackora offers:
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        "Expense tracking",
+                        "AI-powered voice entry",
+                        "Quick Add transactions",
+                        "Spending analytics",
+                        "Budget monitoring",
+                        "Financial dashboards",
+                      ].map((feature) => (
+                        <span
+                          key={feature}
+                          className="text-[11px] font-medium text-muted-foreground border border-border/50 rounded-full px-3 py-1 bg-background/60"
+                        >
+                          {feature}
+                        </span>
+                      ))}
+                    </div>
+                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mt-3">
+                      Our goal is to make money management simple, accessible, and less intimidating for everyone.
+                    </p>
+                  </div>
+
+                  <div className="mt-4 rounded-xl border-l-4 border-primary bg-primary/5 px-4 py-3">
+                    <p className="text-[10px] uppercase tracking-widest text-primary font-semibold mb-1">Our Mission</p>
+                    <p className="text-xs sm:text-sm text-foreground leading-relaxed">
+                      Help people become more aware of their spending habits so they can make better financial decisions with confidence.
+                    </p>
+                  </div>
 
                   <div className="mt-5 sm:mt-6 pt-4 border-t border-border/30 flex items-center justify-between">
                     <span className="text-xs text-muted-foreground">— Sriyaan, Hyderabad</span>
                     <span className="text-[10px] text-muted-foreground/60">Created by Sriyaan Karthikeya</span>
+                  </div>
+
+                  <div className="mt-4 pt-4 border-t border-border/20">
+                    <p className="text-xs text-muted-foreground mb-1.5">Questions, feedback, or suggestions?</p>
+                    <p className="text-xs text-muted-foreground">
+                      <strong className="text-foreground">Email:</strong>{" "}
+                      <a href="mailto:trackorateam@trackorapp.in" className="text-primary hover:underline">
+                        trackorateam@trackorapp.in
+                      </a>
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      <strong className="text-foreground">Website:</strong> trackorapp.in
+                    </p>
                   </div>
                 </div>
               </motion.div>

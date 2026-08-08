@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { X, Cookie } from "lucide-react";
@@ -28,6 +28,9 @@ function loadAdSense() {
   s.src =
     "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9073321526391845";
   s.crossOrigin = "anonymous";
+  s.onerror = () => {
+    console.warn("Trackora: AdSense script failed to load.");
+  };
   document.head.appendChild(s);
 }
 
@@ -41,7 +44,7 @@ export function CookieConsent() {
     }
   }, []);
 
-  const acceptAll = () => {
+  const acceptAll = useCallback(() => {
     setCookie("accepted");
     setShowConsent(false);
 
@@ -54,9 +57,9 @@ export function CookieConsent() {
       });
     }
     loadAdSense();
-  };
+  }, []);
 
-  const rejectNonEssential = () => {
+  const rejectNonEssential = useCallback(() => {
     setCookie("essential-only");
     setShowConsent(false);
 
@@ -68,7 +71,7 @@ export function CookieConsent() {
         ad_personalization: "denied",
       });
     }
-  };
+  }, []);
 
   if (!showConsent) return null;
 
@@ -78,7 +81,8 @@ export function CookieConsent() {
         <button
           onClick={rejectNonEssential}
           className="absolute top-3 right-3 text-muted-foreground hover:text-foreground transition-colors"
-          aria-label="Close"
+          aria-label="Close — essential cookies only will be used"
+          title="Close — essential cookies only will be used"
         >
           <X className="h-4 w-4" />
         </button>
@@ -113,10 +117,14 @@ export function CookieConsent() {
         </div>
 
         <p className="text-xs text-muted-foreground mt-3 text-center">
-          Learn more in our{" "}
+          Preferences saved for 1 year. Learn more in our{" "}
           <a href="/privacy" className="underline hover:text-primary transition-colors">
             Privacy Policy
-          </a>
+          </a>{" "}
+          and{" "}
+          <a href="/terms" className="underline hover:text-primary transition-colors">
+            Terms
+          </a>.
         </p>
       </Card>
     </div>

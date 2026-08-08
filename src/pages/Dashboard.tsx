@@ -1,8 +1,9 @@
 "use client";
-
 import { useEffect, useState, useMemo, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { GmailConnectButton } from '@/components/GmailConnectButton';
+import { useOneSignal } from '@/hooks/useOneSignal';
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useCurrency } from "@/components/currency-selector";
@@ -100,6 +101,7 @@ function parseAppDate(value: string | Date) {
 
 /* ——— Main Dashboard ——— */
 export default function Dashboard() {
+  useOneSignal();
   const { user, isGuest } = useAuth();
   const { formatAmount } = useCurrency();
   const navigate = useNavigate();
@@ -309,9 +311,9 @@ export default function Dashboard() {
             <div className="flex gap-3 flex-shrink-0 flex-wrap">
               <VoiceInput variant="inline" label="Voice Input" onSuccess={refetchAll} />
               <AddExpenseDialog onSuccess={refetchAll} />
+              {!isGuest && <GmailConnectButton />}
             </div>
-          </motion.div>
-
+            </motion.div>
           {/* ——— Envelope Breakdown ——— */}
           <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06, ease }}
             className="rounded-2xl bg-card border border-border/40 px-5 py-5">

@@ -13,276 +13,164 @@ import { SEOHead } from "@/components/SEOHead";
 export default function Blog() {
   const blogPosts = [
     {
-      slug: "fifty-thirty-twenty-rule",
-      title: "The 50/30/20 Rule Explained: A Simple Budget That Works",
-      excerpt:
-        "Learn how the 50/30/20 budgeting rule helps you balance needs, wants, and savings.",
+      slug: "safe-to-spend-number",
+      title: "The Safe-to-Spend Number: Why One Daily Figure Beats a 12-Category Budget",
+      excerpt: "Discover how tracking a single daily number can simplify your finances more effectively than tedious multi-category budgeting.",
       date: "16 May 2026",
-      readTime: "8 min read",
+      readTime: "6 min read",
       category: "Budgeting",
     },
     {
-      slug: "why-tracking-expenses-matters",
-      title: "Why Tracking Expenses Matters More Than You Think",
-      excerpt:
-        "Understand why expense tracking is the foundation of financial awareness.",
+      slug: "voice-logging-petrol-expense",
+      title: "What Happens When You Say \"₹150 Petrol\" Out Loud (Inside Trackora's Voice Logging)",
+      excerpt: "An inside look at how Trackora's hands-free voice logging interprets your speech to log expenses on the go instantly.",
       date: "15 May 2026",
-      readTime: "7 min read",
-      category: "Expense Tracking",
+      readTime: "5 min read",
+      category: "Features",
     },
     {
-      slug: "monthly-budget-guide",
-      title: "How to Create a Monthly Budget for Beginners",
-      excerpt:
-        "A practical beginner-friendly guide to creating a realistic monthly budget.",
+      slug: "automatic-swiggy-categorization",
+      title: "Why Trackora Recognizes \"Swiggy\" as Food Automatically — And What That Saves You",
+      excerpt: "Learn how smart auto-categorization maps merchants perfectly behind the scenes to save you time and manual clicks.",
       date: "14 May 2026",
+      readTime: "5 min read",
+      category: "Automation",
+    },
+    {
+      slug: "scanning-kirana-receipt-vs-typing",
+      title: "Scanning a Kirana Receipt vs Typing It In: A Real Time Comparison",
+      excerpt: "We put Trackora's smart OCR camera receipt scanner up against manual logging to see exactly how much speed you gain.",
+      date: "13 May 2026",
+      readTime: "7 min read",
+      category: "Productivity",
+    },
+    {
+      slug: "subscriptions-tab-forgotten-renewals",
+      title: "The Subscriptions Tab: Finding the ₹999 Renewal You Forgot About",
+      excerpt: "Uncover hidden monthly leaks and master recurring payment visibility using Trackora's dedicated subscription tracking.",
+      date: "12 May 2026",
+      readTime: "6 min read",
+      category: "Savings",
+    },
+    {
+      slug: "budget-page-vs-dashboard",
+      title: "How Trackora's Budget Page Differs From Its Dashboard — And When to Use Each",
+      excerpt: "Understand the tactical differences between looking at your daily operations vs analyzing your long-term budget caps.",
+      date: "11 May 2026",
+      readTime: "5 min read",
+      category: "App Guide",
+    },
+    {
+      slug: "savings-goals-with-deadline",
+      title: "Savings Goals With a Deadline: Why \"Trip by December\" Beats \"Save More\"",
+      excerpt: "Why abstract saving milestones fail and how specific, time-bound targets inside Trackora push you to succeed.",
+      date: "10 May 2026",
+      readTime: "6 min read",
+      category: "Savings",
+    },
+    {
+      slug: "loans-emi-outstanding-percentage",
+      title: "Tracking Loans and EMIs in One Place: What the Outstanding Percentage Actually Tells You",
+      excerpt: "Demystify debt breakdown and track exactly how close you are to absolute financial freedom with debt tracking metrics.",
+      date: "09 May 2026",
+      readTime: "8 min read",
+      category: "Debt Management",
+    },
+    {
+      slug: "log-it-later-kills-tracking",
+      title: "Why \"I'll Log It Later\" Kills Expense Tracking (And What to Do Instead)",
+      excerpt: "The single habit that breaks most expense tracking attempts — and the exact changes that make in-the-moment logging sustainable.",
+      date: "08 May 2026",
+      readTime: "10 min read",
+      category: "Habits",
+    },
+    {
+      slug: "analytics-page-spending-trends",
+      title: "The Analytics Page Explained: Reading Your 3-Month Spending Trend Correctly",
+      excerpt: "Stop obsessing over one-off bad days. Learn how to identify and read multi-month behavioral trend lines.",
+      date: "07 May 2026",
+      readTime: "7 min read",
+      category: "Analytics",
+    },
+    {
+      slug: "no-bank-login-privacy",
+      title: "Why Trackora Doesn't Ask for Your Bank Login (And What That Means for Your Data)",
+      excerpt: "Explore our fundamental commitment to local-first privacy security and why we don't scrape your sensitive credentials.",
+      date: "06 May 2026",
+      readTime: "5 min read",
+      category: "Privacy",
+    },
+    {
+      slug: "week-inside-trackora-logging",
+      title: "A Week Inside Trackora: Logging Every Expense for 7 Days, Category by Category",
+      excerpt: "A field study logging real-world variable spending for a week straight and the resulting financial epiphanies.",
+      date: "05 May 2026",
       readTime: "9 min read",
+      category: "Case Study",
+    },
+    {
+      slug: "splitting-hostel-expenses-students",
+      title: "Splitting Hostel Expenses: Using Trackora as a Student Living Away From Home",
+      excerpt: "Practical tactics for college students to split rent, mess bills, and late-night snacks cleanly without ruining friendships.",
+      date: "04 May 2026",
+      readTime: "6 min read",
+      category: "Student Finance",
+    },
+    {
+      slug: "freelancers-fixed-budget-problem",
+      title: "The Freelancer's Problem With Fixed Budgets — And How Percentage Tracking Fixes It",
+      excerpt: "Static monthly budgets break when income is volatile. Learn how dynamic percentage allocations save the day.",
+      date: "03 May 2026",
+      readTime: "8 min read",
+      category: "Freelancing",
+    },
+    {
+      slug: "festival-season-spending-diwali-eid",
+      title: "Festival Season Spending: Tracking Diwali or Eid Expenses Without Losing the Plot",
+      excerpt: "How to enjoy traditional family holidays, buy gifts, and celebrate without suffering a crushing financial hangover in January.",
+      date: "02 May 2026",
+      readTime: "7 min read",
       category: "Budgeting",
     },
     {
-      slug: "upi-payments-spending-habits",
-      title: "How UPI Payments Make Small Expenses Invisible",
-      excerpt:
-        "Digital payments make spending easier and harder to notice.",
-      date: "13 May 2026",
+      slug: "wants-category-breakdown",
+      title: "Why Your \"Wants\" Category Is Bigger Than You Think — A Trackora Breakdown",
+      excerpt: "Confronting sneaky spending leakage that hides under the guise of daily absolute necessities.",
+      date: "01 May 2026",
       readTime: "6 min read",
       category: "Spending Habits",
     },
     {
-      slug: "money-management-students",
-      title: "Money Management Tips for Students",
-      excerpt:
-        "Simple financial habits students should build early.",
-      date: "12 May 2026",
-      readTime: "7 min read",
-      category: "Student Finance",
-    },
-    {
-      slug: "save-money-effectively",
-      title: "How to Save Money Effectively Without Feeling Restricted",
-      excerpt:
-        "Practical ways to save money consistently without frustration.",
-      date: "11 May 2026",
-      readTime: "8 min read",
-      category: "Savings",
-    },
-    {
-      slug: "common-financial-mistakes",
-      title: "10 Common Financial Mistakes and How to Avoid Them",
-      excerpt:
-        "Avoid the most common money mistakes people make.",
-      date: "10 May 2026",
-      readTime: "10 min read",
-      category: "Finance Tips",
-    },
-    {
-      slug: "what-is-personal-finance",
-      title: "What Is Personal Finance? A Beginner’s Guide",
-      excerpt:
-        "Learn the basics of personal finance management.",
-      date: "9 May 2026",
-      readTime: "9 min read",
-      category: "Finance Basics",
-    },
-    {
-      slug: "build-better-spending-habits",
-      title: "How to Build Better Spending Habits",
-      excerpt:
-        "Learn how small spending habits shape your financial future.",
-      date: "8 May 2026",
-      readTime: "7 min read",
-      category: "Financial Habits",
-    },
-    {
-      slug: "emergency-fund-guide",
-      title: "Why Everyone Needs an Emergency Fund",
-      excerpt:
-        "Emergency funds provide financial stability during uncertainty.",
-      date: "7 May 2026",
-      readTime: "8 min read",
-      category: "Savings",
-    },
-
-    {
-      slug: "stop-living-paycheck-to-paycheck",
-      title: "How to Stop Living Paycheck to Paycheck",
-      excerpt:
-        "Break the cycle of financial stress with practical budgeting habits.",
-      date: "6 May 2026",
-      readTime: "9 min read",
-      category: "Budgeting",
-    },
-    {
-      slug: "best-budgeting-methods",
-      title: "Best Budgeting Methods for Beginners",
-      excerpt:
-        "Explore beginner-friendly budgeting systems that actually work.",
-      date: "5 May 2026",
-      readTime: "10 min read",
-      category: "Budgeting",
-    },
-    {
-      slug: "save-money-on-food",
-      title: "How to Save Money on Food Every Month",
-      excerpt:
-        "Reduce food spending without sacrificing quality or convenience.",
-      date: "4 May 2026",
-      readTime: "7 min read",
-      category: "Savings",
-    },
-    {
-      slug: "reduce-monthly-expenses",
-      title: "Simple Ways to Reduce Monthly Expenses",
-      excerpt:
-        "Easy ways to lower recurring expenses and improve savings.",
-      date: "3 May 2026",
-      readTime: "8 min read",
-      category: "Money Saving",
-    },
-    {
-      slug: "zero-based-budgeting",
-      title: "Zero-Based Budgeting Explained for Beginners",
-      excerpt:
-        "Learn how zero-based budgeting helps control every rupee.",
-      date: "2 May 2026",
-      readTime: "9 min read",
-      category: "Budgeting",
-    },
-    {
-      slug: "budget-after-college",
-      title: "How to Create a Budget After College",
-      excerpt:
-        "Financial tips for graduates starting their first jobs.",
-      date: "1 May 2026",
-      readTime: "8 min read",
-      category: "Student Finance",
-    },
-    {
-      slug: "where-money-goes",
-      title: "Why Most People Don’t Know Where Their Money Goes",
-      excerpt:
-        "Digital payments make small daily spending harder to notice.",
+      slug: "emi-stacking-multiple-loans",
+      title: "EMI Stacking: What Happens When Two Loans Hit the Same Month",
+      excerpt: "Strategic survival blueprints for handling overlapping cash crunches when multiple payments align concurrently.",
       date: "30 April 2026",
       readTime: "7 min read",
-      category: "Expense Tracking",
+      category: "Debt Management",
     },
     {
-      slug: "daily-expense-tracking-habits",
-      title: "Daily Expense Tracking Habits That Actually Work",
-      excerpt:
-        "Build realistic expense tracking habits you can maintain long term.",
+      slug: "salaried-month-timeline-mapping",
+      title: "From Salary Day to the 25th: Mapping a Real Indian Salaried Month",
+      excerpt: "A realistic look into the emotional and physical arc of a typical paycheck lifecycle from early luxury to late-month survival.",
       date: "29 April 2026",
-      readTime: "7 min read",
-      category: "Expense Tracking",
+      readTime: "8 min read",
+      category: "Financial Awareness",
     },
     {
-      slug: "expense-tracking-categories",
-      title: "Best Categories for Expense Tracking",
-      excerpt:
-        "Using proper categories improves financial clarity and awareness.",
+      slug: "six-month-income-vs-expense",
+      title: "Why Trackora Shows Income vs Expenses Over 6 Months, Not Just This Month",
+      excerpt: "Why short-term views distort reality, and how zooming out to a 6-month macroeconomic perspective changes your outlook.",
       date: "28 April 2026",
       readTime: "6 min read",
-      category: "Expense Tracking",
+      category: "Analytics",
     },
     {
-      slug: "small-expenses-destroy-savings",
-      title: "How Small Expenses Destroy Savings Over Time",
-      excerpt:
-        "Small purchases add up faster than most people realize.",
+      slug: "budget-app-vs-expense-tracker",
+      title: "The Honest Difference Between a Budget App and an Expense Tracker (And Why Trackora Is Both)",
+      excerpt: "Reactive logging tells you where you went; proactive budgeting says where you are going. Here's how to mesh both seamlessly.",
       date: "27 April 2026",
       readTime: "8 min read",
-      category: "Savings",
-    },
-
-    {
-      slug: "cash-vs-upi-spending",
-      title: "Cash vs UPI Spending Psychology",
-      excerpt:
-        "Learn how payment methods influence spending behavior.",
-      date: "26 April 2026",
-      readTime: "8 min read",
-      category: "Behavioral Finance",
-    },
-    {
-      slug: "financial-mistakes-students",
-      title: "Financial Mistakes College Students Make",
-      excerpt:
-        "Avoid common financial mistakes students make during college life.",
-      date: "25 April 2026",
-      readTime: "7 min read",
-      category: "Student Finance",
-    },
-    {
-      slug: "students-save-money-india",
-      title: "How Students Can Save Money in India",
-      excerpt:
-        "Practical saving tips specifically for Indian students.",
-      date: "24 April 2026",
-      readTime: "8 min read",
-      category: "Savings",
-    },
-    {
-      slug: "money-habits-before-25",
-      title: "Best Money Habits to Learn Before 25",
-      excerpt:
-        "Financial habits built early can shape long-term stability.",
-      date: "23 April 2026",
-      readTime: "7 min read",
-      category: "Financial Habits",
-    },
-    {
-      slug: "budgeting-hostel-students",
-      title: "Budgeting Tips for Hostel Students",
-      excerpt:
-        "Simple budgeting ideas for students living away from home.",
-      date: "22 April 2026",
-      readTime: "6 min read",
-      category: "Student Finance",
-    },
-    {
-      slug: "why-financial-discipline-matters",
-      title: "Why Financial Discipline Matters",
-      excerpt:
-        "Financial discipline is more important than income alone.",
-      date: "21 April 2026",
-      readTime: "8 min read",
-      category: "Financial Habits",
-    },
-    {
-      slug: "financial-stress-daily-life",
-      title: "How Financial Stress Affects Daily Life",
-      excerpt:
-        "Money stress impacts productivity, mental peace, and decisions.",
-      date: "20 April 2026",
-      readTime: "7 min read",
-      category: "Financial Awareness",
-    },
-    {
-      slug: "needs-vs-wants",
-      title: "The Difference Between Needs and Wants",
-      excerpt:
-        "Understanding needs vs wants improves financial decisions.",
-      date: "19 April 2026",
-      readTime: "6 min read",
       category: "Finance Basics",
-    },
-    {
-      slug: "financial-awareness-vs-income",
-      title: "Why Financial Awareness Is More Important Than Income",
-      excerpt:
-        "Higher income alone does not guarantee financial stability.",
-      date: "18 April 2026",
-      readTime: "8 min read",
-      category: "Financial Awareness",
-    },
-    {
-      slug: "lifestyle-inflation",
-      title: "How Lifestyle Inflation Ruins Savings",
-      excerpt:
-        "Increasing lifestyle expenses can quietly destroy long-term savings.",
-      date: "17 April 2026",
-      readTime: "8 min read",
-      category: "Savings",
     },
   ];
 
@@ -311,7 +199,6 @@ export default function Blog() {
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
                 Trackora Blog
               </h1>
-
               <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl">
                 Financial tips, budgeting guides, and practical money advice
                 to help you understand spending habits and make smarter
@@ -343,17 +230,14 @@ export default function Blog() {
                       </p>
 
                       <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground pt-4 border-t">
-
                         <div className="flex items-center gap-2">
                           <Calendar className="h-4 w-4" />
                           {post.date}
                         </div>
-
                         <div className="flex items-center gap-2">
                           <Clock className="h-4 w-4" />
                           {post.readTime}
                         </div>
-
                       </div>
 
                       <div className="flex items-center gap-2 text-primary font-medium group-hover:gap-3 transition-all">

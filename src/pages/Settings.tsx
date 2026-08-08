@@ -53,7 +53,16 @@ function Section({ title, children }: { title: string; children: React.ReactNode
     </div>
   );
 }
+import { useOneSignal } from '@/hooks/useOneSignal';
 
+function NotificationOptIn() {
+  const { requestPermission } = useOneSignal();
+  return (
+    <button onClick={requestPermission} className="text-sm underline text-muted-foreground">
+      Enable renewal reminders
+    </button>
+  );
+}
 export default function Settings() {
   const { user } = useAuth();
   const { toast } = useToast();

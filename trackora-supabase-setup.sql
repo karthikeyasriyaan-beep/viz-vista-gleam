@@ -142,12 +142,6 @@ create table if not exists public.loans (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
-
--- Migration helpers (rename old columns / add missing ones if you ran a previous version)
-alter table public.loans rename column principal_amount to initial_amount;
--- if the above errors with "column does not exist", it's already renamed — ignore.
-alter table public.loans rename column remaining_amount to current_balance;
--- ditto.
 alter table public.loans add column if not exists status text not null default 'active';
 create index if not exists idx_loans_user on public.loans (user_id);
 
