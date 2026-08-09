@@ -35,3 +35,36 @@ entrypoint = "./functions/notify-renewals/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/notify-renewals/*.html" ]
+
+[functions.notify-budget-alerts]
+enabled = true
+verify_jwt = false
+import_map = "./functions/notify-budget-alerts/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/notify-budget-alerts/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/notify-budget-alerts/*.html" ]
+
+[functions.notify-safe-spend]
+enabled = true
+verify_jwt = false
+import_map = "./functions/notify-safe-spend/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/notify-safe-spend/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/notify-safe-spend/*.html" ]
+
+[functions.notify-summary]
+enabled = true
+verify_jwt = false
+import_map = "./functions/notify-summary/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/notify-summary/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/notify-summary/*.html" ]

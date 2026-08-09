@@ -3,6 +3,7 @@ import { useEffect, useState, useMemo, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { GmailConnectButton } from '@/components/GmailConnectButton';
+import { GmailFeedbackPoll } from '@/components/GmailFeedbackPoll';
 import { useOneSignal } from '@/hooks/useOneSignal';
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -101,7 +102,7 @@ function parseAppDate(value: string | Date) {
 
 /* ——— Main Dashboard ——— */
 export default function Dashboard() {
-  useOneSignal();
+  const { requestPermission } = useOneSignal();
   const { user, isGuest } = useAuth();
   const { formatAmount } = useCurrency();
   const navigate = useNavigate();
@@ -228,8 +229,6 @@ export default function Dashboard() {
   const totalExpenses = monthExpenses.reduce((s: number, e: any) => s + Number(e.amount), 0);
   const totalIncome = monthIncome.reduce((s: number, i: any) => s + Number(i.amount), 0);
 
-  // ——— Envelope budgeting ———
-  // Spend per category this month
   const spendByCategory = monthExpenses.reduce((acc: Record<string, number>, e: any) => {
     const c = e.category || "Other";
     acc[c] = (acc[c] || 0) + Number(e.amount);
@@ -237,12 +236,10 @@ export default function Dashboard() {
   }, {});
   const budgetedCategories = new Set((categoryBudgets as any[]).map((b) => b.category));
   const totalBudgeted = (categoryBudgets as any[]).reduce((s, b) => s + Number(b.monthly_limit || 0), 0);
-  // Reserved deduction: max(limit, spent_in_cat) — reservation holds, overspend extends it
   const totalReservedDeduction = (categoryBudgets as any[]).reduce(
     (s, b) => s + Math.max(Number(b.monthly_limit || 0), spendByCategory[b.category] || 0),
     0
   );
-  // Unbudgeted spend (categories without a budget) hits safe-to-spend directly
   const unbudgetedSpend = Object.entries(spendByCategory)
     .filter(([cat]) => !budgetedCategories.has(cat))
     .reduce((s, [, amt]) => s + (amt as number), 0);
@@ -262,7 +259,6 @@ export default function Dashboard() {
   const remainingEMIObligations = Math.max(totalEMIObligations - emiPaidThisMonth, 0);
 
   const budgetLimit = monthlyBudget?.total_limit || 0;
-  // Freely available (envelope safe-to-spend)
   const safeToSpend = Math.max(totalIncome - totalReservedDeduction - unbudgetedSpend - remainingEMIObligations, 0);
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const dayOfMonth = now.getDate();
@@ -288,7 +284,6 @@ export default function Dashboard() {
       <div className="relative min-h-screen w-full overflow-x-hidden bg-background">
         <div className="max-w-6xl mx-auto px-5 md:px-8 pt-6 pb-28 space-y-6">
 
-          {/* ——— Top: Safe to Spend (full width, compact) ——— */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease }}
             className="rounded-2xl bg-card border border-border/40 px-6 py-6 md:py-8 flex flex-col md:flex-row items-center md:items-start gap-6">
             <div className="flex-1 text-center md:text-left">
@@ -307,14 +302,23 @@ export default function Dashboard() {
               </p>
             </div>
 
-            {/* Quick Actions inline on desktop */}
-            <div className="flex gap-3 flex-shrink-0 flex-wrap">
+            <div className="flex gap-3 flex-shrink-0 flex-wrap items-start">
               <VoiceInput variant="inline" label="Voice Input" onSuccess={refetchAll} />
               <AddExpenseDialog onSuccess={refetchAll} />
-              {!isGuest && <GmailConnectButton />}
+              {!isGuest && (
+                <div className="flex flex-col items-center gap-0.5">
+                  <GmailConnectButton />
+                  <span className="text-[10px] text-muted-foreground font-medium">Coming soon</span>
+                  <GmailFeedbackPoll />
+                </div>
+              )}
+              {!isGuest && (
+                <Button variant="outline" onClick={requestPermission}>
+                  Enable Reminders
+                </Button>
+              )}
             </div>
             </motion.div>
-          {/* ——— Envelope Breakdown ——— */}
           <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06, ease }}
             className="rounded-2xl bg-card border border-border/40 px-5 py-5">
             <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-medium mb-4">This month's money</p>
@@ -341,7 +345,6 @@ export default function Dashboard() {
             </div>
           </motion.div>
 
-          {/* ——— Grid: Summary + Budget ——— */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08, ease }}
               className="px-5 py-5 rounded-2xl bg-card border border-border/40">
@@ -384,10 +387,8 @@ export default function Dashboard() {
             )}
           </div>
 
-          {/* ——— Bottom Grid: Transactions + Loans ——— */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-            {/* Recent Transactions */}
             <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, ease }}
               className="rounded-2xl bg-card border border-border/40 overflow-hidden">
               <div className="flex items-center justify-between px-5 pt-5 pb-3">
@@ -426,7 +427,6 @@ export default function Dashboard() {
               </div>
             </motion.div>
 
-            {/* Loans & Debts */}
             {!isGuest && (
               <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.24, ease }}
                 className="rounded-2xl bg-card border border-border/40 overflow-hidden">
@@ -479,9 +479,7 @@ export default function Dashboard() {
             )}
           </div>
 
-          {/* ——— Subscriptions & Savings Grid ——— */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Upcoming Subscription Renewals */}
             {!isGuest && subscriptions.length > 0 && (
               <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.28, ease }}
                 className="rounded-2xl bg-card border border-border/40 overflow-hidden">
@@ -508,7 +506,6 @@ export default function Dashboard() {
               </motion.div>
             )}
 
-            {/* Savings Target */}
             {!isGuest && savingsGoals.length > 0 && (
               <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.32, ease }}
                 className="rounded-2xl bg-card border border-border/40 overflow-hidden">
