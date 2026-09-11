@@ -9,10 +9,10 @@ import {
 } from "lucide-react";
 import { Footer } from "@/components/Footer";
 import { useAuth } from "@/hooks/useAuth";
+import { SEOHead } from "@/components/SEOHead";
 
 export default function BudgetingGuide() {
-  const { enterAsGuest } = useAuth();
-
+  const { signInWithGoogle } = useAuth();
   const budgetingMethods = [
     {
       title: "The 50/30/20 Rule",
@@ -118,7 +118,14 @@ export default function BudgetingGuide() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/5">
+    <>
+      <SEOHead
+        title="Budgeting Guide — Learn 4 Proven Budget Methods & Avoid Mistakes | Trackora"
+        description="Master budgeting with our complete guide: 50/30/20 rule, zero-based budgeting, envelope system, and proven strategies for Indian families."
+        keywords="budgeting guide, budget methods, how to budget, budgeting for beginners, budget tips India"
+        canonicalUrl="https://trackorapp.in/budgeting-guide"
+      />
+      <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/5">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
         <div className="container mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
@@ -410,7 +417,7 @@ export default function BudgetingGuide() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button
-                  onClick={enterAsGuest}
+                  onClick={() => void signInWithGoogle()}
                   size="lg"
                   className="text-lg px-10 py-7 rounded-2xl shadow-lg hover:shadow-xl transition-all bg-gradient-to-r from-primary to-secondary"
                 >
@@ -434,5 +441,6 @@ export default function BudgetingGuide() {
 
       <Footer />
     </div>
+    </>
   );
 }

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { 
   DollarSign, Repeat, Target, BarChart3, 
   Shield, Zap, CheckCircle2, ArrowRight,
-  Globe, Wallet
+  Globe, Wallet, ScanLine
 } from "lucide-react";
 import { Footer } from "@/components/Footer";
 import { useNavigate } from "react-router-dom";
@@ -14,6 +14,34 @@ const Features = () => {
   const navigate = useNavigate();
 
   const mainFeatures = [
+    {
+      icon: ScanLine,
+      title: "📥 Smart Import",
+      description: "Turn receipts and messages into organised transactions:",
+      features: [
+        "Scan receipts instead of typing every line",
+        "Import expense details from supported messages",
+        "Review and edit imported transactions before saving",
+        "Automatically suggest categories from the details",
+        "Keep your records in one searchable place"
+      ],
+      highlight: "Less data entry. More time with a clear picture of your spending.",
+      color: "from-primary/20 to-accent/20"
+    },
+    {
+      icon: Target,
+      title: "🎯 Budget Planning",
+      description: "Give every month a plan that matches how you spend:",
+      features: [
+        "Set a monthly budget for your household",
+        "Track planned spending against actual expenses",
+        "See category-level progress as the month moves on",
+        "Adjust your plan when your priorities change",
+        "Keep budgets alongside your transactions and insights"
+      ],
+      highlight: "A budget that reflects real life, not a spreadsheet you forget.",
+      color: "from-accent/20 to-primary/20"
+    },
     {
       icon: DollarSign,
       title: "💰 Loans & Debts Tracker",
@@ -218,7 +246,7 @@ const Features = () => {
             Built for <span className="text-primary">real life</span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            No bank linking. No complicated setup. Works the moment you open it.
+            Sign in once. No bank linking. Your financial workspace is ready when you are.
           </p>
         </div>
 

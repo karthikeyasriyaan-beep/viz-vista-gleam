@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Footer } from "@/components/Footer";
 import { Link } from "react-router-dom";
+import { SEOHead } from "@/components/SEOHead";
 
 const categories = [
   {
@@ -57,7 +58,14 @@ export default function Resources() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      <SEOHead
+        title="Financial Resources & Guides — Learn Money Management | Trackora"
+        description="Explore comprehensive guides on expense tracking, budgeting, savings goals, loans, and subscriptions. Free educational resources for personal finance."
+        keywords="financial resources, money management guides, budgeting tips, expense tracking guides, savings resources"
+        canonicalUrl="https://trackorapp.in/resources"
+      />
+      <div className="min-h-screen bg-background\">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 max-w-5xl">
         <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="mb-6 gap-2">
           <ArrowLeft className="h-4 w-4" /> Back
@@ -106,5 +114,6 @@ export default function Resources() {
       </div>
       <Footer />
     </div>
+    </>
   );
 }

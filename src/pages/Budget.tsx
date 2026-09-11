@@ -13,6 +13,7 @@ import {
   Sparkles,
   Trash2,
 } from "lucide-react";
+import { SEOHead } from "@/components/SEOHead";
 import { NoIndexMeta } from "@/components/NoIndexMeta";
 import { useState, useMemo, useRef, useEffect } from "react";
 import { SetBudgetDialog } from "@/components/forms/SetBudgetDialog";
@@ -230,6 +231,7 @@ export default function Budget() {
 
   return (
     <>
+      <SEOHead title="Budget Planner" description="Plan your monthly spending and compare your budget with actual expenses in Trackora." noindex />
       <NoIndexMeta />
 
       <div className="relative min-h-screen w-full overflow-x-hidden bg-background">

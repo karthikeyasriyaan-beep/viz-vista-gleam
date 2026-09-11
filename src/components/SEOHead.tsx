@@ -11,6 +11,7 @@ interface SEOHeadProps {
   author?: string;
   section?: string;
   imageUrl?: string;
+  noindex?: boolean;
 }
 
 /**
@@ -25,9 +26,10 @@ export const SEOHead = ({
   type = "website",
   publishedTime,
   modifiedTime,
-  author = "Trackora Team",
+  author = "Sriyaan karthikeya",
   section,
   imageUrl,
+  noindex = false,
 }: SEOHeadProps) => {
   useEffect(() => {
     // Update document title
@@ -45,7 +47,10 @@ export const SEOHead = ({
       element.setAttribute("content", content);
     };
 
-    // Set canonical URL
+    // Robots directive — keeps pages like NotFound out of the index
+    setMetaTag("robots", noindex ? "noindex, follow" : "index, follow");
+
+    // Canonical URL — clear any stale one when this page shouldn't set its own
     let canonicalElement = document.querySelector('link[rel="canonical"]');
     if (canonicalUrl) {
       if (!canonicalElement) {
@@ -54,6 +59,8 @@ export const SEOHead = ({
         document.head.appendChild(canonicalElement);
       }
       canonicalElement.setAttribute("href", canonicalUrl);
+    } else if (canonicalElement) {
+      canonicalElement.remove();
     }
 
     // Basic meta tags
@@ -102,8 +109,21 @@ export const SEOHead = ({
     // Cleanup function - reset to defaults when component unmounts
     return () => {
       document.title = "Trackora - Smart Expense Tracker & Budget Analytics Platform";
+      setMetaTag("robots", "index, follow");
     };
-  }, [title, description, keywords, canonicalUrl, type, publishedTime, modifiedTime, author, section, imageUrl]);
+  }, [
+    title,
+    description,
+    keywords,
+    canonicalUrl,
+    type,
+    publishedTime,
+    modifiedTime,
+    author,
+    section,
+    imageUrl,
+    noindex,
+  ]);
 
   return null;
 };

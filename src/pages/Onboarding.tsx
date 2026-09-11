@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Receipt, Wallet, PiggyBank, Repeat, LayoutDashboard, ArrowRight, SkipForward } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SEOHead } from "@/components/SEOHead";
 
 const steps = [
   {
@@ -64,7 +65,14 @@ export default function Onboarding() {
   const Icon = step.icon;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
+    <>
+      <SEOHead
+        title="Get Started with Trackora — Your Personal Finance Guide | Trackora"
+        description="Learn how Trackora helps you track expenses, manage budgets, and reach your savings goals. A complete onboarding guide to financial awareness."
+        keywords="get started Trackora, how to use Trackora, expense tracker guide, financial management tools"
+        canonicalUrl="https://trackorapp.in/onboarding"
+      />
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
       {current < steps.length - 1 && (
         <div className="fixed top-4 right-4 z-10">
           <Button variant="ghost" size="sm" onClick={finish} className="gap-1.5 text-muted-foreground text-xs">
@@ -108,5 +116,6 @@ export default function Onboarding() {
         </AnimatePresence>
       </div>
     </div>
+    </>
   );
 }

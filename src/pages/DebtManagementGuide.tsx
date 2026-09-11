@@ -9,10 +9,10 @@ import {
 } from "lucide-react";
 import { Footer } from "@/components/Footer";
 import { useAuth } from "@/hooks/useAuth";
+import { SEOHead } from "@/components/SEOHead";
 
 export default function DebtManagementGuide() {
-  const { enterAsGuest } = useAuth();
-
+  const { signInWithGoogle } = useAuth();
   const debtTypes = [
     {
       type: "Credit Card Debt",
@@ -201,7 +201,15 @@ export default function DebtManagementGuide() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/5">
+    <>
+      <SEOHead
+        title="Debt Management Guide — Pay Off Debt Faster | Trackora"
+        description="A complete guide to understanding debt types, comparing payoff strategies like avalanche vs snowball, avoiding common mistakes, and eliminating debt faster."
+        keywords="debt management, debt payoff, debt avalanche, debt snowball, credit card debt, EMI, loan payoff India"
+        canonicalUrl="https://trackorapp.in/debt-management-guide"
+      />
+
+      <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/5">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
         <div className="container mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
@@ -511,7 +519,7 @@ export default function DebtManagementGuide() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button
-                  onClick={enterAsGuest}
+                  onClick={() => void signInWithGoogle()}
                   size="lg"
                   className="text-lg px-10 py-7 rounded-2xl shadow-lg hover:shadow-xl transition-all bg-gradient-to-r from-primary to-secondary"
                 >
@@ -534,6 +542,7 @@ export default function DebtManagementGuide() {
       </div>
 
       <Footer />
-    </div>
+      </div>
+    </>
   );
 }

@@ -8,11 +8,12 @@ import {
 } from "recharts";
 import {
   TrendingUp, TrendingDown, Wallet, PiggyBank, CreditCard, Repeat,
-  ArrowUpRight, ArrowDownRight, Target, AlertTriangle, Sparkles, BarChart3,
+  ArrowUpRight, ArrowDownRight, Target, AlertTriangle, Sparkles, BarChart3, ShieldCheck,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useCurrency } from "@/components/currency-selector";
+import { SEOHead } from "@/components/SEOHead";
 import { NoIndexMeta } from "@/components/NoIndexMeta";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
@@ -190,6 +191,29 @@ export default function Analytics() {
     return { target, saved, pct };
   }, [savings]);
 
+  // current-month pace projection (pure math, no AI)
+  const monthPace = useMemo(() => {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+    const dayOfMonth = now.getDate();
+
+    const spentSoFar = expenses
+      .filter((e: any) => {
+        const d = parseAppDate(e.date);
+        return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+      })
+      .reduce((s: number, e: any) => s + Number(e.amount || 0), 0);
+
+    if (spentSoFar === 0 || dayOfMonth === 0) return null;
+
+    const dailyAvg = spentSoFar / dayOfMonth;
+    const projected = dailyAvg * daysInMonth;
+
+    return { spentSoFar, dayOfMonth, daysInMonth, dailyAvg, projected };
+  }, [expenses]);
+
   // ------ insights (smart, rule-based, NOT AI) ------
   const insights = useMemo(() => {
     const out: { type: "positive" | "warning" | "info"; title: string; body: string }[] = [];
@@ -272,6 +296,16 @@ export default function Analytics() {
       });
     }
 
+    // Month-end pace projection
+    if (monthPace) {
+      const overshoot = totals.totalIncome > 0 && monthPace.projected > totals.totalIncome;
+      out.push({
+        type: overshoot ? "warning" : "info",
+        title: overshoot ? "On track to overspend this month" : "This month's pace",
+        body: `At ${formatAmount(monthPace.dailyAvg)}/day, you're on pace for ~${formatAmount(monthPace.projected)} by day ${monthPace.daysInMonth}.`,
+      });
+    }
+
     if (out.length === 0) {
       out.push({
         type: "info",
@@ -280,7 +314,7 @@ export default function Analytics() {
       });
     }
     return out;
-  }, [categoryBreakdown, deltas, totals, subsMonthly, loanStats, savingsStats, monthlyTrend, formatAmount]);
+  }, [categoryBreakdown, deltas, totals, subsMonthly, loanStats, savingsStats, monthlyTrend, monthPace, formatAmount]);
 
   if (isLoading) {
     return (
@@ -302,6 +336,7 @@ export default function Analytics() {
 
   return (
     <>
+      <SEOHead title="Spending Analytics" description="Review your income, expenses, categories, and spending trends in Trackora." noindex />
       <NoIndexMeta />
 
       {/* Sticky header — matches Transactions / Smart Import vibe */}
@@ -354,9 +389,15 @@ export default function Analytics() {
         {/* Smart insights */}
         <motion.div variants={fadeUp} initial="hidden" animate="show" custom={4}
           className="rounded-2xl border border-border/30 bg-card overflow-hidden">
-          <div className="flex items-center gap-2 px-4 sm:px-5 py-3 border-b border-border/20">
-            <Sparkles className="h-3.5 w-3.5" />
-            <p className="text-[11px] font-bold uppercase tracking-[0.14em]">Answers for you</p>
+          <div className="flex items-center justify-between gap-2 px-4 sm:px-5 py-3 border-b border-border/20">
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-3.5 w-3.5" />
+              <p className="text-[11px] font-bold uppercase tracking-[0.14em]">Answers for you</p>
+            </div>
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-foreground/5 border border-border/40">
+              <ShieldCheck className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+              <span className="text-[9px] sm:text-[10px] font-semibold text-muted-foreground whitespace-nowrap">Computed on your data — no AI, nothing sent anywhere</span>
+            </div>
           </div>
           <div className="divide-y divide-border/20">
             {insights.map((ins, i) => (
@@ -646,10 +687,6 @@ export default function Analytics() {
             </div>
           </TabsContent>
         </Tabs>
-
-        <p className="text-[11px] text-muted-foreground text-center pt-4">
-          Insights are computed from your data — no AI, just smart math.
-        </p>
       </div>
     </>
   );

@@ -1,11 +1,9 @@
 import { useAuth } from '@/hooks/useAuth';
+import { Navigate, useLocation } from 'react-router-dom';
 
-/**
- * Auth removed — no login required. Just waits briefly for the anonymous
- * Supabase session to be established so queries using auth.uid() work.
- */
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { loading } = useAuth();
+  const { loading, user } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -13,6 +11,10 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
       </div>
     );
+  }
+
+  if (!user || user.is_anonymous) {
+    return <Navigate to="/" replace state={{ from: location.pathname }} />;
   }
 
   return <>{children}</>;

@@ -149,6 +149,9 @@ export default function App() {
                   <Route path="/loans" element={<Loans />} />
                   <Route path="/savings" element={<Savings />} />
                   <Route path="/settings" element={<Settings />} />
+                  <Route path="/budgeting-guide" element={<BudgetingGuide />} />
+                  <Route path="/savings-guide" element={<SavingsGuide />} />
+                  <Route path="/debt-management-guide" element={<DebtManagementGuide />} />
                 </Route>
 
                 <Route path="/privacy" element={<Privacy />} />
@@ -162,9 +165,6 @@ export default function App() {
                 <Route path="/disclaimer" element={<Disclaimer />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/how-it-works" element={<HowItWorks />} />
-                <Route path="/budgeting-guide" element={<BudgetingGuide />} />
-                <Route path="/savings-guide" element={<SavingsGuide />} />
-                <Route path="/debt-management-guide" element={<DebtManagementGuide />} />
                 <Route path="/resources" element={<Resources />} />
                 <Route path="/resources/:slug" element={<ResourceArticle />} />
                 <Route path="*" element={<NotFound />} />

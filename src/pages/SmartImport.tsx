@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { addGuestExpense } from "@/lib/guest-storage";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { SEOHead } from "@/components/SEOHead";
 import { NoIndexMeta } from "@/components/NoIndexMeta";
 import { EXPENSE_CATEGORIES, detectExpenseCategory } from "@/lib/categories";
 
@@ -252,6 +253,7 @@ export default function SmartImport() {
 
   return (
     <>
+      <SEOHead title="Smart Import" description="Import expenses from receipts and supported messages, then review them in Trackora." noindex />
       <NoIndexMeta />
       <div className="min-h-screen w-full bg-background" onPaste={onPaste}>
 

@@ -130,20 +130,15 @@
 
 @layer utilities {
   /* Glass Effects — Matte */
-  .glass { 
+  .glass {
     @apply bg-card/80 backdrop-blur-2xl border border-border/40;
     box-shadow: var(--shadow-lg);
   }
-  .glass-strong { 
+  .glass-strong {
     @apply bg-card/90 backdrop-blur-2xl border border-border/50;
     box-shadow: var(--shadow-xl);
   }
-  
-  /* Gradient Text — Monochrome */
-  .gradient-text { 
-    @apply bg-gradient-to-r from-foreground via-foreground/80 to-foreground bg-clip-text text-transparent font-extrabold; 
-  }
-  
+
   /* Bold Card Styles */
   .luxury-card {
     @apply relative overflow-hidden rounded-2xl border border-border/60 bg-card transition-all duration-500;
@@ -160,18 +155,18 @@
     left: 0;
     right: 0;
     height: 2px;
-    background: linear-gradient(90deg, hsl(var(--foreground)), hsl(var(--muted-foreground)), hsl(var(--foreground)));
+    background: hsl(var(--foreground));
   }
-  
+
   /* Hover Effects — Premium */
-  .hover-glow { 
+  .hover-glow {
     @apply transition-all duration-300 ease-out;
   }
   .hover-glow:hover {
     box-shadow: var(--shadow-glow);
     transform: translateY(-2px);
   }
-  .hover-lift { 
+  .hover-lift {
     @apply transition-all duration-500 ease-out;
     box-shadow: var(--shadow-sm);
   }
@@ -187,7 +182,7 @@
   .icon-hover:hover {
     transform: scale(1.1) rotate(-3deg);
   }
-  
+
   /* Bold Button */
   .btn-luxury {
     @apply rounded-xl px-8 py-4 font-extrabold tracking-tight transition-all duration-300;
@@ -199,18 +194,18 @@
     box-shadow: var(--shadow-glow);
     transform: translateY(-2px);
   }
-  
+
   /* Status */
   .status-positive { @apply text-success font-bold; }
   .status-negative { @apply text-destructive font-bold; }
   .status-neutral { @apply text-muted-foreground font-bold; }
   .transition-smooth { @apply transition-all duration-300 ease-out; }
-  
+
   /* Highlight Box */
   .highlight-box {
     @apply relative rounded-2xl p-8 overflow-hidden bg-muted/50 border border-border/40;
   }
-  
+
   /* Feature Badge */
   .feature-badge {
     @apply inline-flex items-center gap-2 px-4 py-2 rounded-full font-bold text-sm;
@@ -219,41 +214,37 @@
   }
 
   /* Animations */
-  @keyframes gentle-pulse { 
+  @keyframes gentle-pulse {
     0%, 100% { opacity: 1; transform: scale(1); }
     50% { opacity: 0.92; transform: scale(1.01); }
   }
-  @keyframes soft-slide-up { 
-    from { opacity: 0; transform: translateY(40px); } 
-    to { opacity: 1; transform: translateY(0); } 
+  @keyframes soft-slide-up {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
   }
-  @keyframes fade-in { 
-    from { opacity: 0; } 
-    to { opacity: 1; } 
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
-  @keyframes count-up { 
-    from { transform: translateY(12px); opacity: 0; } 
-    to { transform: translateY(0); opacity: 1; } 
+  @keyframes count-up {
+    from { transform: translateY(12px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
   }
-  @keyframes subtle-glow { 
+  @keyframes subtle-glow {
     0%, 100% { box-shadow: 0 0 20px 0 hsl(var(--foreground) / 0.1); }
     50% { box-shadow: 0 0 40px 8px hsl(var(--foreground) / 0.06); }
   }
-  @keyframes gentle-float { 
+  @keyframes gentle-float {
     0%, 100% { transform: translateY(0px); }
     50% { transform: translateY(-10px); }
   }
-  @keyframes soft-shimmer { 
+  @keyframes soft-shimmer {
     0% { background-position: -1000px 0; }
     100% { background-position: 1000px 0; }
   }
   @keyframes rotate-glow {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
-  }
-  @keyframes gradient-shift {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
   }
   @keyframes text-reveal {
     from { clip-path: inset(0 100% 0 0); }
@@ -267,9 +258,5 @@
   .animate-subtle-glow { animation: subtle-glow 5s ease-in-out infinite; }
   .animate-gentle-float { animation: gentle-float 6s ease-in-out infinite; }
   .animate-soft-shimmer { animation: soft-shimmer 2.5s linear infinite; }
-  .animate-gradient { 
-    animation: gradient-shift 8s ease infinite;
-    background-size: 200% 200%;
-  }
   .animate-text-reveal { animation: text-reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 }

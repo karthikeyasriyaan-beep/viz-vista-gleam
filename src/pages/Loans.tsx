@@ -13,6 +13,7 @@ import EditLoanDialog from "@/components/forms/EditLoanDialog";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { SEOHead } from "@/components/SEOHead";
 import { NoIndexMeta } from "@/components/NoIndexMeta";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
@@ -188,6 +189,7 @@ export default function Loans() {
 
   return (
     <>
+      <SEOHead title="Loans and Debt Tracker" description="Track loans, EMIs, balances, interest rates, and debt payoff progress in Trackora." noindex />
       <NoIndexMeta />
       <div className="relative min-h-screen w-full overflow-x-hidden bg-background">
         <div className="max-w-6xl mx-auto px-5 md:px-8 pt-6 pb-28 space-y-6">

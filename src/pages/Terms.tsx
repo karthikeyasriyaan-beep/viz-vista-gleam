@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Footer } from "@/components/Footer";
+import { SEOHead } from "@/components/SEOHead";
 
 const sections = [
   {
@@ -55,7 +56,14 @@ const Terms = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      <SEOHead
+        title="Terms & Conditions — User Agreement | Trackora"
+        description="Review Trackora's terms and conditions. Understand your rights and responsibilities when using our personal finance management platform."
+        keywords="terms of service, user agreement, terms and conditions, service terms"
+        canonicalUrl="https://trackorapp.in/terms"
+      />
+      <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 max-w-3xl">
         <Button variant="ghost" onClick={() => navigate(-1)} className="mb-6">
           <ArrowLeft className="h-4 w-4 mr-2" />
@@ -106,6 +114,7 @@ const Terms = () => {
 
       <Footer />
     </div>
+    </>
   );
 };
 

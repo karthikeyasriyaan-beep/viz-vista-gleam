@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Eye, EyeOff, KeyRound, CheckCircle } from "lucide-react";
+import { SEOHead } from "@/components/SEOHead";
+import { NoIndexMeta } from "@/components/NoIndexMeta";
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
@@ -126,7 +128,10 @@ const ResetPassword = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+    <>
+      <SEOHead title="Reset Password" description="Set a new password for your Trackora account." noindex />
+      <NoIndexMeta />
+      <div className="min-h-screen flex items-center justify-center p-4 bg-background\">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -202,6 +207,7 @@ const ResetPassword = () => {
         </Card>
       </motion.div>
     </div>
+    </>
   );
 };
 

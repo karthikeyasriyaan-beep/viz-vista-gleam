@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Footer } from "@/components/Footer";
+import { SEOHead } from "@/components/SEOHead";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
@@ -21,7 +22,14 @@ export default function About() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      <SEOHead
+        title="About Trackora — Money Management Made Simple | Trackora"
+        description="Learn about Trackora's mission to simplify personal finance with tools for expense tracking, budgeting, savings goals, and loan management."
+        keywords="about Trackora, money management app, personal finance tools, expense tracker"
+        canonicalUrl="https://trackorapp.in/about"
+      />
+      <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <Button variant="ghost" onClick={() => navigate(-1)} className="mb-6">
           <ArrowLeft className="h-4 w-4 mr-2" />
@@ -152,5 +160,6 @@ export default function About() {
 
       <Footer />
     </div>
+    </>
   );
 }

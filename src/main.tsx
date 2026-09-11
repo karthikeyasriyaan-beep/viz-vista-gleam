@@ -1,10 +1,22 @@
-import { createRoot } from "react-dom/client";
+import { createRoot, hydrateRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-import App from "./App.tsx";
+import App from "./App";
 import "./index.css";
 
-createRoot(document.getElementById("root")!).render(
-  <BrowserRouter>
-    <App />
-  </BrowserRouter>
-);
+const rootElement = document.getElementById("root") as HTMLElement;
+
+// Check if react-snap left pre-rendered HTML in the root container
+if (rootElement.hasChildNodes()) {
+  hydrateRoot(
+    rootElement,
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>,
+  );
+} else {
+  createRoot(rootElement).render(
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>,
+  );
+}

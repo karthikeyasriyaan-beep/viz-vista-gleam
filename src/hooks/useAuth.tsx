@@ -3,17 +3,6 @@ import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 
-/**
- * Auth flow:
- * - On first load, the app silently signs the visitor in anonymously via
- *   Supabase so RLS policies (auth.uid() = user_id) keep working and each
- *   browser gets its own private data.
- * - `signInWithGoogle()` upgrades an anonymous session to a real Google
- *   account via linkIdentity (keeps the same user_id, so existing data
- *   stays attached), or does a normal OAuth sign-in if there's no
- *   anonymous session yet.
- * - `enterAsGuest()` just navigates to /dashboard.
- */
 interface AuthContextType {
   user: User | null;
   session: Session | null;
@@ -23,7 +12,6 @@ interface AuthContextType {
   signInWithEmail: (email: string, password: string) => Promise<{ error: any }>;
   signUpWithEmail: (email: string, password: string, fullName: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
-  enterAsGuest: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -42,25 +30,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(true);
 
       const { data: { session: existing } } = await supabase.auth.getSession();
-      if (existing) {
-        if (!mounted) return;
-        setSession(existing);
-        setUser(existing.user);
-        setLoading(false);
-        return;
-      }
-
-      const { data, error } = await supabase.auth.signInAnonymously();
       if (!mounted) return;
-      if (error) {
-        console.error('Anonymous sign-in failed:', error);
-        setSession(null);
-        setUser(null);
-        setLoading(false);
-        return;
-      }
-      setSession(data.session);
-      setUser(data.user);
+      setSession(existing);
+      setUser(existing?.user ?? null);
       setLoading(false);
     };
 
@@ -72,9 +44,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setLoading(false);
         return;
       }
-      if (event === 'SIGNED_OUT') {
-        void ensureSession();
-      }
     });
 
     void ensureSession();
@@ -85,21 +54,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  const enterAsGuest = () => {
-    navigate('/dashboard');
-  };
-
-  /**
-   * Signs in with Google. If the current session is anonymous, links the
-   * Google identity onto it so the user keeps their existing data and
-   * user_id. Otherwise does a normal OAuth redirect sign-in.
-   */
   const signInWithGoogle = async () => {
     try {
       const { data: { session: current } } = await supabase.auth.getSession();
 
       if (current?.user?.is_anonymous) {
-        const { data, error } = await supabase.auth.linkIdentity({
+        const { error } = await supabase.auth.linkIdentity({
           provider: 'google',
           options: {
             redirectTo: `${window.location.origin}/dashboard`,
@@ -121,7 +81,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const noopAuth = async () => ({ error: null });
+  const signInWithEmail = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    return { error };
+  };
+
+  const signUpWithEmail = async (email: string, password: string, fullName: string) => {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: fullName } },
+    });
+    return { error };
+  };
 
   const signOut = async () => {
     await supabase.auth.signOut();
@@ -133,12 +105,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       user,
       session,
       loading,
-      isGuest: false,
+      isGuest: user?.is_anonymous ?? false,
       signInWithGoogle,
-      signInWithEmail: noopAuth,
-      signUpWithEmail: noopAuth,
+      signInWithEmail,
+      signUpWithEmail,
       signOut,
-      enterAsGuest,
     }}>
       {children}
     </AuthContext.Provider>

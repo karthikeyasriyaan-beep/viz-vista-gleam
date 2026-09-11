@@ -21,19 +21,6 @@ function getCookie(): string | null {
   return match ? match.split("=")[1] : null;
 }
 
-function loadAdSense() {
-  if (document.querySelector('script[src*="adsbygoogle"]')) return;
-  const s = document.createElement("script");
-  s.async = true;
-  s.src =
-    "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9073321526391845";
-  s.crossOrigin = "anonymous";
-  s.onerror = () => {
-    console.warn("Trackora: AdSense script failed to load.");
-  };
-  document.head.appendChild(s);
-}
-
 export function CookieConsent() {
   const [showConsent, setShowConsent] = useState(false);
 
@@ -51,12 +38,8 @@ export function CookieConsent() {
     if (typeof gtag !== "undefined") {
       gtag("consent", "update", {
         analytics_storage: "granted",
-        ad_storage: "granted",
-        ad_user_data: "granted",
-        ad_personalization: "granted",
       });
     }
-    loadAdSense();
   }, []);
 
   const rejectNonEssential = useCallback(() => {
@@ -66,9 +49,6 @@ export function CookieConsent() {
     if (typeof gtag !== "undefined") {
       gtag("consent", "update", {
         analytics_storage: "denied",
-        ad_storage: "denied",
-        ad_user_data: "denied",
-        ad_personalization: "denied",
       });
     }
   }, []);

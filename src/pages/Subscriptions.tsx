@@ -8,6 +8,7 @@ import EditSubscriptionDialog from "@/components/forms/EditSubscriptionDialog";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { SEOHead } from "@/components/SEOHead";
 import { NoIndexMeta } from "@/components/NoIndexMeta";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
@@ -55,6 +56,7 @@ export default function Subscriptions() {
 
   return (
     <>
+      <SEOHead title="Subscription Tracker" description="Track recurring payments, renewal dates, and subscription costs in Trackora." noindex />
       <NoIndexMeta />
       <div className="relative min-h-screen bg-background">
         <div className="max-w-5xl mx-auto px-4 sm:px-5 md:px-8 pt-4 sm:pt-6 pb-28 space-y-4 sm:space-y-5">

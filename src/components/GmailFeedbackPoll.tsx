@@ -6,15 +6,22 @@ import { ThumbsUp, ThumbsDown } from 'lucide-react';
 export function GmailFeedbackPoll() {
   const { user } = useAuth();
   const [voted, setVoted] = useState<'yes' | 'no' | null>(null);
+  const [error, setError] = useState(false);
 
   const vote = async (choice: 'yes' | 'no') => {
     if (!user || voted) return;
-    setVoted(choice);
-    await supabase.from('feature_feedback').insert({
+    setError(false);
+    const { error: insertError } = await supabase.from('feature_feedback').insert({
       user_id: user.id,
       feature: 'gmail_connect',
       vote: choice,
     });
+    if (insertError) {
+      console.error('Feature feedback failed:', insertError);
+      setError(true);
+      return;
+    }
+    setVoted(choice);
   };
 
   if (voted) {
@@ -42,6 +49,11 @@ export function GmailFeedbackPoll() {
       >
         <ThumbsDown className="h-3 w-3 text-muted-foreground" />
       </button>
+      {error && (
+        <span className="text-[10px] text-destructive font-medium">
+          Could not save
+        </span>
+      )}
     </div>
   );
 }

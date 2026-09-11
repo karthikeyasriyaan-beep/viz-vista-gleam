@@ -1,13 +1,13 @@
 "use client";
 
-import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import {
   ArrowRight, Target, BarChart3, CheckCircle2, TrendingUp, Wallet,
   Sparkles, GraduationCap, CreditCard, Users, Home, Briefcase,
   AlertCircle, Mic, ScanLine, Repeat, PiggyBank, Zap,
-  TrendingDown, IndianRupee,
+  TrendingDown, IndianRupee, ShieldCheck,
 } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Link } from "react-router-dom";
@@ -82,25 +82,11 @@ const categoryColors: Record<string, string> = {
 };
 
 const Welcome = () => {
-  const { enterAsGuest, user } = useAuth();
+  const { signInWithGoogle, user } = useAuth();
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroOpacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
   const heroY = useTransform(scrollYProgress, [0, 1], [0, 80]);
-
-  /* Hide/show navbar on scroll */
-  const [navHidden, setNavHidden] = [false, (_: boolean) => {}];
-  const { scrollY } = useScroll();
-  const lastScrollY = useRef(0);
-  const [_navHidden, setNavHiddenState] = [false, (_: boolean) => {}];
-
-  // Using proper state for nav
-  const [navVisible, setNavVisible] = [true, (_: boolean) => {}];
-
-  useMotionValueEvent(scrollY, "change", (latest) => {
-    // no-op: keep nav always visible on welcome page for accessibility
-    lastScrollY.current = latest;
-  });
 
   return (
     <>
@@ -123,9 +109,14 @@ const Welcome = () => {
         >
           <div className="mx-3 sm:mx-6 mt-2 sm:mt-4">
             <div className="bg-background/60 backdrop-blur-2xl border border-border/30 rounded-2xl shadow-lg px-4 sm:px-6 py-3 flex items-center justify-between max-w-6xl mx-auto">
-              <span className="font-extrabold text-lg sm:text-2xl text-foreground tracking-tighter">
-                Trackora
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="font-extrabold text-lg sm:text-2xl text-foreground tracking-tighter">
+                  Trackora
+                </span>
+                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground border border-border/60 rounded-full px-2 py-0.5">
+                  Beta
+                </span>
+              </div>
               <div className="flex items-center gap-2 sm:gap-3">
                 {user?.is_anonymous !== false && (
                   <div className="hidden sm:block">
@@ -133,18 +124,11 @@ const Welcome = () => {
                   </div>
                 )}
                 <Button
-                  onClick={enterAsGuest}
-                  variant="ghost"
-                  className="hidden sm:inline-flex font-bold text-sm tracking-tight"
-                >
-                  Enter
-                </Button>
-                <Button
-                  onClick={enterAsGuest}
+                  onClick={() => void signInWithGoogle()}
                   size="sm"
                   className="sm:hidden font-bold text-xs rounded-xl px-4"
                 >
-                  Start Free
+                    Start Free
                 </Button>
                 <ThemeToggle />
               </div>
@@ -160,9 +144,18 @@ const Welcome = () => {
 
                 {/* Left — Content */}
                 <motion.div initial="hidden" animate="visible" variants={staggerContainer}>
-                  <motion.h1
+                  <motion.div
                     variants={textReveal}
                     custom={0}
+                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-foreground/5 border border-border/50 text-xs font-bold mb-5 sm:mb-6"
+                  >
+                    <Sparkles className="h-3.5 w-3.5" />
+                    In Beta — new features coming soon
+                  </motion.div>
+
+                  <motion.h1
+                    variants={textReveal}
+                    custom={1}
                     className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-[-0.05em] leading-[1.1] mb-6 sm:mb-8"
                   >
                     <span className="block">Where did</span>
@@ -174,7 +167,7 @@ const Welcome = () => {
 
                   <motion.p
                     variants={textReveal}
-                    custom={1}
+                    custom={2}
                     className="text-sm sm:text-base md:text-lg text-muted-foreground leading-relaxed mb-5 sm:mb-7 max-w-xl font-medium"
                   >
                     Trackora shows you — in seconds. Speak it, snap it, or type it.
@@ -183,11 +176,11 @@ const Welcome = () => {
 
                   <motion.div
                     variants={textReveal}
-                    custom={2}
+                    custom={3}
                     className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6 sm:mb-8"
                   >
                     <Button
-                      onClick={enterAsGuest}
+                      onClick={() => void signInWithGoogle()}
                       size="lg"
                       className="text-sm sm:text-base px-6 sm:px-10 py-5 sm:py-7 rounded-xl font-extrabold tracking-tight shadow-lg hover:shadow-xl transition-all group"
                     >
@@ -208,7 +201,7 @@ const Welcome = () => {
                   {/* Trust pills */}
                   <motion.div
                     variants={textReveal}
-                    custom={3}
+                    custom={4}
                     className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs sm:text-sm text-muted-foreground font-medium"
                   >
                     {["Free forever", "No bank linking", "No credit card"].map((pill) => (
@@ -251,7 +244,6 @@ const Welcome = () => {
 
         {/* ═══════ 2. SAFE TO SPEND TODAY ═══════ */}
         <section className="py-16 sm:py-24 md:py-32 relative">
-          <div className="absolute inset-0 bg-gradient-to-b from-muted/20 via-transparent to-transparent" />
           <div className="container mx-auto px-4 sm:px-6 relative">
             <motion.div
               initial="hidden"
@@ -331,6 +323,24 @@ const Welcome = () => {
                       </motion.div>
                     ))}
                   </div>
+
+                  {/* Stay tuned teaser */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                    className="mt-6 sm:mt-8 rounded-xl sm:rounded-2xl border border-border/50 bg-foreground/5 px-4 sm:px-5 py-4 sm:py-5 flex items-start gap-3"
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-foreground/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Sparkles className="h-4 w-4 text-foreground" />
+                    </div>
+                    <div>
+                      <p className="text-xs sm:text-sm font-bold tracking-tight">
+                        Stay tuned — amazing features coming soon
+                      </p>
+                    </div>
+                  </motion.div>
                 </motion.div>
               </div>
             </motion.div>
@@ -468,7 +478,6 @@ const Welcome = () => {
 
         {/* ═══════ 4. AUTO-CATEGORISATION ═══════ */}
         <section className="py-16 sm:py-24 md:py-32 relative">
-          <div className="absolute inset-0 bg-gradient-to-b from-muted/20 via-transparent to-transparent" />
           <div className="container mx-auto px-4 sm:px-6 relative">
             <motion.div
               initial="hidden"
@@ -604,9 +613,44 @@ const Welcome = () => {
           </div>
         </section>
 
+        {/* ═══════ 5.5 PRIVACY ═══════ */}
+        <section className="py-16 sm:py-24 md:py-32 relative">
+          <div className="container mx-auto px-4 sm:px-6 relative">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-80px" }}
+              variants={staggerContainer}
+              className="max-w-3xl mx-auto text-center"
+            >
+              <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-foreground/5 border border-border/50 text-xs font-bold mb-5 sm:mb-6">
+                <ShieldCheck className="h-3.5 w-3.5" />
+                No agenda, no strings
+              </motion.div>
+              <motion.h2 variants={fadeUp} custom={1} className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight mb-4 sm:mb-6 leading-tight">
+                Your money app shouldn't have an agenda.
+              </motion.h2>
+              <motion.p variants={fadeUp} custom={2} className="text-sm sm:text-base md:text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-8 sm:mb-10 font-medium">
+                Trackora doesn't read your SMS inbox. Doesn't link to your bank. Doesn't sell your data to lenders.
+                A lot of "free" expense trackers make their money that way — reading your messages, pushing credit
+                lines at you, quietly becoming a loan company wearing a budgeting app's skin. Trackora doesn't.
+                It's free during Beta because we're building something worth eventually paying for — not because
+                your data is the product.
+              </motion.p>
+              <motion.div variants={fadeUp} custom={3} className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+                {["No SMS access", "No bank login", "No loan pitches", "Your data stays yours"].map((pill) => (
+                  <span key={pill} className="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-muted-foreground border border-border/50 rounded-full px-3 py-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-foreground" />
+                    {pill}
+                  </span>
+                ))}
+              </motion.div>
+            </motion.div>
+          </div>
+        </section>
+
         {/* ═══════ 6. FEATURES — 6 CARDS ═══════ */}
         <section className="py-16 sm:py-24 md:py-32 relative">
-          <div className="absolute inset-0 bg-gradient-to-b from-muted/20 via-transparent to-transparent" />
           <div className="container mx-auto px-4 sm:px-6 relative">
             <motion.div
               initial="hidden"
@@ -699,7 +743,7 @@ const Welcome = () => {
 
               <div className="max-w-4xl mx-auto">
                 <div className="grid grid-cols-3 gap-3 sm:gap-8 relative">
-                  <div className="hidden sm:block absolute top-10 sm:top-12 left-[16.6%] right-[16.6%] h-0.5 bg-gradient-to-r from-foreground/30 via-foreground/10 to-foreground/30" />
+                  <div className="hidden sm:block absolute top-10 sm:top-12 left-[16.6%] right-[16.6%] h-0.5 bg-border" />
 
                   {[
                     {
@@ -736,11 +780,11 @@ const Welcome = () => {
 
               <motion.div variants={fadeUp} className="text-center mt-10 sm:mt-14">
                 <Button
-                  onClick={enterAsGuest}
+                  onClick={() => void signInWithGoogle()}
                   size="lg"
                   className="text-sm sm:text-base px-8 sm:px-12 py-5 sm:py-6 rounded-xl font-extrabold tracking-tight shadow-lg group"
                 >
-                  Try it now — no signup needed
+                  Sign in with Google
                   <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-300" />
                 </Button>
               </motion.div>
@@ -750,7 +794,6 @@ const Welcome = () => {
 
         {/* ═══════ 8. WHO IT'S FOR ═══════ */}
         <section className="py-16 sm:py-24 md:py-32 relative">
-          <div className="absolute inset-0 bg-gradient-to-b from-muted/20 via-transparent to-transparent" />
           <div className="container mx-auto px-4 sm:px-6 relative">
             <motion.div
               initial="hidden"
@@ -892,7 +935,6 @@ const Welcome = () => {
 
         {/* ═══════ 10. FAQ + FINAL CTA ═══════ */}
         <section className="py-16 sm:py-24 md:py-32 relative">
-          <div className="absolute inset-0 bg-gradient-to-b from-muted/20 via-transparent to-transparent" />
           <div className="container mx-auto px-4 sm:px-6 relative">
             <motion.div
               initial="hidden"
@@ -964,7 +1006,7 @@ const Welcome = () => {
                     </p>
                     <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
                       <Button
-                        onClick={enterAsGuest}
+                        onClick={() => void signInWithGoogle()}
                         size="lg"
                         className="text-sm sm:text-lg px-8 sm:px-12 py-5 sm:py-7 rounded-xl sm:rounded-2xl shadow-xl hover:shadow-2xl transition-all group font-extrabold"
                       >

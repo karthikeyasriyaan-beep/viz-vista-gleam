@@ -9,10 +9,10 @@ import {
 } from "lucide-react";
 import { Footer } from "@/components/Footer";
 import { useAuth } from "@/hooks/useAuth";
+import { SEOHead } from "@/components/SEOHead";
 
 export default function SavingsGuide() {
-  const { enterAsGuest } = useAuth();
-
+  const { signInWithGoogle } = useAuth();
   const savingsTypes = [
     {
       icon: Shield,
@@ -139,7 +139,15 @@ export default function SavingsGuide() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/5">
+    <>
+      <SEOHead
+        title="Savings Guide — Build an Emergency Fund & Reach Your Goals | Trackora"
+        description="A complete guide to building savings: emergency funds, house/car/education goals, proven savings strategies, and overcoming common savings obstacles."
+        keywords="savings guide, emergency fund, savings strategies, savings goals, how to save money India"
+        canonicalUrl="https://trackorapp.in/savings-guide"
+      />
+
+      <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/5">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
         <div className="container mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
@@ -426,7 +434,7 @@ export default function SavingsGuide() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button
-                  onClick={enterAsGuest}
+                  onClick={() => void signInWithGoogle()}
                   size="lg"
                   className="text-lg px-10 py-7 rounded-2xl shadow-lg hover:shadow-xl transition-all bg-gradient-to-r from-primary to-secondary"
                 >
@@ -449,6 +457,7 @@ export default function SavingsGuide() {
       </div>
 
       <Footer />
-    </div>
+      </div>
+    </>
   );
 }

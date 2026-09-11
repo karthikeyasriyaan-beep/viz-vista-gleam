@@ -3,12 +3,20 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Mail, Globe, MessageSquare } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { Footer } from "@/components/Footer";
+import { SEOHead } from "@/components/SEOHead";
 
 export default function Contact() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      <SEOHead
+        title="Contact Us — Get Help & Support | Trackora"
+        description="Have questions about Trackora? Reach out to our team via email or visit our website. We respond within 1-2 business days."
+        keywords="contact Trackora, customer support, help desk, get in touch"
+        canonicalUrl="https://trackorapp.in/contact"
+      />
+      <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <Button variant="ghost" onClick={() => navigate(-1)} className="mb-6">
           <ArrowLeft className="h-4 w-4 mr-2" />
@@ -100,5 +108,6 @@ export default function Contact() {
 
       <Footer />
     </div>
+    </>
   );
 }

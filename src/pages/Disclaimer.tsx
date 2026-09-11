@@ -4,12 +4,20 @@ import { ArrowLeft, AlertTriangle } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Footer } from "@/components/Footer";
+import { SEOHead } from "@/components/SEOHead";
 
 const Disclaimer = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      <SEOHead
+        title="Disclaimer — Terms & Legal Information | Trackora"
+        description="Read Trackora's disclaimer. Our content is for educational purposes only and not financial advice. Please review our complete legal terms."
+        keywords="disclaimer, legal, financial services disclaimer"
+        canonicalUrl="https://trackorapp.in/disclaimer"
+      />
+      <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <Button
           variant="ghost"
@@ -290,6 +298,7 @@ const Disclaimer = () => {
 
       <Footer />
     </div>
+    </>
   );
 };
 

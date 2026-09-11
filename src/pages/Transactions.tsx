@@ -15,6 +15,7 @@ import EditExpenseDialog from "@/components/forms/EditExpenseDialog";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { SEOHead } from "@/components/SEOHead";
 import { NoIndexMeta } from "@/components/NoIndexMeta";
 import { VoiceInput } from "@/components/VoiceInput";
 import {
@@ -218,6 +219,7 @@ export default function Transactions() {
 
   return (
     <>
+      <SEOHead title="Transactions" description="Review, search, and manage your income and expenses in Trackora." noindex />
       <NoIndexMeta />
       <div className="min-h-screen w-full bg-background">
 

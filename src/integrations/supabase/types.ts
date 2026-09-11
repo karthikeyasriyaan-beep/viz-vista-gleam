@@ -114,6 +114,30 @@ export type Database = {
         }
         Relationships: []
       }
+      feature_feedback: {
+        Row: {
+          created_at: string
+          feature: string
+          id: string
+          user_id: string
+          vote: string
+        }
+        Insert: {
+          created_at?: string
+          feature: string
+          id?: string
+          user_id: string
+          vote: string
+        }
+        Update: {
+          created_at?: string
+          feature?: string
+          id?: string
+          user_id?: string
+          vote?: string
+        }
+        Relationships: []
+      }
       gmail_connections: {
         Row: {
           created_at: string
@@ -255,6 +279,30 @@ export type Database = {
           updated_at?: string
           user_id?: string
           year?: number
+        }
+        Relationships: []
+      }
+      notification_log: {
+        Row: {
+          id: string
+          reference: string | null
+          sent_at: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          reference?: string | null
+          sent_at?: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          reference?: string | null
+          sent_at?: string
+          type?: string
+          user_id?: string
         }
         Relationships: []
       }

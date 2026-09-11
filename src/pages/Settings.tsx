@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
   Trash2, AlertTriangle, User, Palette, Database,
-  ShieldCheck, FileText, LogOut, ChevronRight
+  ShieldCheck, FileText, LogOut, ChevronRight, Download
 } from "lucide-react";
 import { CurrencySelector } from "@/components/currency-selector";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -14,11 +14,17 @@ import {
   AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { SEOHead } from "@/components/SEOHead";
 import { NoIndexMeta } from "@/components/NoIndexMeta";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
+
+const EXPORT_TABLES = [
+  "income", "expenses", "loans", "subscriptions",
+  "receipts", "savings", "budgets", "monthly_budgets",
+] as const;
 
 /* ——— Reusable row ——— */
 function SettingRow({
@@ -68,6 +74,49 @@ export default function Settings() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isClearing, setIsClearing] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+
+  /* ——— Export all data ——— */
+  const handleExportData = async () => {
+    if (!user) return;
+    setIsExporting(true);
+    try {
+      const results = await Promise.all(
+        EXPORT_TABLES.map(async (table) => {
+          const { data, error } = await (supabase.from(table as any) as any)
+            .select("*")
+            .eq("user_id", user.id);
+          if (error) throw error;
+          return [table, data ?? []] as const;
+        })
+      );
+
+      const exportPayload: Record<string, unknown> = {
+        exported_at: new Date().toISOString(),
+        account_email: user.email,
+      };
+      for (const [table, rows] of results) {
+        exportPayload[table] = rows;
+      }
+
+      const blob = new Blob([JSON.stringify(exportPayload, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      const dateStr = new Date().toISOString().split("T")[0];
+      a.href = url;
+      a.download = `trackora-export-${dateStr}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+
+      toast({ title: "Export ready", description: "Your data has been downloaded as a JSON file." });
+    } catch {
+      toast({ title: "Error", description: "Could not export data. Please try again.", variant: "destructive" });
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   /* ——— Clear all data ——— */
   const handleClearData = async () => {
@@ -104,6 +153,7 @@ export default function Settings() {
 
   return (
     <>
+      <SEOHead title="Settings" description="Manage your Trackora account, preferences, and connected services." noindex />
       <NoIndexMeta />
       <div className="min-h-screen w-full bg-background">
 
@@ -126,7 +176,7 @@ export default function Settings() {
                   <SettingRow icon={User} label={user?.email || "No email"} desc={`Member since ${memberSince}`}>
                     <span className="text-[10px] bg-success/10 text-success font-semibold px-2 py-1 rounded-full">Active</span>
                   </SettingRow>
-                  <SettingRow icon={ShieldCheck} label="Data Security" desc="Bank-level encryption, stored securely">
+                  <SettingRow icon={ShieldCheck} label="Data Security" desc="Encrypted in transit (TLS), isolated per-account in the database">
                     <span className="text-[10px] bg-primary/10 text-primary font-semibold px-2 py-1 rounded-full">Protected</span>
                   </SettingRow>
                 </Section>
@@ -164,9 +214,20 @@ export default function Settings() {
             {/* ── RIGHT column ── */}
             <div className="space-y-4">
 
-              {/* Data Management — only clear now */}
+              {/* Data Management — export + clear */}
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08, ease }}>
                 <Section title="Data Management">
+                  <div
+                    onClick={isExporting ? undefined : handleExportData}
+                    className={`transition-colors rounded-lg -mx-1 px-1 ${isExporting ? "opacity-60" : "cursor-pointer hover:bg-muted/40"}`}
+                  >
+                    <SettingRow
+                      icon={Download}
+                      label={isExporting ? "Preparing export…" : "Export My Data"}
+                      desc="Download everything you've logged as a JSON file"
+                    />
+                  </div>
+
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <div className="cursor-pointer hover:bg-destructive/5 transition-colors rounded-lg -mx-1 px-1">
@@ -184,7 +245,7 @@ export default function Settings() {
                           <AlertTriangle className="h-4 w-4 text-destructive" /> Clear all data?
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                          This permanently deletes all your income, expenses, loans, savings, subscriptions and receipts. This cannot be undone.
+                          This permanently deletes all your income, expenses, loans, savings, subscriptions and receipts. This cannot be undone. Consider exporting your data first.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>

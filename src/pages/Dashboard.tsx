@@ -9,9 +9,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useCurrency } from "@/components/currency-selector";
 import {
-  Plus, Mic, TrendingUp, TrendingDown, ChevronDown, ChevronUp, X, Wallet, ArrowRight, Target, Repeat
+  TrendingUp, TrendingDown, X, Wallet, ArrowRight, Target, Repeat
 } from "lucide-react";
 import { VoiceInput } from "@/components/VoiceInput";
+import { SEOHead } from "@/components/SEOHead";
 import { NoIndexMeta } from "@/components/NoIndexMeta";
 import { useNavigate } from "react-router-dom";
 import { getGuestExpenses, getGuestIncome, type GuestExpense, type GuestIncome } from "@/lib/guest-storage";
@@ -114,7 +115,6 @@ export default function Dashboard() {
 
   const [guestIncome, setGuestIncome] = useState<GuestIncome[]>([]);
   const [guestExpenses, setGuestExpenses] = useState<GuestExpense[]>([]);
-  const [showLoans, setShowLoans] = useState(false);
 
   const refreshGuestData = () => { setGuestIncome(getGuestIncome()); setGuestExpenses(getGuestExpenses()); };
   useEffect(() => { if (isGuest) refreshGuestData(); }, [isGuest]);
@@ -266,8 +266,6 @@ export default function Dashboard() {
   const dailySafe = daysLeft > 0 ? safeToSpend / daysLeft : safeToSpend;
   const budgetProgress = budgetLimit > 0 ? Math.min((totalExpenses / budgetLimit) * 100, 100) : 0;
 
-  const totalOwed = totalYouOwe;
-
   const todayStr = now.toISOString().split("T")[0];
   const allTransactions = useMemo(() => {
     return [
@@ -280,6 +278,7 @@ export default function Dashboard() {
 
   return (
     <>
+      <SEOHead title="Dashboard" description="See your safe-to-spend amount, recent transactions, budgets, and spending overview in Trackora." noindex />
       <NoIndexMeta />
       <div className="relative min-h-screen w-full overflow-x-hidden bg-background">
         <div className="max-w-6xl mx-auto px-5 md:px-8 pt-6 pb-28 space-y-6">
@@ -318,7 +317,8 @@ export default function Dashboard() {
                 </Button>
               )}
             </div>
-            </motion.div>
+          </motion.div>
+
           <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06, ease }}
             className="rounded-2xl bg-card border border-border/40 px-5 py-5">
             <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-medium mb-4">This month's money</p>

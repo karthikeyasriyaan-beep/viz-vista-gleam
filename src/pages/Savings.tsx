@@ -9,6 +9,7 @@ import { AddSavingsDialog } from "@/components/forms/AddSavingsDialog";
 import EditSavingsDialog from "@/components/forms/EditSavingsDialog";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { SEOHead } from "@/components/SEOHead";
 import { NoIndexMeta } from "@/components/NoIndexMeta";
 import { VoiceInput } from "@/components/VoiceInput";
 import { motion, AnimatePresence } from "framer-motion";
@@ -47,6 +48,7 @@ const Savings = () => {
 
   return (
     <>
+      <SEOHead title="Savings Goals" description="Create savings goals, set deadlines, and track your progress in Trackora." noindex />
       <NoIndexMeta />
       <div className="relative min-h-screen bg-background">
         <div className="max-w-6xl mx-auto px-5 md:px-8 pt-6 pb-28 space-y-6">

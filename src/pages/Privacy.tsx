@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Footer } from "@/components/Footer";
+import { SEOHead } from "@/components/SEOHead";
 
 const sections = [
   {
@@ -59,7 +60,14 @@ const Privacy = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      <SEOHead
+        title="Privacy Policy — Your Data & Security | Trackora"
+        description="Read Trackora's privacy policy to understand how we collect, use, and protect your financial data. Your privacy is our priority."
+        keywords="privacy policy, data protection, financial data security, user privacy"
+        canonicalUrl="https://trackorapp.in/privacy"
+      />
+      <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 max-w-3xl">
         <Button variant="ghost" onClick={() => navigate(-1)} className="mb-6">
           <ArrowLeft className="h-4 w-4 mr-2" />
@@ -110,6 +118,7 @@ const Privacy = () => {
 
       <Footer />
     </div>
+    </>
   );
 };
 

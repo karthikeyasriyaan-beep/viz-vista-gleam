@@ -5,7 +5,7 @@ const GOOGLE_GMAIL_CLIENT_ID = "679798363007-nqnrb2gvd4v3dk49mm0ohc2fdteiqnh7.ap
 export function GmailConnectButton() {
   const { user } = useAuth();
 
-  if (!user || user.is_anonymous) return null;
+  if (!user) return null;
 
   const handleConnect = () => {
     const params = new URLSearchParams({

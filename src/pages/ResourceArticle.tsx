@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/Footer";
+import { SEOHead } from "@/components/SEOHead";
 
 export default function ResourceArticle() {
   const { slug } = useParams();
@@ -14,7 +15,14 @@ export default function ResourceArticle() {
     .join(" ");
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      <SEOHead
+        title={`${title} — Financial Guide | Trackora`}
+        description={`Learn about ${title} with our comprehensive guide. Get practical tips and strategies for personal finance success.`}
+        keywords={`${title}, financial guide, money management, personal finance tips`}
+        canonicalUrl={`https://trackorapp.in/resources/${slug}`}
+      />
+      <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 max-w-3xl">
         <Button variant="ghost" size="sm" onClick={() => navigate("/resources")} className="mb-6 gap-2">
           <ArrowLeft className="h-4 w-4" /> Back to Resources
@@ -29,5 +37,6 @@ export default function ResourceArticle() {
       </div>
       <Footer />
     </div>
+    </>
   );
 }
