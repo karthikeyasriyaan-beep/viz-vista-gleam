@@ -32,8 +32,12 @@ export const SEOHead = ({
   noindex = false,
 }: SEOHeadProps) => {
   useEffect(() => {
-    // Update document title
-    document.title = `${title} | Trackora`;
+    // Update document title. Many pages already include "| Trackora" or
+    // "— Trackora" in the title they pass in, so only append the suffix
+    // when it's missing — otherwise every one of those pages ends up with
+    // "...| Trackora | Trackora" in the actual <title> tag.
+    const hasTrackoraSuffix = /trackora\s*$/i.test(title.trim());
+    document.title = hasTrackoraSuffix ? title : `${title} | Trackora`;
 
     // Helper function to set or update meta tags
     const setMetaTag = (name: string, content: string, isProperty = false) => {
