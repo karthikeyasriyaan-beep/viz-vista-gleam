@@ -2,13 +2,21 @@ import puppeteer from "puppeteer";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { preview } from "vite";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const distDir = path.join(__dirname, "..", "dist");
+const rootDir = path.join(__dirname, "..");
 
-// Only routes that are real, live pages right now.
-// Update this list as you wire up more posts in blogArticleMap
-// or add new public pages — keep it in sync with sitemap.xml.
+// vite.config.ts sets build.outDir to "build" (not the Vite default "dist") —
+// this MUST match or prerendered HTML silently lands somewhere that never
+// gets deployed.
+const outDir = path.join(rootDir, "build");
+
+// Every public, indexable route — kept in sync with public/sitemap.xml.
+// Auth-gated routes (dashboard, transactions, settings, etc.) are
+// intentionally excluded: there's nothing for a crawler to index there,
+// and prerendering them would just bake a stale loading spinner into
+// a page bots shouldn't be visiting anyway.
 const routes = [
   "/",
   "/features",
@@ -35,17 +43,35 @@ const routes = [
   "/disclaimer",
 ];
 
-const BASE_URL = "http://localhost:4173";
-
 async function run() {
-  const browser = await puppeteer.launch({
-    headless: "new",
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  if (!fs.existsSync(outDir)) {
+    console.error(`✘ Build output "${outDir}" not found — run "vite build" first.`);
+    process.exit(1);
+  }
+
+  // Start the preview server in-process via Vite's own API instead of
+  // spawning a shell command and guessing a port/timing — this is what
+  // makes the script portable across Codespaces, CI, and local machines.
+  const server = await preview({
+    root: rootDir,
+    preview: { host: "127.0.0.1", port: 4173, strictPort: false, open: false },
   });
+  const address = server.resolvedUrls.local[0].replace(/\/$/, "");
+
+  // Uses the Chromium that ships with the puppeteer package itself
+  // (downloaded on `npm install`), instead of a hardcoded system path
+  // like /usr/bin/chromium-browser that doesn't reliably exist across
+  // environments — this was the actual cause of prior prerender failures.
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-gpu", "--disable-dev-shm-usage"],
+  });
+
+  let failures = 0;
 
   for (const route of routes) {
     const page = await browser.newPage();
-    const url = `${BASE_URL}${route}`;
+    const url = `${address}${route}`;
 
     try {
       await page.goto(url, { waitUntil: "networkidle0", timeout: 30000 });
@@ -54,20 +80,30 @@ async function run() {
 
       const html = await page.content();
 
-      const outDir = route === "/" ? distDir : path.join(distDir, route);
-      fs.mkdirSync(outDir, { recursive: true });
-      fs.writeFileSync(path.join(outDir, "index.html"), html, "utf-8");
+      const targetDir = route === "/" ? outDir : path.join(outDir, route);
+      fs.mkdirSync(targetDir, { recursive: true });
+      fs.writeFileSync(path.join(targetDir, "index.html"), html, "utf-8");
 
       console.log(`✔ Prerendered: ${route}`);
     } catch (err) {
-      console.error(`✘ Failed: ${route}`, err.message);
+      failures += 1;
+      console.error(`✘ Failed: ${route} — ${err.message}`);
     } finally {
       await page.close();
     }
   }
 
   await browser.close();
-  console.log("\nPrerendering complete.");
+  await server.close();
+
+  if (failures > 0) {
+    console.error(`\nPrerendering finished with ${failures} failure(s).`);
+    process.exit(1);
+  }
+  console.log("\nPrerendering complete — all routes rendered successfully.");
 }
 
-run();
+run().catch((err) => {
+  console.error("Prerendering crashed:", err);
+  process.exit(1);
+});

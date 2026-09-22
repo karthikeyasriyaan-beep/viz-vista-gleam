@@ -149,10 +149,14 @@ export default function App() {
                   <Route path="/loans" element={<Loans />} />
                   <Route path="/savings" element={<Savings />} />
                   <Route path="/settings" element={<Settings />} />
-                  <Route path="/budgeting-guide" element={<BudgetingGuide />} />
-                  <Route path="/savings-guide" element={<SavingsGuide />} />
-                  <Route path="/debt-management-guide" element={<DebtManagementGuide />} />
                 </Route>
+
+                {/* Public content/marketing pages — must NOT sit behind ProtectedRoute,
+                    or Googlebot and signed-out visitors get redirected to "/" and the
+                    page is never indexed. */}
+                <Route path="/budgeting-guide" element={<BudgetingGuide />} />
+                <Route path="/savings-guide" element={<SavingsGuide />} />
+                <Route path="/debt-management-guide" element={<DebtManagementGuide />} />
 
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/terms" element={<Terms />} />

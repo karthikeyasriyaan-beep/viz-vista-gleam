@@ -1,0 +1,342 @@
+diff --git a/index.html b/index.html
+index 7fbeebd..e1824c2 100644
+--- a/index.html
++++ b/index.html
+@@ -105,8 +105,9 @@
+       "offers": {
+         "@type": "Offer",
+         "price": "0",
+-        "priceCurrency": "USD"
++        "priceCurrency": "INR"
+       },
++      "inLanguage": "en-IN",
+       "operatingSystem": "Web",
+       "description": "Smart personal expense tracker and budget analytics platform. Track daily spending, manage budgets, set savings goals, and get insightful financial analytics.",
+       "url": "https://trackorapp.in",
+diff --git a/package.json b/package.json
+index 414ecf1..24eb8b4 100644
+--- a/package.json
++++ b/package.json
+@@ -6,7 +6,7 @@
+   "scripts": {
+     "dev": "vite",
+     "build": "vite build",
+-    "postbuild": "react-snap",
++    "postbuild": "node scripts/prerender.mjs",
+     "preview": "vite preview"
+   },
+   "dependencies": {
+@@ -77,29 +77,9 @@
+     "autoprefixer": "^10.4.20",
+     "lovable-tagger": "^1.1.11",
+     "postcss": "^8.4.47",
+-    "react-snap": "^1.23.0",
++    "puppeteer": "^25.0.0",
+     "tailwindcss": "^3.4.17",
+     "typescript": "^5.5.0",
+     "vite": "^5.4.0"
+-  },
+-  "reactSnap": {
+-    "inlineCss": false,
+-    "crawl": true,
+-    "puppeteer": {
+-      "executablePath": "/usr/bin/chromium-browser"
+-    },
+-    "puppeteerArgs": [
+-      "--no-sandbox",
+-      "--disable-setuid-sandbox",
+-      "--disable-gpu",
+-      "--disable-dev-shm-usage"
+-    ],
+-    "minifyHtml": {
+-      "collapseWhitespace": true
+-    },
+-    "include": [
+-      "/",
+-      "/debt-management-guide"
+-    ]
+   }
+ }
+\ No newline at end of file
+diff --git a/public/sitemap.xml b/public/sitemap.xml
+index 7940087..a1134fe 100644
+--- a/public/sitemap.xml
++++ b/public/sitemap.xml
+@@ -2,74 +2,98 @@
+ <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+ 	<url>
+ 		<loc>https://trackorapp.in/</loc>
++		<lastmod>2026-09-20</lastmod>
+ 	</url>
+ 	<url>
+ 		<loc>https://trackorapp.in/features</loc>
++		<lastmod>2026-09-20</lastmod>
+ 	</url>
+ 	<url>
+ 		<loc>https://trackorapp.in/how-it-works</loc>
++		<lastmod>2026-09-20</lastmod>
+ 	</url>
+ 	<url>
+ 		<loc>https://trackorapp.in/about</loc>
++		<lastmod>2026-09-20</lastmod>
+ 	</url>
+ 	<url>
+ 		<loc>https://trackorapp.in/contact</loc>
++		<lastmod>2026-09-20</lastmod>
+ 	</url>
+ 	<url>
+ 		<loc>https://trackorapp.in/faq</loc>
++		<lastmod>2026-09-20</lastmod>
+ 	</url>
+ 	<url>
+ 		<loc>https://trackorapp.in/budgeting-guide</loc>
++		<lastmod>2026-09-20</lastmod>
+ 	</url>
+ 	<url>
+ 		<loc>https://trackorapp.in/savings-guide</loc>
++		<lastmod>2026-09-20</lastmod>
+ 	</url>
+ 	<url>
+ 		<loc>https://trackorapp.in/debt-management-guide</loc>
++		<lastmod>2026-09-20</lastmod>
+ 	</url>
+ 	<url>
+ 		<loc>https://trackorapp.in/resources</loc>
++		<lastmod>2026-09-20</lastmod>
+ 	</url>
+ 	<url>
+ 		<loc>https://trackorapp.in/blog</loc>
++		<lastmod>2026-09-20</lastmod>
+ 	</url>
+ 	<url>
+ 		<loc>https://trackorapp.in/blog/safe-to-spend-number</loc>
++		<lastmod>2026-09-20</lastmod>
+ 	</url>
+ 	<url>
+ 		<loc>https://trackorapp.in/blog/voice-logging-petrol-expense</loc>
++		<lastmod>2026-09-20</lastmod>
+ 	</url>
+ 	<url>
+ 		<loc>https://trackorapp.in/blog/automatic-swiggy-categorization</loc>
++		<lastmod>2026-09-20</lastmod>
+ 	</url>
+ 	<url>
+ 		<loc>https://trackorapp.in/blog/scanning-kirana-receipt-vs-typing</loc>
++		<lastmod>2026-09-20</lastmod>
+ 	</url>
+ 	<url>
+ 		<loc>https://trackorapp.in/blog/subscriptions-tab-forgotten-renewals</loc>
++		<lastmod>2026-09-20</lastmod>
+ 	</url>
+ 	<url>
+ 		<loc>https://trackorapp.in/blog/budget-page-vs-dashboard</loc>
++		<lastmod>2026-09-20</lastmod>
+ 	</url>
+ 	<url>
+ 		<loc>https://trackorapp.in/blog/savings-goals-with-deadline</loc>
++		<lastmod>2026-09-20</lastmod>
+ 	</url>
+ 	<url>
+ 		<loc>https://trackorapp.in/blog/loans-emi-outstanding-percentage</loc>
++		<lastmod>2026-09-20</lastmod>
+ 	</url>
+ 	<url>
+ 		<loc>https://trackorapp.in/blog/log-it-later-kills-tracking</loc>
++		<lastmod>2026-09-20</lastmod>
+ 	</url>
+ 	<url>
+ 		<loc>https://trackorapp.in/blog/analytics-page-spending-trends</loc>
++		<lastmod>2026-09-20</lastmod>
+ 	</url>
+ 	<url>
+ 		<loc>https://trackorapp.in/privacy</loc>
++		<lastmod>2026-09-20</lastmod>
+ 	</url>
+ 	<url>
+ 		<loc>https://trackorapp.in/terms</loc>
++		<lastmod>2026-09-20</lastmod>
+ 	</url>
+ 	<url>
+ 		<loc>https://trackorapp.in/disclaimer</loc>
++		<lastmod>2026-09-20</lastmod>
+ 	</url>
+ </urlset>
+diff --git a/scripts/postbuild.sh b/scripts/postbuild.sh
+deleted file mode 100755
+index bc746d0..0000000
+--- a/scripts/postbuild.sh
++++ /dev/null
+@@ -1,21 +0,0 @@
+-#!/bin/bash
+-
+-# Try to run react-snap for pre-rendering
+-# This script gracefully handles failures in environments where Chromium dependencies are missing (e.g., dev containers)
+-
+-echo "Attempting to run react-snap pre-rendering..."
+-
+-if npx react-snap; then
+-  echo "✓ react-snap pre-rendering completed successfully"
+-  exit 0
+-else
+-  EXIT_CODE=$?
+-  echo "⚠ react-snap pre-rendering failed with exit code $EXIT_CODE"
+-  echo "This is normal in containerized development environments without X11 libraries."
+-  echo "Your Vite build succeeded. The app will work with client-side rendering."
+-  echo ""
+-  echo "To enable pre-rendering in production:"
+-  echo "1. Install Chromium dependencies in your production environment"
+-  echo "2. Or use a CI/CD pipeline with proper system dependencies"
+-  exit 0
+-fi
+diff --git a/scripts/prerender.mjs b/scripts/prerender.mjs
+index a51c12a..0b6de10 100644
+--- a/scripts/prerender.mjs
++++ b/scripts/prerender.mjs
+@@ -2,13 +2,21 @@ import puppeteer from "puppeteer";
+ import fs from "fs";
+ import path from "path";
+ import { fileURLToPath } from "url";
++import { preview } from "vite";
+ 
+ const __dirname = path.dirname(fileURLToPath(import.meta.url));
+-const distDir = path.join(__dirname, "..", "dist");
++const rootDir = path.join(__dirname, "..");
+ 
+-// Only routes that are real, live pages right now.
+-// Update this list as you wire up more posts in blogArticleMap
+-// or add new public pages — keep it in sync with sitemap.xml.
++// vite.config.ts sets build.outDir to "build" (not the Vite default "dist") —
++// this MUST match or prerendered HTML silently lands somewhere that never
++// gets deployed.
++const outDir = path.join(rootDir, "build");
++
++// Every public, indexable route — kept in sync with public/sitemap.xml.
++// Auth-gated routes (dashboard, transactions, settings, etc.) are
++// intentionally excluded: there's nothing for a crawler to index there,
++// and prerendering them would just bake a stale loading spinner into
++// a page bots shouldn't be visiting anyway.
+ const routes = [
+   "/",
+   "/features",
+@@ -35,17 +43,35 @@ const routes = [
+   "/disclaimer",
+ ];
+ 
+-const BASE_URL = "http://localhost:4173";
+-
+ async function run() {
++  if (!fs.existsSync(outDir)) {
++    console.error(`✘ Build output "${outDir}" not found — run "vite build" first.`);
++    process.exit(1);
++  }
++
++  // Start the preview server in-process via Vite's own API instead of
++  // spawning a shell command and guessing a port/timing — this is what
++  // makes the script portable across Codespaces, CI, and local machines.
++  const server = await preview({
++    root: rootDir,
++    preview: { host: "127.0.0.1", port: 4173, strictPort: false, open: false },
++  });
++  const address = server.resolvedUrls.local[0].replace(/\/$/, "");
++
++  // Uses the Chromium that ships with the puppeteer package itself
++  // (downloaded on `npm install`), instead of a hardcoded system path
++  // like /usr/bin/chromium-browser that doesn't reliably exist across
++  // environments — this was the actual cause of prior prerender failures.
+   const browser = await puppeteer.launch({
+-    headless: "new",
+-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
++    headless: true,
++    args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-gpu", "--disable-dev-shm-usage"],
+   });
+ 
++  let failures = 0;
++
+   for (const route of routes) {
+     const page = await browser.newPage();
+-    const url = `${BASE_URL}${route}`;
++    const url = `${address}${route}`;
+ 
+     try {
+       await page.goto(url, { waitUntil: "networkidle0", timeout: 30000 });
+@@ -54,20 +80,30 @@ async function run() {
+ 
+       const html = await page.content();
+ 
+-      const outDir = route === "/" ? distDir : path.join(distDir, route);
+-      fs.mkdirSync(outDir, { recursive: true });
+-      fs.writeFileSync(path.join(outDir, "index.html"), html, "utf-8");
++      const targetDir = route === "/" ? outDir : path.join(outDir, route);
++      fs.mkdirSync(targetDir, { recursive: true });
++      fs.writeFileSync(path.join(targetDir, "index.html"), html, "utf-8");
+ 
+       console.log(`✔ Prerendered: ${route}`);
+     } catch (err) {
+-      console.error(`✘ Failed: ${route}`, err.message);
++      failures += 1;
++      console.error(`✘ Failed: ${route} — ${err.message}`);
+     } finally {
+       await page.close();
+     }
+   }
+ 
+   await browser.close();
+-  console.log("\nPrerendering complete.");
++  await server.close();
++
++  if (failures > 0) {
++    console.error(`\nPrerendering finished with ${failures} failure(s).`);
++    process.exit(1);
++  }
++  console.log("\nPrerendering complete — all routes rendered successfully.");
+ }
+ 
+-run();
+\ No newline at end of file
++run().catch((err) => {
++  console.error("Prerendering crashed:", err);
++  process.exit(1);
++});
+\ No newline at end of file
+diff --git a/src/App.tsx b/src/App.tsx
+index 56786e7..b80fe1b 100644
+--- a/src/App.tsx
++++ b/src/App.tsx
+@@ -149,11 +149,15 @@ export default function App() {
+                   <Route path="/loans" element={<Loans />} />
+                   <Route path="/savings" element={<Savings />} />
+                   <Route path="/settings" element={<Settings />} />
+-                  <Route path="/budgeting-guide" element={<BudgetingGuide />} />
+-                  <Route path="/savings-guide" element={<SavingsGuide />} />
+-                  <Route path="/debt-management-guide" element={<DebtManagementGuide />} />
+                 </Route>
+ 
++                {/* Public content/marketing pages — must NOT sit behind ProtectedRoute,
++                    or Googlebot and signed-out visitors get redirected to "/" and the
++                    page is never indexed. */}
++                <Route path="/budgeting-guide" element={<BudgetingGuide />} />
++                <Route path="/savings-guide" element={<SavingsGuide />} />
++                <Route path="/debt-management-guide" element={<DebtManagementGuide />} />
++
+                 <Route path="/privacy" element={<Privacy />} />
+                 <Route path="/terms" element={<Terms />} />
+                 <Route path="/features" element={<Features />} />
+diff --git a/src/components/SEOHead.tsx b/src/components/SEOHead.tsx
+index 98b6694..4cdfa28 100644
+--- a/src/components/SEOHead.tsx
++++ b/src/components/SEOHead.tsx
+@@ -32,8 +32,12 @@ export const SEOHead = ({
+   noindex = false,
+ }: SEOHeadProps) => {
+   useEffect(() => {
+-    // Update document title
+-    document.title = `${title} | Trackora`;
++    // Update document title. Many pages already include "| Trackora" or
++    // "— Trackora" in the title they pass in, so only append the suffix
++    // when it's missing — otherwise every one of those pages ends up with
++    // "...| Trackora | Trackora" in the actual <title> tag.
++    const hasTrackoraSuffix = /trackora\s*$/i.test(title.trim());
++    document.title = hasTrackoraSuffix ? title : `${title} | Trackora`;
+ 
+     // Helper function to set or update meta tags
+     const setMetaTag = (name: string, content: string, isProperty = false) => {
