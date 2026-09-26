@@ -12,7 +12,10 @@ export default function ReceiptScanVsTyping() {
         title="Scanning a Kirana Receipt vs Typing It In: A Real Time Comparison — Trackora"
         description="A practical, step-by-step time comparison between scanning a kirana store receipt in Trackora and typing the same purchase in manually."
         keywords="receipt scanning expense tracker, Trackora receipt scan, kirana bill tracking India"
-        canonicalUrl="https://trackorapp.in/blog/receipt-scan-vs-typing"
+        canonicalUrl="https://trackorapp.in/blog/scanning-kirana-receipt-vs-typing"
+        type="article"
+        publishedTime="2026-06-04"
+        imageUrl="https://trackorapp.in/og-image.png"
       />
 
       <div className="min-h-screen bg-background">

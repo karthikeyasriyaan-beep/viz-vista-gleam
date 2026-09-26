@@ -187,7 +187,7 @@ export default function FAQ() {
     <>
       <SEOHead
         title="FAQ - Frequently Asked Questions About Trackora"
-        description="Get answers to common questions about Trackora expense tracker. Learn about features, security, pricing, supported currencies, data export, and how to get started with personal finance management."
+        description="Answers to common questions about Trackora: features, security, pricing, supported currencies, data export, and getting started."
         keywords="Trackora FAQ, expense tracker help, budgeting app questions, Trackora support, financial tracking help, personal finance FAQ"
         canonicalUrl="https://trackorapp.in/faq"
       />

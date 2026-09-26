@@ -13,6 +13,9 @@ export default function LogItLaterKillsTracking() {
         description="The specific reason deferred logging breaks expense tracking habits — and the exact changes that make in-the-moment logging sustainable long term."
         keywords="expense tracking habit, log expenses immediately, Trackora logging habit India"
         canonicalUrl="https://trackorapp.in/blog/log-it-later-kills-tracking"
+        type="article"
+        publishedTime="2026-06-21"
+        imageUrl="https://trackorapp.in/og-image.png"
       />
 
       <div className="min-h-screen bg-background">

@@ -142,7 +142,7 @@ const Features = () => {
     <>
       <SEOHead
         title="Trackora Features - Expense Tracking, Budgeting & Savings Tools"
-        description="Explore Trackora's features: voice expense entry, smart receipt import, budget planning, subscription tracking, loan management, savings goals, and spending analytics. All free."
+        description="Trackora's features: voice expense entry, receipt import, budget planning, subscription and loan tracking, savings goals, and spending analytics — all free."
         keywords="expense tracking features, budget management tools, subscription tracker, loan management, savings goals, spending analytics, voice expense entry India"
         canonicalUrl="https://trackorapp.in/features"
       />

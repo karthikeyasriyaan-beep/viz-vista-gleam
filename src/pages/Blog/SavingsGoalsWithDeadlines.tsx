@@ -12,7 +12,10 @@ export default function SavingsGoalsWithDeadlines() {
         title='Savings Goals With a Deadline: Why "Trip by December" Beats "Save More" — Trackora'
         description="How Trackora's savings goals feature uses named targets and deadlines, and why that structure outperforms a vague intention to save more."
         keywords="Trackora savings goals, savings goal tracker India, save for a trip deadline"
-        canonicalUrl="https://trackorapp.in/blog/savings-goals-with-deadlines"
+        canonicalUrl="https://trackorapp.in/blog/savings-goals-with-deadline"
+        type="article"
+        publishedTime="2026-06-06"
+        imageUrl="https://trackorapp.in/og-image.png"
       />
 
       <div className="min-h-screen bg-background">

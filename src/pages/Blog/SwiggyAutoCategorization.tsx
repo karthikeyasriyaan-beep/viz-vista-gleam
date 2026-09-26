@@ -12,7 +12,10 @@ export default function SwiggyAutoCategorization() {
         title='Why Trackora Recognizes "Swiggy" as Food Automatically — And What That Saves You'
         description="How Trackora's brand recognition works for Indian apps like Swiggy, Ola, and Amazon, and the real time and accuracy it saves compared to manual categorization."
         keywords="Trackora auto categorization, Swiggy Zomato Ola expense tracking, automatic expense category India"
-        canonicalUrl="https://trackorapp.in/blog/swiggy-auto-categorization"
+        canonicalUrl="https://trackorapp.in/blog/automatic-swiggy-categorization"
+        type="article"
+        publishedTime="2026-06-03"
+        imageUrl="https://trackorapp.in/og-image.png"
       />
 
       <div className="min-h-screen bg-background">
