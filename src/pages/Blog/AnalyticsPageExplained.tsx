@@ -12,7 +12,10 @@ export default function AnalyticsPageExplained() {
         title="The Analytics Page Explained: Reading Your 3-Month Spending Trend Correctly — Trackora"
         description="A walkthrough of Trackora's analytics page — what each chart and metric shows, how to read a 3-month trend correctly, and what actionable decisions it enables."
         keywords="Trackora analytics page, 3 month spending trend, expense analytics India, spending pattern chart"
-        canonicalUrl="https://trackorapp.in/blog/analytics-page-explained"
+        canonicalUrl="https://trackorapp.in/blog/analytics-page-spending-trends"
+        type="article"
+        publishedTime="2026-06-20"
+        imageUrl="https://trackorapp.in/og-image.png"
       />
 
       <div className="min-h-screen bg-background">

@@ -13,6 +13,9 @@ export default function SafeToSpendNumber() {
         description="A breakdown of how Trackora's safe-to-spend number is actually calculated, and why a single daily figure works better than a multi-category budget for most people."
         keywords="safe to spend today, daily budget number, Trackora dashboard, budgeting India"
         canonicalUrl="https://trackorapp.in/blog/safe-to-spend-number"
+        type="article"
+        publishedTime="2026-06-01"
+        imageUrl="https://trackorapp.in/og-image.png"
       />
 
       <div className="min-h-screen bg-background">

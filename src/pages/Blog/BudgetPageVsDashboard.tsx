@@ -13,6 +13,9 @@ export default function BudgetPageVsDashboard() {
         description="A clear breakdown of what Trackora's dashboard and budget page each show, why they answer different questions, and how to use them together."
         keywords="Trackora budget page, Trackora dashboard difference, expense tracker budget India"
         canonicalUrl="https://trackorapp.in/blog/budget-page-vs-dashboard"
+        type="article"
+        publishedTime="2026-06-18"
+        imageUrl="https://trackorapp.in/og-image.png"
       />
 
       <div className="min-h-screen bg-background">

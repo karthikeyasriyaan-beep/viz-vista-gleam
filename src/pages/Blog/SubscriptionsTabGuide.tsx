@@ -12,7 +12,10 @@ export default function SubscriptionsTabGuide() {
         title="The Subscriptions Tab: Finding the ₹999 Renewal You Forgot About — Trackora"
         description="A walkthrough of Trackora's Subscriptions page — how it surfaces forgotten recurring charges and what to actually do once you find one."
         keywords="Trackora subscriptions tracker, forgotten subscription renewal, subscription audit India app"
-        canonicalUrl="https://trackorapp.in/blog/subscriptions-tab-guide"
+        canonicalUrl="https://trackorapp.in/blog/subscriptions-tab-forgotten-renewals"
+        type="article"
+        publishedTime="2026-06-05"
+        imageUrl="https://trackorapp.in/og-image.png"
       />
 
       <div className="min-h-screen bg-background">

@@ -12,7 +12,10 @@ export default function VoiceLoggingWalkthrough() {
         title='What Happens When You Say "₹150 Petrol" Out Loud — Inside Trackora Voice Logging'
         description="A step-by-step look at what actually happens behind the scenes when you log an expense by voice in Trackora — from speech to categorized entry."
         keywords="voice expense logging, Trackora voice entry, speak to log expense, expense tracker voice India"
-        canonicalUrl="https://trackorapp.in/blog/voice-logging-walkthrough"
+        canonicalUrl="https://trackorapp.in/blog/voice-logging-petrol-expense"
+        type="article"
+        publishedTime="2026-06-02"
+        imageUrl="https://trackorapp.in/og-image.png"
       />
 
       <div className="min-h-screen bg-background">

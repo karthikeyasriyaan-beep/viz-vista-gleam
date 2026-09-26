@@ -54,6 +54,18 @@ import LoansEmiOutstandingPercentage from "./pages/Blog/LoansEmiOutstandingPerce
 import LogItLaterKillsTracking from "./pages/Blog/LogItLaterKillsTracking";
 import AnalyticsPageExplained from "./pages/Blog/AnalyticsPageExplained";
 
+// ——— Blog Imports (second 10) ———
+import NoBankLoginPrivacy from "./pages/Blog/NoBankLoginPrivacy";
+import WeekInsideTrackoraLogging from "./pages/Blog/WeekInsideTrackoraLogging";
+import SplittingHostelExpensesStudents from "./pages/Blog/SplittingHostelExpensesStudents";
+import FreelancersFixedBudgetProblem from "./pages/Blog/FreelancersFixedBudgetProblem";
+import FestivalSeasonSpendingDiwaliEid from "./pages/Blog/FestivalSeasonSpendingDiwaliEid";
+import WantsCategoryBreakdown from "./pages/Blog/WantsCategoryBreakdown";
+import EmiStackingMultipleLoans from "./pages/Blog/EmiStackingMultipleLoans";
+import SalariedMonthTimelineMapping from "./pages/Blog/SalariedMonthTimelineMapping";
+import SixMonthIncomeVsExpense from "./pages/Blog/SixMonthIncomeVsExpense";
+import BudgetAppVsExpenseTracker from "./pages/Blog/BudgetAppVsExpenseTracker";
+
 const queryClient = new QueryClient();
 
 const blogArticleMap: Record<string, ComponentType> = {
@@ -67,6 +79,16 @@ const blogArticleMap: Record<string, ComponentType> = {
   "loans-emi-outstanding-percentage": LoansEmiOutstandingPercentage,
   "log-it-later-kills-tracking": LogItLaterKillsTracking,
   "analytics-page-spending-trends": AnalyticsPageExplained,
+  "no-bank-login-privacy": NoBankLoginPrivacy,
+  "week-inside-trackora-logging": WeekInsideTrackoraLogging,
+  "splitting-hostel-expenses-students": SplittingHostelExpensesStudents,
+  "freelancers-fixed-budget-problem": FreelancersFixedBudgetProblem,
+  "festival-season-spending-diwali-eid": FestivalSeasonSpendingDiwaliEid,
+  "wants-category-breakdown": WantsCategoryBreakdown,
+  "emi-stacking-multiple-loans": EmiStackingMultipleLoans,
+  "salaried-month-timeline-mapping": SalariedMonthTimelineMapping,
+  "six-month-income-vs-expense": SixMonthIncomeVsExpense,
+  "budget-app-vs-expense-tracker": BudgetAppVsExpenseTracker,
 };
 
 function BlogArticleRouter() {

@@ -13,6 +13,9 @@ export default function LoansEmiOutstandingPercentage() {
         description="A walkthrough of Trackora's Loans page and what the outstanding-paid percentage actually means for someone juggling multiple EMIs."
         keywords="Trackora loans tracker, EMI tracking app India, outstanding loan percentage"
         canonicalUrl="https://trackorapp.in/blog/loans-emi-outstanding-percentage"
+        type="article"
+        publishedTime="2026-06-07"
+        imageUrl="https://trackorapp.in/og-image.png"
       />
 
       <div className="min-h-screen bg-background">

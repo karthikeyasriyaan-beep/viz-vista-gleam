@@ -94,7 +94,13 @@ export const SEOHead = ({
       setMetaTag("twitter:image", imageUrl);
     }
 
-    // Article-specific meta tags
+    // Article-specific meta tags + BlogPosting structured data. Structured
+    // data is what makes a post eligible for rich results (author, date,
+    // headline) in search — none of the blog posts had this before.
+    const articleLdId = "seohead-article-ld";
+    const existingArticleLd = document.getElementById(articleLdId);
+    if (existingArticleLd) existingArticleLd.remove();
+
     if (type === "article") {
       if (publishedTime) {
         setMetaTag("article:published_time", publishedTime, true);
@@ -108,12 +114,40 @@ export const SEOHead = ({
       if (section) {
         setMetaTag("article:section", section, true);
       }
+
+      // Structured-data headline shouldn't carry the "| Trackora" /
+      // "— Trackora" site suffix — that's a document.title convention,
+      // not part of the article's actual headline.
+      const headline = title.replace(/\s*[|—]\s*Trackora\s*$/i, "").trim();
+
+      const script = document.createElement("script");
+      script.type = "application/ld+json";
+      script.id = articleLdId;
+      script.text = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        headline,
+        description,
+        image: imageUrl ? [imageUrl] : undefined,
+        datePublished: publishedTime,
+        dateModified: modifiedTime || publishedTime,
+        author: { "@type": "Person", name: author },
+        publisher: {
+          "@type": "Organization",
+          name: "Trackora",
+          logo: { "@type": "ImageObject", url: "https://trackorapp.in/android-chrome-512x512.png" },
+        },
+        mainEntityOfPage: canonicalUrl ? { "@type": "WebPage", "@id": canonicalUrl } : undefined,
+      });
+      document.head.appendChild(script);
     }
 
     // Cleanup function - reset to defaults when component unmounts
     return () => {
       document.title = "Trackora - Smart Expense Tracker & Budget Analytics Platform";
       setMetaTag("robots", "index, follow");
+      const ld = document.getElementById(articleLdId);
+      if (ld) ld.remove();
     };
   }, [
     title,

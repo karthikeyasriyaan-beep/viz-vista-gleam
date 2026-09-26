@@ -92,7 +92,7 @@ const Welcome = () => {
     <>
       <SEOHead
         title="Trackora — Know Exactly Where Your Money Goes"
-        description="Trackora is a free expense tracker built for India. Log expenses by voice, snap receipts, and see your spending clearly. Know your safe-to-spend today. No bank linking required."
+        description="Free expense tracker built for India. Log expenses by voice, snap receipts, and know your safe-to-spend today. No bank linking required."
         keywords="expense tracker India, voice expense entry, receipt scanner, UPI spending tracker, personal finance India, budget tracker, safe to spend, Swiggy Zomato expense"
         canonicalUrl="https://trackorapp.in"
       />
